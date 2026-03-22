@@ -1,0 +1,109 @@
+SDG 4 – Quality Education: My Real School – Full Game Design
+
+Genre: School Simulation / Management
+Target Audience: Teens, casual players
+Tone: Realistic but friendly, focused on education, inclusion, and student well-being
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Assign students to classes and activities.
+	2.	Schedule teachers and manage lessons.
+	3.	Monitor student academic performance, social skills, and emotional health.
+	4.	Respond to events: exams, clubs, conflicts, or burnout.
+	5.	Track school-wide metrics: knowledge, happiness, graduation readiness.
+	6.	Repeat daily or weekly.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start of Day
+	•	Display school dashboard: student roster, teacher availability, class schedules.
+	•	Show key metrics: student happiness, average grades, participation in clubs.
+
+Step 1: Assign Students to Classes
+	•	Place students in classrooms based on their learning needs and abilities.
+	•	Each classroom has capacity and subject type.
+	•	Student learning efficiency depends on teacher skill, class size, and engagement.
+
+Step 2: Assign Teachers
+	•	Select teachers for each class.
+	•	Teachers have attributes: subject expertise, teaching style, energy level.
+	•	Assign teachers to maximize student knowledge gain and engagement.
+
+Step 3: Manage Student Activities
+	•	Players schedule extracurricular activities: clubs, sports, art, or volunteering.
+	•	Activities improve social skills, happiness, and specific talents.
+	•	Track student energy and avoid burnout.
+
+Step 4: Respond to Events
+	•	Random or scheduled events: exams, bullying incidents, student stress, parental requests.
+	•	Player chooses actions: counseling, schedule changes, classroom interventions.
+	•	Student metrics adjust based on response effectiveness.
+
+Step 5: End of Day
+	•	Update student knowledge, happiness, social skills, and fatigue.
+	•	Visual feedback: happy or tired students, classroom engagement, overall school environment.
+	•	Prepare next day’s schedule and teacher assignments.
+
+⸻
+
+3. Key Variables & Objects
+
+Student Attributes
+	•	Name, age
+	•	Knowledge level (0–100)
+	•	Happiness (0–100)
+	•	Social skills (0–100)
+	•	Energy / fatigue (0–100)
+	•	Assigned classes and activities
+
+Teacher Attributes
+	•	Name, subject expertise
+	•	Teaching skill (0–100)
+	•	Energy / stress level
+	•	Engagement with students
+
+School Attributes
+	•	Classrooms: capacity, subject type
+	•	Clubs / activities: participation and impact
+	•	Metrics: average knowledge, happiness, graduation readiness
+
+Global Variables
+	•	Day count
+	•	Academic calendar (exam dates, holidays)
+	•	School reputation
+	•	Resources (budget for upgrades, activities, and teachers)
+
+⸻
+
+4. UI Elements
+	•	Top bar: day, school reputation, budget, overall student happiness and knowledge
+	•	Student panel: list of students, individual metrics, class and activity assignments
+	•	Teacher panel: list of teachers, skill levels, energy
+	•	Classroom view: current lessons, engagement levels
+	•	Alerts: exams, conflicts, burnout, special events
+	•	Daily summary: academic progress, happiness trends, club performance
+
+⸻
+
+5. Feedback Systems
+	•	Student animations: engaged, happy, stressed, or tired
+	•	Classroom visual indicators: participation, overcrowding, engagement
+	•	Alerts for underperforming or unhappy students
+	•	Daily report: knowledge gain, student happiness, club achievements
+
+⸻
+
+6. Progression
+	•	Unlock new classrooms, subjects, and extracurricular programs as school reputation grows
+	•	Hire additional teachers or specialized staff (counselors, coaches)
+	•	Introduce challenges: exams, conflicts, budget limitations, or unexpected events
+	•	Track long-term student development and graduation readiness
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Majority of students graduate with high knowledge, happiness, and social skills; school reputation is maximized
+	•	Loss: Students fall below minimum knowledge, happiness drops critically, or school resources are depleted, causing poor outcomes

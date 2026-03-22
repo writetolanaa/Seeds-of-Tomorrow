@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useGame } from '@/context/GameContext';
 import { ZONES, type ZoneId } from '@/data/gameData';
@@ -6,675 +6,1165 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
 import {
-  NPC_LeeFather, NPC_LeeMom, NPC_GrandmaRosa, NPC_YoungMaya,
-  NPC_BakerHelper, NPC_HouseKeeper, NPC_Trainer,
-  NPC_FarmerAli, NPC_CitizenMia, NPC_CitizenTom,
+  NPC_LeeFather, NPC_LeeMom, NPC_GrandmaRosa, NPC_YoungMaya, NPC_BakerHelper,
+  NPC_HouseKeeper, NPC_Trainer, NPC_FarmerAli, NPC_CitizenMia, NPC_CitizenTom,
   NPC_MrBun, NPC_LittleZoe, NPC_GrandpaJoe, NPC_DoctorLeaf,
   NPC_StudentSam, NPC_StudentAria, NPC_StudentLeo, NPC_TeacherThinklet,
   NPC_Girl, NPC_Worker, NPC_Sibling, NPC_Advocate,
 } from '@/components/Sprites';
 
-/* ── reusable NPC card ── */
-function NpcCard({
-  Sprite, label, sublabel, selected, matched, error, dim, onClick, size = 'md', bubble,
-}: {
-  Sprite: React.FC<any>;
-  label: string;
-  sublabel?: string;
-  selected?: boolean;
-  matched?: boolean;
-  error?: boolean;
-  dim?: boolean;
-  onClick?: () => void;
-  size?: 'sm' | 'md' | 'lg';
-  bubble?: string;
-}) {
-  const sz = { sm: 'w-16 h-16', md: 'w-20 h-20 md:w-24 md:h-24', lg: 'w-24 h-24 md:w-28 md:h-28' }[size];
+function triggerConfetti() {
+  confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#FFD700','#FF6B6B','#4CAF50','#2196F3','#FF9800'] });
+}
+
+/* ── stat bar ── */
+function StatBar({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <motion.button
-      onClick={onClick}
-      disabled={matched || dim}
-      whileHover={!matched && !dim ? { scale: 1.08 } : {}}
-      whileTap={!matched && !dim ? { scale: 0.93 } : {}}
-      className={cn(
-        "flex flex-col items-center gap-1 p-2 rounded-2xl border-2 cursor-pointer transition-all relative",
-        matched && "border-green-500 bg-green-50",
-        error && "border-red-400 bg-red-50 animate-shake",
-        selected && !matched && "border-amber-500 bg-amber-50 shadow-lg",
-        !matched && !error && !selected && "border-gray-200 bg-white hover:border-amber-300 hover:shadow-md",
-        dim && "opacity-30 cursor-default",
-      )}
-    >
-      {bubble && (
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white border border-gray-300 rounded-xl px-2 py-1 text-xs font-semibold text-gray-700 shadow whitespace-nowrap z-10">
-          {bubble}
-          <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white" />
-        </div>
-      )}
-      <div className={sz}>
-        <Sprite />
+    <div className="w-full">
+      <div className="flex justify-between text-[10px] font-bold mb-0.5">
+        <span className="text-gray-600">{label}</span>
+        <span style={{ color }}>{value}%</span>
       </div>
-      <span className="text-xs font-bold text-gray-800 text-center leading-tight">{label}</span>
-      {sublabel && <span className="text-[10px] text-gray-500 text-center leading-tight">{sublabel}</span>}
-      {matched && <span className="text-green-600 text-base">✓</span>}
-    </motion.button>
+      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <motion.div className="h-full rounded-full" style={{ background: color }} animate={{ width: `${value}%` }} transition={{ duration: 0.6 }} />
+      </div>
+    </div>
   );
 }
 
-/* ──────────────────────────────────────────────
-   SDG 1 – No Poverty
-──────────────────────────────────────────────── */
+/* ── hint box ── */
+function HintBox({ text, color = '#F59E0B' }: { text: string; color?: string }) {
+  return (
+    <div className="w-full px-4 py-2 rounded-xl text-sm font-semibold text-center border-2" style={{ background: color + '18', borderColor: color + '66', color: '#374151' }}>
+      {text}
+    </div>
+  );
+}
+
+/* ── token chip ── */
+function TokenChip({ count, max }: { count: number; max: number }) {
+  return (
+    <div className="flex gap-1 flex-wrap justify-center">
+      {Array.from({ length: max }).map((_, i) => (
+        <div key={i} className={cn('w-6 h-6 rounded-full border-2 text-xs flex items-center justify-center font-bold transition-all',
+          i < count ? 'bg-yellow-400 border-yellow-600 text-white' : 'bg-gray-100 border-gray-300 text-gray-300'
+        )}>{i < count ? '🪙' : ''}</div>
+      ))}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SDG 1 – No Poverty: Kind Neighborhood
+   Week-based resource allocation simulation
+═══════════════════════════════════════════════════════════════ */
+type NpcFamily = {
+  id: number; Sprite: React.FC; name: string; role: string;
+  income: number; housing: number; employment: number;
+  actions: string[];
+};
+
 const PovertyPuzzle = ({ onWin }: { onWin: () => void }) => {
-  const resources = [
-    { id: 'job', Sprite: NPC_BakerHelper, label: 'Baker Maya', sublabel: 'Has a job offer!', bubble: '💼 We\'re hiring!' },
-    { id: 'housing', Sprite: NPC_HouseKeeper, label: 'Builder Ben', sublabel: 'Has a new cottage!', bubble: '🏠 Home ready!' },
-    { id: 'training', Sprite: NPC_Trainer, label: 'Coach Lily', sublabel: 'Runs a skills class!', bubble: '📋 Free training!' },
-  ];
-  const families = [
-    { id: 1, need: 'job', Sprite: NPC_LeeFather, label: 'The Lees', sublabel: 'Dad needs a job', bubble: '😟 No work...' },
-    { id: 2, need: 'housing', Sprite: NPC_GrandmaRosa, label: 'Grandma Rosa', sublabel: 'Roof is broken', bubble: '😢 Leaking roof' },
-    { id: 3, need: 'training', Sprite: NPC_YoungMaya, label: 'Young Maya', sublabel: 'Wants new skills', bubble: '🌟 I want to learn!' },
+  const BUDGET = 8;
+  const WEEKS = 2;
+
+  const initialFamilies: NpcFamily[] = [
+    { id: 1, Sprite: NPC_LeeFather, name: 'Lee Family', role: 'Dad unemployed', income: 15, housing: 60, employment: 0, actions: [] },
+    { id: 2, Sprite: NPC_GrandmaRosa, name: 'Grandma Rosa', role: 'Leaky roof, no income', income: 20, housing: 20, employment: 0, actions: [] },
+    { id: 3, Sprite: NPC_YoungMaya, name: 'Young Maya', role: 'No skills or job', income: 10, housing: 50, employment: 0, actions: [] },
+    { id: 4, Sprite: NPC_LeeMom, name: 'The Tans', role: 'Low income, renting', income: 35, housing: 40, employment: 30, actions: [] },
+    { id: 5, Sprite: NPC_BakerHelper, name: 'Baker\'s Kid', role: 'Part-time, struggling', income: 40, housing: 55, employment: 40, actions: [] },
   ];
 
-  const [selected, setSelected] = useState<string | null>(null);
-  const [matched, setMatched] = useState<Record<number, boolean>>({});
-  const [error, setError] = useState<number | null>(null);
-  const [hint, setHint] = useState('Click a helper NPC above, then click the right family!');
+  const [families, setFamilies] = useState<NpcFamily[]>(initialFamilies);
+  const [budget, setBudget] = useState(BUDGET);
+  const [week, setWeek] = useState(1);
+  const [phase, setPhase] = useState<'plan' | 'results' | 'event' | 'final'>('plan');
+  const [selected, setSelected] = useState<number | null>(null);
+  const [event, setEvent] = useState('');
+  const [hint, setHint] = useState('Select a family, then use a resource action. Budget: 8 tokens.');
 
-  const handleResource = (rid: string, name: string) => {
-    setSelected(rid);
-    setHint(`You picked ${name}! Now find the right family for them 👇`);
+  const ACTIONS = [
+    { id: 'job', label: '💼 Give Job', cost: 3, desc: '+35 employment, +25 income', effect: (f: NpcFamily) => ({ ...f, employment: Math.min(100, f.employment + 35), income: Math.min(100, f.income + 25) }) },
+    { id: 'housing', label: '🏠 Fix Housing', cost: 2, desc: '+30 housing quality', effect: (f: NpcFamily) => ({ ...f, housing: Math.min(100, f.housing + 30) }) },
+    { id: 'training', label: '📚 Skills Training', cost: 1, desc: '+15 income potential', effect: (f: NpcFamily) => ({ ...f, income: Math.min(100, f.income + 15), employment: Math.min(100, f.employment + 10) }) },
+  ];
+
+  const EVENTS = [
+    { text: '⚡ Power outage hits the neighborhood! Housing -10 for all.', apply: (fs: NpcFamily[]) => fs.map(f => ({ ...f, housing: Math.max(0, f.housing - 10) })) },
+    { text: '🏭 Factory opens! Employed families get +15 income bonus.', apply: (fs: NpcFamily[]) => fs.map(f => ({ ...f, income: f.employment > 30 ? Math.min(100, f.income + 15) : f.income })) },
+    { text: '🌧️ Flooding damages some homes. Trained workers rebuild faster.', apply: (fs: NpcFamily[]) => fs.map(f => ({ ...f, housing: f.employment > 30 ? f.housing : Math.max(0, f.housing - 15) })) },
+  ];
+
+  const povertyRate = () => {
+    const poor = families.filter(f => f.income < 40 || f.employment < 25).length;
+    return Math.round((poor / families.length) * 100);
   };
 
-  const handleFamily = (fid: number, need: string, name: string) => {
-    if (!selected || matched[fid]) return;
-    if (selected === need) {
-      const newM = { ...matched, [fid]: true };
-      setMatched(newM);
-      setSelected(null);
-      setHint(Object.keys(newM).length < families.length ? '🎉 Great match! Keep going!' : '');
-      if (Object.keys(newM).length === families.length) setTimeout(onWin, 700);
+  const applyAction = (actionId: string) => {
+    if (selected === null) { setHint('👆 First click a family card to select them!'); return; }
+    const action = ACTIONS.find(a => a.id === actionId)!;
+    if (budget < action.cost) { setHint(`❌ Not enough tokens! This costs ${action.cost} 🪙`); return; }
+    const fam = families.find(f => f.id === selected)!;
+    if (fam.actions.includes(actionId)) { setHint(`Already applied ${action.label} to this family this week!`); return; }
+
+    setFamilies(prev => prev.map(f => f.id === selected ? { ...action.effect(f), actions: [...f.actions, actionId] } : f));
+    setBudget(b => b - action.cost);
+    setSelected(null);
+    setHint(`✅ Applied! ${budget - action.cost} tokens remaining.`);
+  };
+
+  const endWeek = () => {
+    if (week < WEEKS) {
+      const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+      setEvent(ev.text);
+      setFamilies(ev.apply);
+      setPhase('event');
     } else {
-      setError(fid);
-      setHint(`❌ Hmm, try a different helper for ${name}!`);
-      setTimeout(() => { setError(null); setSelected(null); }, 900);
+      setPhase('final');
+      const rate = povertyRate();
+      if (rate <= 30) setTimeout(onWin, 600);
     }
   };
 
+  const startNextWeek = () => {
+    setWeek(w => w + 1);
+    setBudget(BUDGET);
+    setFamilies(prev => prev.map(f => ({ ...f, actions: [] })));
+    setPhase('plan');
+    setHint(`Week 2! Budget reset to 8 🪙. Keep improving the neighborhood!`);
+    setSelected(null);
+  };
+
+  const rate = povertyRate();
+
+  if (phase === 'event') return (
+    <div className="flex flex-col items-center gap-6 text-center max-w-md mx-auto">
+      <div className="text-6xl">📰</div>
+      <h3 className="font-display text-xl text-orange-700">Week {week} Event!</h3>
+      <div className="bg-orange-50 border-2 border-orange-300 rounded-2xl p-5 text-sm font-medium text-gray-700">{event}</div>
+      <StatBar label="Poverty Rate" value={rate} color="#EF4444" />
+      <button onClick={startNextWeek} className="px-6 py-3 bg-green-500 text-white font-bold rounded-xl shadow-lg hover:bg-green-600 transition-colors">
+        Start Week 2 →
+      </button>
+    </div>
+  );
+
+  if (phase === 'final') return (
+    <div className="flex flex-col items-center gap-5 text-center max-w-md mx-auto">
+      {rate <= 30 ? (
+        <>
+          <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} className="text-6xl">🏘️</motion.div>
+          <h3 className="font-display text-2xl text-green-700">Neighborhood Thriving!</h3>
+          <p className="text-sm text-gray-600">Poverty rate down to <strong>{rate}%</strong>! Your resource allocation made a real difference.</p>
+        </>
+      ) : (
+        <>
+          <div className="text-6xl">😔</div>
+          <h3 className="font-display text-xl text-red-700">Still struggling... ({rate}% poverty)</h3>
+          <p className="text-sm text-gray-600">Focus jobs on the most unemployed families next time!</p>
+          <button onClick={() => { setFamilies(initialFamilies); setWeek(1); setBudget(BUDGET); setPhase('plan'); setHint('Try again! Allocate resources wisely.'); }} className="px-5 py-2 bg-orange-500 text-white font-bold rounded-xl">↩ Try Again</button>
+        </>
+      )}
+      <div className="w-full space-y-2">
+        {families.map(f => (
+          <div key={f.id} className="bg-white rounded-xl border p-3 text-left">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-10 h-10"><f.Sprite /></div>
+              <div><p className="font-bold text-sm">{f.name}</p><p className="text-xs text-gray-500">{f.role}</p></div>
+              <span className={cn('ml-auto text-sm font-bold', f.income >= 40 && f.employment >= 25 ? 'text-green-600' : 'text-red-500')}>
+                {f.income >= 40 && f.employment >= 25 ? '✅ Out of poverty' : '❌ Still struggling'}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 text-sm font-semibold text-amber-800 text-center">
-        {hint}
+    <div className="flex flex-col gap-4 w-full">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="bg-yellow-50 border border-yellow-300 rounded-xl px-3 py-1.5 text-sm font-bold text-yellow-800">📅 Week {week}/{WEEKS}</div>
+        <div className="flex flex-col items-center">
+          <TokenChip count={budget} max={BUDGET} />
+          <p className="text-[10px] text-gray-500 mt-0.5">{budget} tokens left</p>
+        </div>
+        <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-1.5 text-sm font-bold text-red-700">📊 Poverty: {rate}%</div>
       </div>
 
-      {/* Helper NPCs */}
+      <HintBox text={hint} />
+
+      {/* Action buttons */}
+      <div className="flex gap-2 justify-center flex-wrap">
+        {ACTIONS.map(a => (
+          <motion.button key={a.id} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
+            onClick={() => applyAction(a.id)}
+            disabled={budget < a.cost}
+            className={cn('flex flex-col items-center px-3 py-2 rounded-xl border-2 text-xs font-bold transition-all',
+              budget >= a.cost ? 'bg-white border-amber-400 hover:bg-amber-50 cursor-pointer' : 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed'
+            )}
+          >
+            <span className="text-base">{a.label}</span>
+            <span className="text-gray-500 font-normal">{a.desc}</span>
+            <span className="text-amber-600">Cost: {a.cost} 🪙</span>
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Family cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {families.map(f => (
+          <motion.div key={f.id} whileHover={{ scale: 1.02 }} onClick={() => { setSelected(f.id); setHint(`Selected ${f.name}! Now pick an action above.`); }}
+            className={cn('bg-white rounded-2xl border-2 p-3 cursor-pointer transition-all',
+              selected === f.id ? 'border-amber-500 shadow-lg bg-amber-50' : 'border-gray-200 hover:border-amber-300'
+            )}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-10 h-12 shrink-0"><f.Sprite /></div>
+              <div>
+                <p className="font-bold text-xs leading-tight">{f.name}</p>
+                <p className="text-[10px] text-gray-500 leading-tight">{f.role}</p>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <StatBar label="💰 Income" value={f.income} color="#F59E0B" />
+              <StatBar label="🏠 Housing" value={f.housing} color="#3B82F6" />
+              <StatBar label="💼 Employment" value={f.employment} color="#10B981" />
+            </div>
+            {f.actions.length > 0 && (
+              <div className="mt-1.5 flex gap-1 flex-wrap">
+                {f.actions.map(a => <span key={a} className="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-bold">✓ {a}</span>)}
+              </div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+
+      <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+        onClick={endWeek}
+        className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md transition-colors"
+      >
+        ⏭ End Week {week} & See Results
+      </motion.button>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   SDG 2 – Zero Hunger: Grow & Serve
+   Farm plots → grow → harvest → feed citizens
+═══════════════════════════════════════════════════════════════ */
+type Plot = { id: number; crop: string | null; stage: number; watered: number };
+type Citizen2 = { id: number; Sprite: React.FC; name: string; wants: string; hunger: number; fed: boolean };
+
+const CROPS = [
+  { id: 'carrot', emoji: '🥕', name: 'Carrot', waterNeeded: 2 },
+  { id: 'tomato', emoji: '🍅', name: 'Tomato', waterNeeded: 3 },
+  { id: 'corn',   emoji: '🌽', name: 'Corn',   waterNeeded: 2 },
+  { id: 'potato', emoji: '🥔', name: 'Potato', waterNeeded: 2 },
+];
+
+const HungerPuzzle = ({ onWin }: { onWin: () => void }) => {
+  const [plots, setPlots] = useState<Plot[]>(Array.from({ length: 6 }, (_, i) => ({ id: i, crop: null, stage: 0, watered: 0 })));
+  const [seed, setSeed] = useState<string | null>(null);
+  const [harvest, setHarvest] = useState<Record<string, number>>({});
+  const [citizens, setCitizens] = useState<Citizen2[]>([
+    { id: 1, Sprite: NPC_CitizenMia,  name: 'Mia',  wants: 'carrot', hunger: 85, fed: false },
+    { id: 2, Sprite: NPC_FarmerAli,   name: 'Ali',  wants: 'tomato', hunger: 90, fed: false },
+    { id: 3, Sprite: NPC_CitizenTom,  name: 'Tom',  wants: 'corn',   hunger: 75, fed: false },
+    { id: 4, Sprite: NPC_LeeMom,      name: 'Lily', wants: 'potato', hunger: 80, fed: false },
+  ]);
+  const [selectedHarvest, setSelectedHarvest] = useState<string | null>(null);
+  const [phase, setPhase] = useState<'farm' | 'serve'>('farm');
+  const [waste, setWaste] = useState(0);
+  const [hint, setHint] = useState('Pick a seed type, then click an empty plot to plant!');
+
+  const totalHarvested = Object.values(harvest).reduce((s, n) => s + n, 0);
+  const fedAll = citizens.every(c => c.fed);
+
+  // Hunger timer
+  useEffect(() => {
+    if (phase !== 'serve') return;
+    const t = setInterval(() => {
+      setCitizens(prev => prev.map(c => c.fed ? c : { ...c, hunger: Math.min(100, c.hunger + 2) }));
+    }, 1000);
+    return () => clearInterval(t);
+  }, [phase]);
+
+  useEffect(() => { if (fedAll) setTimeout(onWin, 700); }, [fedAll]);
+
+  const plotCrop = (pid: number) => {
+    if (!seed) { setHint('👆 First pick a seed type below!'); return; }
+    setPlots(prev => prev.map(p => p.id === pid && !p.crop ? { ...p, crop: seed, stage: 1, watered: 0 } : p));
+    setHint(`Planted! Now click 💧 to water it until it's ready.`);
+  };
+
+  const waterPlot = (pid: number) => {
+    setPlots(prev => prev.map(p => {
+      if (p.id !== pid || !p.crop || p.stage === 3) return p;
+      const crop = CROPS.find(c => c.id === p.crop)!;
+      const nw = p.watered + 1;
+      const ns = nw >= crop.waterNeeded ? 3 : nw >= 1 ? 2 : 1;
+      if (ns === 3 && p.stage < 3) setHint(`🌟 ${crop.name} is ready to harvest! Click it!`);
+      return { ...p, watered: nw, stage: ns };
+    }));
+  };
+
+  const harvestPlot = (pid: number) => {
+    const p = plots.find(pl => pl.id === pid)!;
+    if (p.stage < 3) { setHint('Not ready yet! Keep watering 💧'); return; }
+    const crop = CROPS.find(c => c.id === p.crop)!;
+    setHarvest(h => ({ ...h, [p.crop!]: (h[p.crop!] ?? 0) + 1 }));
+    setPlots(prev => prev.map(pl => pl.id === pid ? { id: pid, crop: null, stage: 0, watered: 0 } : pl));
+    setHint(`Harvested ${crop.emoji} ${crop.name}! Check your basket →`);
+
+    const allReady = citizens.every(c => (harvest[c.wants] ?? 0) + (c.wants === p.crop ? 1 : 0) >= 1);
+    if (allReady) { setTimeout(() => { setPhase('serve'); setHint('All needed crops harvested! Now feed the hungry citizens!'); }, 300); }
+  };
+
+  const feedCitizen = (cid: number, wants: string) => {
+    if (!selectedHarvest) { setHint('Pick a food from your basket first!'); return; }
+    if (selectedHarvest !== wants) {
+      const crop = CROPS.find(c => c.id === selectedHarvest)!;
+      const wantedCrop = CROPS.find(c => c.id === wants)!;
+      setWaste(w => w + 1);
+      setHint(`❌ They want ${wantedCrop.emoji} not ${crop.emoji}! Wasted food increases hunger globally.`);
+      setHarvest(h => ({ ...h, [selectedHarvest]: Math.max(0, (h[selectedHarvest] ?? 0) - 1) }));
+      setSelectedHarvest(null);
+      return;
+    }
+    setCitizens(prev => prev.map(c => c.id === cid ? { ...c, fed: true, hunger: 0 } : c));
+    setHarvest(h => ({ ...h, [selectedHarvest]: Math.max(0, (h[selectedHarvest] ?? 0) - 1) }));
+    setSelectedHarvest(null);
+    const c = citizens.find(ci => ci.id === cid)!;
+    setHint(`🎉 ${c.name} is happy! Keep feeding!`);
+  };
+
+  const stageEmoji = (p: Plot) => {
+    if (!p.crop) return '🟫';
+    if (p.stage === 1) return '🌱';
+    if (p.stage === 2) return '🌿';
+    const crop = CROPS.find(c => c.id === p.crop)!;
+    return crop.emoji;
+  };
+
+  if (phase === 'serve') return (
+    <div className="flex flex-col gap-4 w-full">
+      <HintBox text={hint} />
+      {waste > 0 && <div className="text-xs text-center text-red-600 font-bold">🗑️ Food wasted: {waste} portions — better crop matching reduces waste!</div>}
+
+      {/* Basket */}
       <div>
-        <p className="text-xs text-center text-gray-500 mb-3 font-bold uppercase tracking-wide">Community Helpers</p>
-        <div className="flex gap-4 justify-center flex-wrap">
-          {resources.map(r => {
-            const alreadyUsed = Object.entries(matched).some(([fid, done]) => {
-              if (!done) return false;
-              const fam = families.find(f => f.id === Number(fid));
-              return fam?.need === r.id;
-            });
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide text-center mb-2">🧺 Your Harvest Basket</p>
+        <div className="flex gap-3 justify-center flex-wrap">
+          {CROPS.map(c => (
+            (harvest[c.id] ?? 0) > 0 && (
+              <motion.button key={c.id} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.92 }}
+                onClick={() => setSelectedHarvest(selectedHarvest === c.id ? null : c.id)}
+                className={cn('px-4 py-3 rounded-2xl border-2 flex flex-col items-center gap-1 font-bold text-sm transition-all',
+                  selectedHarvest === c.id ? 'border-green-500 bg-green-50 shadow-lg scale-105' : 'border-gray-300 bg-white hover:border-green-400'
+                )}
+              >
+                <span className="text-3xl">{c.emoji}</span>
+                <span>{c.name}</span>
+                <span className="text-xs text-gray-500">×{harvest[c.id]}</span>
+              </motion.button>
+            )
+          ))}
+        </div>
+      </div>
+
+      {/* Citizens */}
+      <div className="grid grid-cols-2 gap-3">
+        {citizens.map(c => (
+          <motion.div key={c.id} whileHover={!c.fed ? { scale: 1.03 } : {}} onClick={() => !c.fed && feedCitizen(c.id, c.wants)}
+            className={cn('bg-white rounded-2xl border-2 p-3 text-center cursor-pointer transition-all',
+              c.fed ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-amber-400'
+            )}
+          >
+            <div className="w-14 h-14 mx-auto"><c.Sprite /></div>
+            <p className="font-bold text-sm mt-1">{c.name}</p>
+            {c.fed ? (
+              <p className="text-green-600 font-bold text-sm">😊 Full & happy!</p>
+            ) : (
+              <>
+                <p className="text-xs text-gray-500">Wants: {CROPS.find(cr => cr.id === c.wants)?.emoji} {CROPS.find(cr => cr.id === c.wants)?.name}</p>
+                <StatBar label="Hunger" value={c.hunger} color={c.hunger > 80 ? '#EF4444' : '#F59E0B'} />
+              </>
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-4 w-full">
+      <HintBox text={hint} />
+
+      {/* Seed selector */}
+      <div>
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide text-center mb-2">🌾 Choose a Seed</p>
+        <div className="flex gap-2 justify-center flex-wrap">
+          {CROPS.map(c => (
+            <motion.button key={c.id} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
+              onClick={() => { setSeed(c.id); setHint(`${c.emoji} ${c.name} selected! Click an empty 🟫 plot to plant.`); }}
+              className={cn('flex flex-col items-center px-3 py-2 rounded-xl border-2 text-xs font-bold transition-all',
+                seed === c.id ? 'border-green-500 bg-green-50 shadow-md' : 'border-gray-300 bg-white hover:border-green-400'
+              )}
+            >
+              <span className="text-2xl">{c.emoji}</span>
+              <span>{c.name}</span>
+              <span className="text-gray-400">💧×{c.waterNeeded}</span>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+
+      {/* Farm grid */}
+      <div className="grid grid-cols-3 gap-3">
+        {plots.map(p => (
+          <div key={p.id} className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 flex flex-col items-center gap-2">
+            <motion.div className="text-4xl cursor-pointer" whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}
+              onClick={() => {
+                if (!p.crop) plotCrop(p.id);
+                else if (p.stage === 3) harvestPlot(p.id);
+              }}
+            >
+              {stageEmoji(p)}
+            </motion.div>
+            {p.crop && p.stage < 3 && (
+              <motion.button whileHover={{ scale: 1.2, rotate: -15 }} whileTap={{ scale: 0.85 }}
+                onClick={() => waterPlot(p.id)} className="text-2xl cursor-pointer"
+              >💧</motion.button>
+            )}
+            {p.crop && (
+              <div className="flex gap-0.5">
+                {Array.from({ length: CROPS.find(c => c.id === p.crop)!.waterNeeded }).map((_, i) => (
+                  <div key={i} className={cn('w-3 h-3 rounded-full border', i < p.watered ? 'bg-blue-400 border-blue-500' : 'bg-gray-100 border-gray-300')} />
+                ))}
+              </div>
+            )}
+            {p.stage === 3 && <p className="text-[10px] font-bold text-green-600 animate-pulse">Tap to harvest!</p>}
+          </div>
+        ))}
+      </div>
+
+      {/* Needed crops */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+        <p className="text-xs font-bold text-blue-800 mb-2">Citizens need:</p>
+        <div className="flex gap-3 flex-wrap">
+          {citizens.map(c => {
+            const crop = CROPS.find(cr => cr.id === c.wants)!;
+            const available = (harvest[c.wants] ?? 0) > 0;
             return (
-              <NpcCard
-                key={r.id}
-                Sprite={r.Sprite}
-                label={r.label}
-                sublabel={r.sublabel}
-                bubble={!alreadyUsed && !selected ? r.bubble : undefined}
-                selected={selected === r.id}
-                matched={alreadyUsed}
-                onClick={() => !alreadyUsed && handleResource(r.id, r.label)}
-                size="md"
-              />
+              <span key={c.id} className={cn('text-xs px-2 py-1 rounded-full font-bold', available ? 'bg-green-200 text-green-800' : 'bg-blue-100 text-blue-700')}>
+                {c.name}: {crop.emoji} {available ? '✓' : ''}
+              </span>
             );
           })}
         </div>
       </div>
 
-      <div className="w-full flex items-center gap-2">
-        <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-gray-400 text-lg">↓</span>
-        <div className="flex-1 h-px bg-gray-200" />
-      </div>
-
-      {/* Family NPCs */}
-      <div>
-        <p className="text-xs text-center text-gray-500 mb-3 font-bold uppercase tracking-wide">Families who need help</p>
-        <div className="flex gap-4 justify-center flex-wrap">
-          {families.map(f => (
-            <NpcCard
-              key={f.id}
-              Sprite={f.Sprite}
-              label={f.label}
-              sublabel={f.sublabel}
-              bubble={!matched[f.id] ? f.bubble : '😊 Thank you!'}
-              matched={matched[f.id]}
-              error={error === f.id}
-              onClick={() => handleFamily(f.id, f.need, f.label)}
-              size="md"
-            />
-          ))}
+      {totalHarvested > 0 && (
+        <div className="text-xs text-center text-green-700 font-bold">
+          🧺 Basket: {Object.entries(harvest).filter(([,v]) => v > 0).map(([k, v]) => `${CROPS.find(c => c.id === k)?.emoji}×${v}`).join('  ')}
         </div>
-      </div>
-
-      <p className="text-xs text-gray-400">Matched: {Object.keys(matched).length}/{families.length}</p>
+      )}
     </div>
   );
 };
 
-/* ──────────────────────────────────────────────
-   SDG 2 – Zero Hunger
-──────────────────────────────────────────────── */
-const HungerPuzzle = ({ onWin }: { onWin: () => void }) => {
-  const crops = [
-    { id: 1, emoji: '🥕', name: 'Carrot', max: 2 },
-    { id: 2, emoji: '🍅', name: 'Tomato', max: 3 },
-    { id: 3, emoji: '🌽', name: 'Corn', max: 2 },
-  ];
-  const citizens = [
-    { id: 1, Sprite: NPC_CitizenMia, name: 'Mia', wants: 1, bubble: '🥕 I love carrots!' },
-    { id: 2, Sprite: NPC_FarmerAli, name: 'Ali', wants: 2, bubble: '🍅 Tomatoes please!' },
-    { id: 3, Sprite: NPC_CitizenTom, name: 'Tom', wants: 3, bubble: '🌽 Any corn left?' },
-  ];
-
-  const [water, setWater] = useState<Record<number, number>>({ 1: 0, 2: 0, 3: 0 });
-  const [harvested, setHarvested] = useState<number[]>([]);
-  const [fed, setFed] = useState<number[]>([]);
-  const [selectedCrop, setSelectedCrop] = useState<number | null>(null);
-  const [phase, setPhase] = useState<'grow' | 'serve'>('grow');
-  const [hint, setHint] = useState('Water each crop by clicking the 🚿 until it\'s ready!');
-
-  const doWater = (id: number) => {
-    const crop = crops.find(c => c.id === id)!;
-    const next = Math.min(water[id] + 1, crop.max);
-    const newW = { ...water, [id]: next };
-    setWater(newW);
-    if (next >= crop.max && !harvested.includes(id)) {
-      setTimeout(() => {
-        setHarvested(prev => {
-          const h = [...prev, id];
-          if (h.length === crops.length) {
-            setPhase('serve');
-            setHint('All crops harvested! Pick a food, then give it to the right person!');
-          }
-          return h;
-        });
-      }, 300);
-    }
-  };
-
-  const handleFeed = (citizenId: number, wants: number, name: string) => {
-    if (!selectedCrop || fed.includes(citizenId)) return;
-    if (selectedCrop === wants) {
-      const newFed = [...fed, citizenId];
-      setFed(newFed);
-      setSelectedCrop(null);
-      setHint(newFed.length < citizens.length ? `🎉 ${name} is happy! Keep feeding!` : '');
-      if (newFed.length === citizens.length) setTimeout(onWin, 700);
-    } else {
-      setSelectedCrop(null);
-      setHint(`❌ That's not what ${name} wanted! Try again.`);
-    }
-  };
-
-  if (phase === 'serve') {
-    return (
-      <div className="flex flex-col items-center gap-6 w-full">
-        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 text-sm font-semibold text-amber-800 text-center">
-          {hint}
-        </div>
-        <div>
-          <p className="text-xs text-center text-gray-500 mb-3 font-bold uppercase tracking-wide">🌾 Harvested Crops</p>
-          <div className="flex gap-4 justify-center">
-            {crops.map(c => {
-              const used = fed.some(fid => citizens.find(ci => ci.id === fid)?.wants === c.id);
-              return (
-                <motion.button
-                  key={c.id}
-                  onClick={() => !used && setSelectedCrop(c.id)}
-                  disabled={used}
-                  whileHover={!used ? { scale: 1.15 } : {}}
-                  whileTap={!used ? { scale: 0.9 } : {}}
-                  className={cn(
-                    "w-16 h-16 rounded-2xl border-2 text-3xl flex items-center justify-center transition-all",
-                    used ? "opacity-30 border-gray-200 cursor-default" :
-                      selectedCrop === c.id ? "border-amber-500 bg-amber-100 shadow-lg scale-110" :
-                        "border-gray-300 bg-white hover:border-amber-400"
-                  )}
-                >
-                  {c.emoji}
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
-        <div>
-          <p className="text-xs text-center text-gray-500 mb-3 font-bold uppercase tracking-wide">🧑 Hungry Villagers</p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            {citizens.map(c => (
-              <NpcCard
-                key={c.id}
-                Sprite={c.Sprite}
-                label={c.name}
-                bubble={fed.includes(c.id) ? '😊 Thank you!' : c.bubble}
-                matched={fed.includes(c.id)}
-                onClick={() => handleFeed(c.id, c.wants, c.name)}
-                size="md"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 text-sm font-semibold text-amber-800 text-center">
-        {hint}
-      </div>
-      <div className="flex gap-6 justify-center flex-wrap">
-        {crops.map(c => {
-          const lvl = water[c.id];
-          const ready = harvested.includes(c.id);
-          return (
-            <div key={c.id} className="flex flex-col items-center gap-2 bg-white rounded-2xl border-2 border-gray-200 p-4 shadow-sm">
-              <div className={cn("text-5xl transition-all", ready ? "scale-125" : lvl > 0 ? "scale-110" : "scale-100")}>
-                {ready ? c.emoji : lvl >= c.max - 1 ? '🌿' : lvl > 0 ? '🌱' : '🪨'}
-              </div>
-              <p className="font-bold text-sm">{c.name}</p>
-              <div className="flex gap-1">
-                {Array.from({ length: c.max }).map((_, i) => (
-                  <div key={i} className={cn("w-5 h-5 rounded-full border-2 border-blue-300 flex items-center justify-center text-xs",
-                    i < lvl ? "bg-blue-400 text-white" : "bg-gray-100")}>{i < lvl ? '💧' : ''}</div>
-                ))}
-              </div>
-              {!ready ? (
-                <motion.button
-                  whileHover={{ scale: 1.2, rotate: -10 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => doWater(c.id)}
-                  className="text-3xl cursor-pointer select-none"
-                >🚿</motion.button>
-              ) : (
-                <span className="text-green-600 font-bold text-sm">✓ Ready!</span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      <p className="text-xs text-gray-500">Harvested: {harvested.length}/{crops.length}</p>
-    </div>
-  );
+/* ═══════════════════════════════════════════════════════════════
+   SDG 3 – Good Health: Oops! Hospital!
+   Manage patients, resources, and treatments
+═══════════════════════════════════════════════════════════════ */
+type Patient = {
+  id: number; Sprite: React.FC; name: string; age: number;
+  issue: string; issueType: string; health: number;
+  needs: string; recovery: number; admitted: boolean; treated: boolean; cured: boolean;
 };
+type Hospital = { beds: number; medicine: number; counselors: number; reputation: number };
 
-/* ──────────────────────────────────────────────
-   SDG 3 – Good Health
-──────────────────────────────────────────────── */
 const HealthPuzzle = ({ onWin }: { onWin: () => void }) => {
-  const patients = [
-    {
-      Sprite: NPC_MrBun, name: 'Mr. Bun', issue: 'Tummy hurts from junk food!',
-      options: [
-        { label: 'Give medicine', emoji: '💊', correct: false, feedback: "Medicine masks it — but the real fix is eating better!" },
-        { label: 'Healthy diet plan', emoji: '🥗', correct: true, feedback: "Yes! Preventing the cause is the best cure!" },
-        { label: 'Just sleep more', emoji: '🛌', correct: false, feedback: "Good idea but won't fix the junk food habit!" },
-      ],
-    },
-    {
-      Sprite: NPC_LittleZoe, name: 'Little Zoe', issue: 'Stressed & can\'t focus at school!',
-      options: [
-        { label: 'Focus pill', emoji: '💊', correct: false, feedback: "Medication isn't the first answer to stress." },
-        { label: 'More screen time', emoji: '📺', correct: false, feedback: "Screens can increase stress, not reduce it!" },
-        { label: 'Exercise + talk it out', emoji: '🏃', correct: true, feedback: "Brilliant! Movement & counseling are the best combo!" },
-      ],
-    },
-    {
-      Sprite: NPC_GrandpaJoe, name: 'Grandpa Joe', issue: 'Coughing from polluted air!',
-      options: [
-        { label: 'Cough drops forever', emoji: '💊', correct: false, feedback: "That only treats symptoms, not the cause!" },
-        { label: 'Clean air + plant trees', emoji: '🌳', correct: true, feedback: "Amazing! A healthy environment IS healthcare!" },
-        { label: 'Stay inside always', emoji: '🚪', correct: false, feedback: "Isolation isn't a solution — clean air is the answer!" },
-      ],
-    },
+  const [patients, setPatients] = useState<Patient[]>([
+    { id: 1, Sprite: NPC_MrBun,     name: 'Mr. Bun',  age: 42, issue: 'Overeating & poor diet 🍔',       issueType: 'diet',    health: 30, needs: 'diet',     recovery: 0, admitted: false, treated: false, cured: false },
+    { id: 2, Sprite: NPC_LittleZoe, name: 'Zoe',       age: 9,  issue: 'Stress & anxiety 😰',              issueType: 'stress',  health: 40, needs: 'counsel',  recovery: 0, admitted: false, treated: false, cured: false },
+    { id: 3, Sprite: NPC_GrandpaJoe,name: 'Grandpa J', age: 71, issue: 'Breathing problems 🫁',            issueType: 'lung',    health: 20, needs: 'medicine', recovery: 0, admitted: false, treated: false, cured: false },
+    { id: 4, Sprite: NPC_YoungMaya, name: 'Maya',      age: 17, issue: 'Sports injury, needs rest 🦵',    issueType: 'injury',  health: 50, needs: 'rest',     recovery: 0, admitted: false, treated: false, cured: false },
+  ]);
+  const [hospital, setHospital] = useState<Hospital>({ beds: 3, medicine: 4, counselors: 2, reputation: 60 });
+  const [selected, setSelected] = useState<number | null>(null);
+  const [event, setEvent] = useState<string | null>(null);
+  const [day, setDay] = useState(1);
+  const [hint, setHint] = useState('Click "Admit" to bring in a patient, then assign the right treatment!');
+  const [phase, setPhase] = useState<'manage' | 'results'>('manage');
+
+  const TREATMENTS = [
+    { id: 'diet',    label: '🥗 Diet Plan',    desc: 'Best for overeating/obesity',   cost: { medicine: 0, beds: 0, counselors: 0 } },
+    { id: 'medicine',label: '💊 Medicine',     desc: 'Best for infections/breathing', cost: { medicine: 1, beds: 0, counselors: 0 } },
+    { id: 'rest',    label: '🛌 Rest & Rehab', desc: 'Best for injuries/fatigue',     cost: { medicine: 0, beds: 1, counselors: 0 } },
+    { id: 'counsel', label: '🧠 Counseling',   desc: 'Best for stress/mental health', cost: { medicine: 0, beds: 0, counselors: 1 } },
+    { id: 'exercise',label: '🏃 Exercise',     desc: 'Good for general wellness',     cost: { medicine: 0, beds: 0, counselors: 0 } },
   ];
 
-  const [current, setCurrent] = useState(0);
-  const [solved, setSolved] = useState(0);
-  const [feedback, setFeedback] = useState<{ text: string; correct: boolean } | null>(null);
+  const RANDOM_EVENTS = [
+    '⚡ Flu season! All untreated patients lose -10 health.',
+    '🌞 Health awareness campaign! Reputation +15.',
+    '🏥 Supply donation! +2 medicine received.',
+  ];
 
-  const handleAnswer = (opt: { label: string; emoji: string; correct: boolean; feedback: string }) => {
-    setFeedback({ text: opt.feedback, correct: opt.correct });
-    if (opt.correct) {
-      setTimeout(() => {
-        setFeedback(null);
-        const ns = solved + 1;
-        setSolved(ns);
-        if (current < patients.length - 1) setCurrent(c => c + 1);
-        else setTimeout(onWin, 400);
-      }, 2000);
-    } else {
-      setTimeout(() => setFeedback(null), 2000);
-    }
+  const admitPatient = (pid: number) => {
+    const p = patients.find(pt => pt.id === pid)!;
+    if (p.admitted) return;
+    if (hospital.beds <= 0) { setHint('❌ No beds available! Discharge a cured patient first.'); return; }
+    setPatients(prev => prev.map(pt => pt.id === pid ? { ...pt, admitted: true } : pt));
+    setHospital(h => ({ ...h, beds: h.beds - 1 }));
+    setHint(`${p.name} admitted. Pick the right treatment!`);
+    setSelected(pid);
   };
 
-  const p = patients[current];
+  const applyTreatment = (pid: number, tid: string) => {
+    const p = patients.find(pt => pt.id === pid)!;
+    const t = TREATMENTS.find(tr => tr.id === tid)!;
+
+    if (t.cost.medicine > hospital.medicine) { setHint('❌ Not enough medicine in stock!'); return; }
+    if (t.cost.beds > 0 && hospital.beds < 0) { setHint('❌ No beds available!'); return; }
+    if (t.cost.counselors > hospital.counselors) { setHint('❌ No counselors available!'); return; }
+
+    const correct = tid === p.needs;
+    const healthGain = correct ? 55 : 20;
+    const repChange = correct ? 10 : -5;
+
+    setHospital(h => ({
+      ...h,
+      medicine: h.medicine - t.cost.medicine,
+      counselors: h.counselors - t.cost.counselors,
+      reputation: Math.min(100, Math.max(0, h.reputation + repChange)),
+    }));
+
+    setPatients(prev => prev.map(pt => pt.id === pid ? {
+      ...pt, treated: true, health: Math.min(100, pt.health + healthGain),
+      recovery: healthGain, cured: pt.health + healthGain >= 75,
+    } : pt));
+
+    setHint(correct
+      ? `✅ Perfect treatment for ${p.name}! +${healthGain} health.`
+      : `⚠️ That partially helps but wasn't ideal for ${p.name}'s condition.`
+    );
+    setSelected(null);
+  };
+
+  const endDay = () => {
+    const ev = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
+    setEvent(ev);
+    if (ev.includes('Flu')) setPatients(prev => prev.map(p => !p.treated ? { ...p, health: Math.max(0, p.health - 10) } : p));
+    if (ev.includes('medicine')) setHospital(h => ({ ...h, medicine: h.medicine + 2 }));
+    if (ev.includes('Reputation')) setHospital(h => ({ ...h, reputation: Math.min(100, h.reputation + 15) }));
+
+    setDay(d => d + 1);
+    const curedAll = patients.every(p => p.cured);
+    if (curedAll || day >= 3) {
+      setPhase('results');
+      if (curedAll || patients.filter(p => p.cured).length >= 3) setTimeout(onWin, 800);
+    }
+    setTimeout(() => setEvent(null), 2500);
+  };
+
+  const dischargePatient = (pid: number) => {
+    const p = patients.find(pt => pt.id === pid)!;
+    if (!p.cured) return;
+    setPatients(prev => prev.map(pt => pt.id === pid ? { ...pt, admitted: false } : pt));
+    setHospital(h => ({ ...h, beds: h.beds + 1 }));
+    setHint(`${p.name} discharged — bed freed!`);
+  };
+
+  const curedCount = patients.filter(p => p.cured).length;
+
+  if (phase === 'results') return (
+    <div className="flex flex-col items-center gap-5 text-center max-w-md mx-auto">
+      <motion.div animate={{ rotate: [0, -5, 5, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="text-6xl">🏥</motion.div>
+      <h3 className="font-display text-2xl text-green-700">Hospital Report</h3>
+      <p className="text-sm text-gray-600">Healed <strong>{curedCount}/4</strong> patients</p>
+      <StatBar label="Hospital Reputation" value={hospital.reputation} color="#3B82F6" />
+      <div className="w-full grid grid-cols-2 gap-2">
+        {patients.map(p => (
+          <div key={p.id} className={cn('flex items-center gap-2 rounded-xl p-2 border-2', p.cured ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50')}>
+            <div className="w-10 h-10"><p.Sprite /></div>
+            <div className="text-left">
+              <p className="text-xs font-bold">{p.name}</p>
+              <StatBar label="Health" value={p.health} color={p.cured ? '#10B981' : '#EF4444'} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="flex flex-col items-center gap-5 w-full max-w-md mx-auto">
-      {/* Progress dots */}
-      <div className="flex gap-3 justify-center">
-        {patients.map((pt, i) => (
-          <div key={i} className={cn("w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold",
-            i < solved ? "border-green-500 bg-green-100 text-green-700" :
-              i === current ? "border-blue-400 bg-blue-100 text-blue-700" : "border-gray-300 bg-gray-50 text-gray-400"
-          )}>
-            {i < solved ? '✓' : i + 1}
+    <div className="flex flex-col gap-3 w-full">
+      {/* Hospital Dashboard */}
+      <div className="grid grid-cols-4 gap-2 text-center">
+        {[
+          { icon: '🛏️', label: 'Beds', value: hospital.beds },
+          { icon: '💊', label: 'Medicine', value: hospital.medicine },
+          { icon: '🧠', label: 'Counselors', value: hospital.counselors },
+          { icon: '⭐', label: 'Rep', value: hospital.reputation + '%' },
+        ].map(r => (
+          <div key={r.label} className="bg-blue-50 border border-blue-200 rounded-xl p-2">
+            <div className="text-xl">{r.icon}</div>
+            <div className="text-xs font-bold text-blue-800">{r.value}</div>
+            <div className="text-[10px] text-gray-500">{r.label}</div>
           </div>
         ))}
       </div>
 
-      {/* Patient NPC */}
-      <motion.div key={current} initial={{ x: 60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="flex flex-col items-center gap-2">
-        <div className="w-28 h-28">
-          <p.Sprite />
-        </div>
-        <div className="bg-white rounded-2xl sketch-border px-4 py-3 text-center max-w-xs">
-          <p className="font-bold text-base">{p.name}</p>
-          <p className="text-sm text-gray-600 mt-1">"{p.issue}"</p>
-        </div>
-      </motion.div>
+      <HintBox text={hint} color="#3B82F6" />
 
-      {/* Doctor NPC */}
-      <div className="flex items-center gap-3">
-        <div className="w-14 h-14">
-          <NPC_DoctorLeaf />
+      <AnimatePresence>
+        {event && (
+          <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }}
+            className="bg-yellow-100 border-2 border-yellow-400 rounded-xl px-4 py-2 text-sm font-bold text-yellow-800 text-center"
+          >📰 {event}</motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Patient Queue */}
+      <div className="grid grid-cols-2 gap-2">
+        {patients.map(p => (
+          <div key={p.id} className={cn('bg-white rounded-2xl border-2 p-2.5 transition-all',
+            selected === p.id ? 'border-blue-500 shadow-lg' :
+              p.cured ? 'border-green-400 bg-green-50' :
+                p.admitted ? 'border-blue-300' : 'border-gray-200'
+          )}>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-10 h-10 shrink-0"><p.Sprite /></div>
+              <div>
+                <p className="font-bold text-xs">{p.name}, {p.age}</p>
+                <p className="text-[10px] text-gray-500 leading-tight">{p.issue}</p>
+              </div>
+            </div>
+            <StatBar label="Health" value={p.health} color={p.health > 70 ? '#10B981' : p.health > 40 ? '#F59E0B' : '#EF4444'} />
+            <div className="mt-2">
+              {!p.admitted && !p.cured && (
+                <button onClick={() => admitPatient(p.id)} className="w-full py-1 bg-blue-500 text-white text-xs font-bold rounded-lg hover:bg-blue-600">
+                  🏥 Admit Patient
+                </button>
+              )}
+              {p.admitted && !p.treated && (
+                <div className="flex flex-col gap-1">
+                  <p className="text-[10px] font-bold text-center text-blue-700">Assign Treatment:</p>
+                  <div className="grid grid-cols-1 gap-0.5">
+                    {TREATMENTS.map(t => (
+                      <button key={t.id} onClick={() => applyTreatment(p.id, t.id)}
+                        className="py-1 px-2 bg-white border border-blue-300 text-[10px] font-bold rounded-lg hover:bg-blue-50 text-left"
+                      >
+                        {t.label} <span className="text-gray-400 font-normal">— {t.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {p.treated && !p.cured && (
+                <div className="text-[10px] text-center text-orange-600 font-bold">⏳ Recovering... ({p.health}% health)</div>
+              )}
+              {p.cured && (
+                <button onClick={() => dischargePatient(p.id)} className="w-full py-1 bg-green-500 text-white text-xs font-bold rounded-lg hover:bg-green-600">
+                  ✅ Discharge
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between text-xs text-gray-500 font-bold">
+        <span>Day {day}/3 • Cured: {curedCount}/4</span>
+        <span>🏥 Rep: {hospital.reputation}%</span>
+      </div>
+
+      <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+        onClick={endDay}
+        className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl shadow-md transition-colors"
+      >
+        ⏭ End Day {day} & See Results
+      </motion.button>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   SDG 4 – Quality Education: My Real School
+   Schedule classes & activities, run days, track student growth
+═══════════════════════════════════════════════════════════════ */
+type Student = {
+  id: number; Sprite: React.FC; name: string;
+  knowledge: number; happiness: number; energy: number;
+  morning: string | null; afternoon: string | null;
+};
+
+const EducationPuzzle = ({ onWin }: { onWin: () => void }) => {
+  const [students, setStudents] = useState<Student[]>([
+    { id: 1, Sprite: NPC_StudentSam,  name: 'Sam',  knowledge: 20, happiness: 30, energy: 90, morning: null, afternoon: null },
+    { id: 2, Sprite: NPC_StudentAria, name: 'Aria', knowledge: 35, happiness: 45, energy: 85, morning: null, afternoon: null },
+    { id: 3, Sprite: NPC_StudentLeo,  name: 'Leo',  knowledge: 15, happiness: 20, energy: 70, morning: null, afternoon: null },
+    { id: 4, Sprite: NPC_YoungMaya,   name: 'Maya', knowledge: 40, happiness: 55, energy: 95, morning: null, afternoon: null },
+  ]);
+  const [day, setDay] = useState(1);
+  const [phase, setPhase] = useState<'plan' | 'results' | 'event' | 'final'>('plan');
+  const [event, setEvent] = useState<{ text: string; effect: () => void } | null>(null);
+  const [hint, setHint] = useState('Assign each student a morning class and an afternoon activity!');
+  const [selected, setSelected] = useState<number | null>(null);
+  const [slot, setSlot] = useState<'morning' | 'afternoon' | null>(null);
+
+  const CLASSES = [
+    { id: 'math',    emoji: '🧮', label: 'Math',    knowledge: 25, energy: -15, happiness: 0  },
+    { id: 'science', emoji: '🔬', label: 'Science', knowledge: 20, energy: -10, happiness: 5  },
+    { id: 'arts',    emoji: '🎨', label: 'Arts',    knowledge: 10, energy: -5,  happiness: 15 },
+    { id: 'reading', emoji: '📚', label: 'Reading', knowledge: 15, energy: -10, happiness: 5  },
+  ];
+  const ACTIVITIES = [
+    { id: 'sports',     emoji: '⚽', label: 'Sports',      knowledge: 0,  energy: 20,  happiness: 25 },
+    { id: 'clubs',      emoji: '🎭', label: 'Drama Club',   knowledge: 5,  energy: 5,   happiness: 20 },
+    { id: 'counseling', emoji: '💬', label: 'Counseling',   knowledge: 0,  energy: 15,  happiness: 30 },
+    { id: 'study',      emoji: '📖', label: 'Study Hall',   knowledge: 20, energy: -5,  happiness: -5 },
+  ];
+
+  const EVENTS = [
+    { text: '📝 Surprise Exam! Knowledge matters — studied students do better.', effect: () => setStudents(prev => prev.map(s => ({ ...s, knowledge: s.knowledge < 40 ? Math.max(0, s.knowledge - 10) : s.knowledge }))) },
+    { text: '🎉 School Fair today! Everyone gains +10 happiness!', effect: () => setStudents(prev => prev.map(s => ({ ...s, happiness: Math.min(100, s.happiness + 10) }))) },
+    { text: '😴 Burnout warning! Low-energy students struggle.', effect: () => setStudents(prev => prev.map(s => ({ ...s, knowledge: s.energy < 30 ? Math.max(0, s.knowledge - 10) : s.knowledge }))) },
+  ];
+
+  const assign = (item: { id: string }) => {
+    if (selected === null || !slot) return;
+    setStudents(prev => prev.map(s => s.id === selected ? { ...s, [slot]: item.id } : s));
+    setSlot(null);
+  };
+
+  const runDay = () => {
+    const allAssigned = students.every(s => s.morning && s.afternoon);
+    if (!allAssigned) { setHint('❗ Assign both morning AND afternoon for every student first!'); return; }
+
+    setStudents(prev => prev.map(s => {
+      const cls = CLASSES.find(c => c.id === s.morning)!;
+      const act = ACTIVITIES.find(a => a.id === s.afternoon)!;
+      return {
+        ...s,
+        knowledge:  Math.min(100, Math.max(0, s.knowledge  + cls.knowledge  + act.knowledge)),
+        happiness:  Math.min(100, Math.max(0, s.happiness  + cls.happiness  + act.happiness)),
+        energy:     Math.min(100, Math.max(0, s.energy     + cls.energy     + act.energy)),
+        morning: null, afternoon: null,
+      };
+    }));
+
+    const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+    ev.effect();
+    setEvent(ev);
+    setPhase('event');
+    setTimeout(() => {
+      setEvent(null);
+      if (day >= 2) {
+        setPhase('final');
+        const passing = students.filter(s => s.knowledge >= 55 && s.happiness >= 50).length;
+        if (passing >= 3) setTimeout(onWin, 600);
+      } else {
+        setDay(d => d + 1);
+        setPhase('plan');
+        setHint(`Day 2! Students need rest — balance challenging classes with fun activities!`);
+      }
+    }, 2500);
+  };
+
+  const allAssigned = students.every(s => s.morning && s.afternoon);
+  const passing = students.filter(s => s.knowledge >= 55 && s.happiness >= 50).length;
+
+  if (phase === 'final') return (
+    <div className="flex flex-col items-center gap-5 max-w-md mx-auto text-center">
+      <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} className="text-6xl">🏫</motion.div>
+      <h3 className="font-display text-2xl text-purple-700">School Report Card!</h3>
+      <p className="text-sm text-gray-600"><strong>{passing}/4</strong> students thriving (knowledge ≥ 55 & happiness ≥ 50)</p>
+      {passing < 3 && <p className="text-xs text-red-500">Tip: balance tough subjects with fun activities, and watch energy levels!</p>}
+      <div className="w-full grid grid-cols-2 gap-2">
+        {students.map(s => (
+          <div key={s.id} className={cn('rounded-xl border-2 p-3', s.knowledge >= 55 && s.happiness >= 50 ? 'border-purple-400 bg-purple-50' : 'border-gray-200 bg-white')}>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-9 h-9"><s.Sprite /></div>
+              <p className="font-bold text-xs">{s.name}</p>
+              {s.knowledge >= 55 && s.happiness >= 50 && <span className="ml-auto text-green-600 text-sm">⭐</span>}
+            </div>
+            <StatBar label="Knowledge" value={s.knowledge} color="#7C3AED" />
+            <StatBar label="Happiness" value={s.happiness} color="#EC4899" />
+            <StatBar label="Energy"    value={s.energy}    color="#10B981" />
+          </div>
+        ))}
+      </div>
+      {passing < 3 && (
+        <button onClick={() => {
+          setStudents([
+            { id: 1, Sprite: NPC_StudentSam,  name: 'Sam',  knowledge: 20, happiness: 30, energy: 90, morning: null, afternoon: null },
+            { id: 2, Sprite: NPC_StudentAria, name: 'Aria', knowledge: 35, happiness: 45, energy: 85, morning: null, afternoon: null },
+            { id: 3, Sprite: NPC_StudentLeo,  name: 'Leo',  knowledge: 15, happiness: 20, energy: 70, morning: null, afternoon: null },
+            { id: 4, Sprite: NPC_YoungMaya,   name: 'Maya', knowledge: 40, happiness: 55, energy: 95, morning: null, afternoon: null },
+          ]);
+          setDay(1); setPhase('plan'); setHint('Try again! Balance learning with wellbeing.');
+        }} className="px-5 py-2 bg-purple-500 text-white font-bold rounded-xl">↩ Try Again</button>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      <div className="flex items-center justify-between">
+        <div className="bg-purple-50 border border-purple-200 rounded-xl px-3 py-1.5 text-sm font-bold text-purple-800">📅 Day {day}/2</div>
+        <div className="text-xs text-gray-500">{allAssigned ? '✅ All assigned!' : `${students.filter(s => s.morning && s.afternoon).length}/4 scheduled`}</div>
+      </div>
+
+      <HintBox text={hint} color="#7C3AED" />
+
+      <AnimatePresence>
+        {event && (
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}
+            className="bg-yellow-100 border-2 border-yellow-400 rounded-xl px-4 py-3 text-sm font-bold text-yellow-800 text-center"
+          >📰 {event.text}</motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Students */}
+      <div className="grid grid-cols-2 gap-2">
+        {students.map(s => (
+          <motion.div key={s.id} whileHover={{ scale: 1.02 }}
+            onClick={() => { setSelected(s.id); setSlot(null); setHint(`${s.name} selected! Now pick morning class then afternoon activity below.`); }}
+            className={cn('bg-white rounded-2xl border-2 p-2.5 cursor-pointer transition-all',
+              selected === s.id ? 'border-purple-500 shadow-lg' : 'border-gray-200 hover:border-purple-300'
+            )}
+          >
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="w-9 h-10 shrink-0"><s.Sprite /></div>
+              <div>
+                <p className="font-bold text-xs">{s.name}</p>
+                <div className="flex gap-1 mt-0.5">
+                  <span className={cn('text-[9px] px-1.5 py-0.5 rounded font-bold', s.morning ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400')}>
+                    {s.morning ? `🌅 ${CLASSES.find(c=>c.id===s.morning)?.label}` : '🌅 ?'}
+                  </span>
+                  <span className={cn('text-[9px] px-1.5 py-0.5 rounded font-bold', s.afternoon ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-400')}>
+                    {s.afternoon ? `🌇 ${ACTIVITIES.find(a=>a.id===s.afternoon)?.label}` : '🌇 ?'}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <StatBar label="📚" value={s.knowledge} color="#7C3AED" />
+            <StatBar label="😊" value={s.happiness}  color="#EC4899" />
+            <StatBar label="⚡" value={s.energy}     color="#10B981" />
+          </motion.div>
+        ))}
+      </div>
+
+      {selected !== null && (
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-3">
+          <div className="flex gap-2 mb-2">
+            <button onClick={() => setSlot('morning')}
+              className={cn('flex-1 py-1 text-xs font-bold rounded-lg border-2 transition-all', slot === 'morning' ? 'border-blue-500 bg-blue-100' : 'border-gray-300 bg-white')}>
+              🌅 Morning Class
+            </button>
+            <button onClick={() => setSlot('afternoon')}
+              className={cn('flex-1 py-1 text-xs font-bold rounded-lg border-2 transition-all', slot === 'afternoon' ? 'border-orange-500 bg-orange-100' : 'border-gray-300 bg-white')}>
+              🌇 Afternoon Activity
+            </button>
+          </div>
+          {slot === 'morning' && (
+            <div className="grid grid-cols-2 gap-1">
+              {CLASSES.map(c => (
+                <button key={c.id} onClick={() => assign(c)} className="flex items-center gap-2 p-2 bg-white border-2 border-blue-200 rounded-xl hover:border-blue-500 text-xs font-bold transition-all">
+                  <span className="text-lg">{c.emoji}</span>
+                  <span>{c.label}<br/><span className="text-gray-400 font-normal">+{c.knowledge}📚 {c.happiness > 0 ? `+${c.happiness}😊` : ''}</span></span>
+                </button>
+              ))}
+            </div>
+          )}
+          {slot === 'afternoon' && (
+            <div className="grid grid-cols-2 gap-1">
+              {ACTIVITIES.map(a => (
+                <button key={a.id} onClick={() => assign(a)} className="flex items-center gap-2 p-2 bg-white border-2 border-orange-200 rounded-xl hover:border-orange-500 text-xs font-bold transition-all">
+                  <span className="text-lg">{a.emoji}</span>
+                  <span>{a.label}<br/><span className="text-gray-400 font-normal">{a.happiness > 0 ? `+${a.happiness}😊` : ''} {a.energy > 0 ? `+${a.energy}⚡` : ''}</span></span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="bg-green-50 border border-green-200 rounded-xl px-3 py-2 text-xs font-semibold text-green-800">
-          What's the best treatment? 🩺
+      )}
+
+      <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={runDay}
+        disabled={!allAssigned}
+        className={cn('w-full py-3 font-bold rounded-xl shadow-md transition-colors text-white',
+          allAssigned ? 'bg-purple-500 hover:bg-purple-600' : 'bg-gray-300 cursor-not-allowed'
+        )}
+      >
+        🔔 Ring the Bell — Run Day {day}!
+      </motion.button>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   SDG 5 – Gender Equality: Switch the Shoes
+   Navigate scenarios, implement policies, raise equality index
+═══════════════════════════════════════════════════════════════ */
+type Scenario = {
+  location: string; icon: string;
+  situation: string;
+  characters: { Sprite: React.FC; name: string; gender: string; quote: string }[];
+  choices: { Sprite: React.FC; label: string; action: string; correct: boolean; feedback: string; policy: string }[];
+};
+
+const EqualityPuzzle = ({ onWin }: { onWin: () => void }) => {
+  const [gender, setGender] = useState<string | null>(null);
+  const [equalityIndex, setEqualityIndex] = useState(12);
+  const [current, setCurrent] = useState(0);
+  const [policies, setPolicies] = useState<string[]>([]);
+  const [feedback, setFeedback] = useState<{ text: string; correct: boolean } | null>(null);
+  const [solved, setSolved] = useState(0);
+  const [hint, setHint] = useState('');
+  const [phase, setPhase] = useState<'gender' | 'play' | 'final'>('gender');
+
+  const GENDER_PERSPECTIVES: Record<string, { bias: string; color: string }> = {
+    female: { bias: 'You may face pay gaps, fewer leadership opportunities, and social stereotypes.', color: '#EC4899' },
+    male: { bias: 'You\'ll see how male privilege operates — and how you can use it to advocate for fairness.', color: '#3B82F6' },
+    nonbinary: { bias: 'You experience unique challenges when systems only recognize two genders.', color: '#8B5CF6' },
+  };
+
+  const SCENARIOS: Scenario[] = [
+    {
+      location: '⚽ School Sports',
+      icon: '🏫',
+      situation: 'Coach Rex won\'t let Zara join the football team — "It\'s a boys\' sport."',
+      characters: [
+        { Sprite: NPC_Girl,    name: 'Zara', gender: 'female', quote: '⚽ I want to play!' },
+        { Sprite: NPC_Worker,  name: 'Rex',  gender: 'male',   quote: '🚫 Not for girls!' },
+      ],
+      choices: [
+        { Sprite: NPC_Advocate, label: 'Fair Fern', action: 'Petition the principal for gender-inclusive team policies', correct: true, feedback: '✅ Systemic change! Inclusive sports policies help everyone.', policy: '🏅 Inclusive Sports Policy' },
+        { Sprite: NPC_Sibling,  label: 'Bystander Bo', action: 'Say nothing — don\'t want trouble', correct: false, feedback: '❌ Silence maintains unfair rules. Speak up!', policy: '' },
+        { Sprite: NPC_Worker,   label: 'Bystander Cal', action: 'Tell Zara to try gymnastics instead', correct: false, feedback: '❌ Redirecting isn\'t equality — she deserves equal access!', policy: '' },
+      ],
+    },
+    {
+      location: '💼 The Workplace',
+      icon: '🏢',
+      situation: 'Priya earns 30% less than her male colleague doing identical work. HR says "That\'s just how it\'s always been."',
+      characters: [
+        { Sprite: NPC_Worker,  name: 'Priya', gender: 'female', quote: '💰 Same work, less pay?' },
+        { Sprite: NPC_Worker,  name: 'HR Ed', gender: 'male',   quote: '📊 That\'s policy...' },
+      ],
+      choices: [
+        { Sprite: NPC_Sibling, label: 'Bystander Sam', action: 'Accept it — risk of conflict too high', correct: false, feedback: '❌ Accepting inequality perpetuates it for everyone.', policy: '' },
+        { Sprite: NPC_Advocate, label: 'Advocate Ana', action: 'File a formal pay equity complaint and educate the team', correct: true, feedback: '✅ Pay equity advocacy creates lasting systemic change!', policy: '💸 Equal Pay Policy' },
+        { Sprite: NPC_Girl, label: 'Bystander Cam', action: 'Tell Priya to quietly negotiate alone', correct: false, feedback: '⚠️ Individual negotiation helps one person, not the system.', policy: '' },
+      ],
+    },
+    {
+      location: '🏠 Home Life',
+      icon: '🏡',
+      situation: 'Jamie does ALL the household chores while their sibling is exempt because "That\'s just how families work."',
+      characters: [
+        { Sprite: NPC_Sibling, name: 'Jamie', gender: 'nonbinary', quote: '🧹 Why only me?' },
+        { Sprite: NPC_Worker,  name: 'Parent', gender: 'male',     quote: '🏠 Tradition!' },
+      ],
+      choices: [
+        { Sprite: NPC_Advocate, label: 'Fair Fern', action: 'Propose a shared chores roster for the whole family', correct: true, feedback: '✅ Equitable home division is the foundation of gender equality!', policy: '🧹 Shared Responsibility Charter' },
+        { Sprite: NPC_Worker, label: 'Bystander Bo', action: 'Agree — some people are naturally better at chores', correct: false, feedback: '❌ Chores aren\'t biological destiny — fairness is a choice!', policy: '' },
+        { Sprite: NPC_Girl, label: 'Bystander Ria', action: 'Tell Jamie to just do it — avoid conflict', correct: false, feedback: '❌ Avoiding conflict means accepting unfair burdens forever.', policy: '' },
+      ],
+    },
+    {
+      location: '🎓 University',
+      icon: '🎓',
+      situation: 'A scholarship committee overlooks equally qualified female applicants, saying "We need strong male engineers."',
+      characters: [
+        { Sprite: NPC_StudentAria, name: 'Aria', gender: 'female', quote: '📐 I\'m equally qualified!' },
+        { Sprite: NPC_TeacherThinklet, name: 'Prof', gender: 'male', quote: '🔩 We need "strong" engineers' },
+      ],
+      choices: [
+        { Sprite: NPC_Worker, label: 'Bystander Sam', action: 'Accept — maybe try art school instead', correct: false, feedback: '❌ Steering people away from fields they\'re qualified for is bias!', policy: '' },
+        { Sprite: NPC_Girl, label: 'Bystander Val', action: 'Whisper about it privately', correct: false, feedback: '❌ Quiet complaints don\'t reform selection processes.', policy: '' },
+        { Sprite: NPC_Advocate, label: 'Advocate Ana', action: 'Demand blind application review and bias training for committee', correct: true, feedback: '✅ Blind review + bias training creates fair opportunity for all!', policy: '🎓 Blind Scholarship Review' },
+      ],
+    },
+  ];
+
+  const handleChoice = (choice: Scenario['choices'][number]) => {
+    setFeedback({ text: choice.feedback, correct: choice.correct });
+    if (choice.correct) {
+      setEqualityIndex(v => Math.min(100, v + 22));
+      if (choice.policy) setPolicies(prev => [...prev, choice.policy]);
+      setTimeout(() => {
+        setFeedback(null);
+        setSolved(s => s + 1);
+        if (current < SCENARIOS.length - 1) {
+          setCurrent(c => c + 1);
+          setHint('');
+        } else {
+          setPhase('final');
+          setTimeout(onWin, 600);
+        }
+      }, 2200);
+    } else {
+      setEqualityIndex(v => Math.max(0, v - 5));
+      setTimeout(() => setFeedback(null), 2200);
+    }
+  };
+
+  if (phase === 'gender') return (
+    <div className="flex flex-col items-center gap-5 text-center max-w-md mx-auto">
+      <div className="text-5xl">👟</div>
+      <h3 className="font-display text-xl text-orange-700">Switch the Shoes</h3>
+      <p className="text-sm text-gray-600">Choose a perspective to walk through daily scenarios and fight inequality!</p>
+      <div className="grid grid-cols-3 gap-3 w-full">
+        {(['female', 'male', 'nonbinary'] as const).map(g => (
+          <motion.button key={g} whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+            onClick={() => { setGender(g); setHint(''); }}
+            className={cn('flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all font-bold capitalize',
+              gender === g ? 'border-orange-500 bg-orange-50 shadow-lg' : 'border-gray-200 bg-white hover:border-orange-300'
+            )}
+          >
+            <span className="text-3xl">{g === 'female' ? '👩' : g === 'male' ? '👨' : '🧑'}</span>
+            <span className="text-sm">{g === 'nonbinary' ? 'Non-binary' : g.charAt(0).toUpperCase() + g.slice(1)}</span>
+          </motion.button>
+        ))}
+      </div>
+      {gender && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-orange-50 border border-orange-300 rounded-xl p-4 text-sm text-gray-700"
+        >
+          <p className="font-bold mb-1" style={{ color: GENDER_PERSPECTIVES[gender].color }}>As a {gender === 'nonbinary' ? 'non-binary' : gender} person:</p>
+          <p>{GENDER_PERSPECTIVES[gender].bias}</p>
+        </motion.div>
+      )}
+      {gender && (
+        <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
+          onClick={() => { setPhase('play'); setHint('Read the situation and choose the most equitable response!'); }}
+          className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg"
+        >
+          👟 Step Into Their Shoes →
+        </motion.button>
+      )}
+    </div>
+  );
+
+  if (phase === 'final') return (
+    <div className="flex flex-col items-center gap-5 text-center max-w-md mx-auto">
+      <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 1 }} className="text-6xl">⚖️</motion.div>
+      <h3 className="font-display text-2xl text-orange-700">Equality Achieved!</h3>
+      <p className="text-sm text-gray-600">Equality Index: <strong>{equalityIndex}%</strong></p>
+      <StatBar label="Equality Index" value={equalityIndex} color="#F59E0B" />
+      <div className="w-full bg-orange-50 border border-orange-200 rounded-xl p-4 text-left">
+        <p className="font-bold text-sm text-orange-800 mb-2">Policies Enacted:</p>
+        {policies.map(p => <p key={p} className="text-sm text-gray-700">✅ {p}</p>)}
+      </div>
+    </div>
+  );
+
+  const s = SCENARIOS[current];
+
+  return (
+    <div className="flex flex-col gap-4 w-full max-w-lg mx-auto">
+      {/* Equality bar */}
+      <div>
+        <div className="flex justify-between text-xs font-bold text-orange-700 mb-1">
+          <span>⚖️ Equality Index</span>
+          <span>{equalityIndex}%</span>
+        </div>
+        <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
+          <motion.div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg, #F97316, #FCD34D)' }}
+            animate={{ width: `${equalityIndex}%` }} transition={{ duration: 0.7 }} />
         </div>
       </div>
 
+      {/* Perspective badge */}
+      <div className="flex items-center gap-2 justify-center">
+        <span className="text-sm">{gender === 'female' ? '👩' : gender === 'male' ? '👨' : '🧑'}</span>
+        <span className="text-xs font-bold bg-orange-100 text-orange-800 px-3 py-1 rounded-full">Playing as: {gender === 'nonbinary' ? 'Non-binary' : gender}</span>
+        <span className="text-xs text-gray-400">{current + 1}/{SCENARIOS.length}</span>
+      </div>
+
+      {/* Scenario */}
+      <motion.div key={current} initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="flex flex-col gap-3">
+        <div className="bg-orange-50 border-2 border-orange-200 rounded-2xl p-4">
+          <p className="text-xs font-bold text-orange-700 mb-1">{s.icon} {s.location}</p>
+          <p className="text-sm text-gray-700 font-medium">{s.situation}</p>
+        </div>
+
+        {/* Characters */}
+        <div className="flex justify-center gap-6">
+          {s.characters.map(ch => (
+            <div key={ch.name} className="flex flex-col items-center gap-1">
+              <div className="relative">
+                <div className="w-14 h-14"><ch.Sprite /></div>
+                <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-white border border-gray-300 rounded-xl px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap shadow">
+                  {ch.quote}
+                </div>
+              </div>
+              <p className="text-[10px] font-bold text-gray-700">{ch.name}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      <p className="text-xs font-bold text-center text-gray-600">Who should act? Pick the best response:</p>
+
       <AnimatePresence mode="wait">
         {feedback ? (
-          <motion.div
-            key="fb"
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={cn("w-full p-4 rounded-xl text-center font-semibold text-sm border-2",
-              feedback.correct ? "bg-green-100 text-green-800 border-green-400" : "bg-red-100 text-red-800 border-red-400")}
+          <motion.div key="fb" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}
+            className={cn('p-4 rounded-2xl border-2 text-sm font-semibold text-center',
+              feedback.correct ? 'bg-green-100 text-green-800 border-green-400' : 'bg-red-100 text-red-800 border-red-400'
+            )}
           >
-            {feedback.correct ? '✅ ' : '❌ '}{feedback.text}
+            {feedback.text}
           </motion.div>
         ) : (
-          <motion.div key="opts" className="flex gap-3 justify-center flex-wrap" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {p.options.map((opt, i) => (
-              <motion.button
-                key={i}
-                onClick={() => handleAnswer(opt)}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex flex-col items-center gap-1 px-4 py-3 rounded-2xl border-2 border-gray-200 bg-white hover:border-green-400 hover:shadow-md transition-all w-28"
+          <motion.div key="choices" className="grid grid-cols-1 gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {s.choices.map((c, i) => (
+              <motion.button key={i} whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.97 }}
+                onClick={() => handleChoice(c)}
+                className="flex items-center gap-3 bg-white border-2 border-orange-200 hover:border-orange-500 rounded-2xl px-4 py-3 text-left transition-all"
               >
-                <span className="text-3xl">{opt.emoji}</span>
-                <span className="text-xs font-bold text-center">{opt.label}</span>
+                <div className="w-10 h-10 shrink-0"><c.Sprite /></div>
+                <div>
+                  <p className="font-bold text-sm">{c.label}</p>
+                  <p className="text-xs text-gray-600">{c.action}</p>
+                </div>
               </motion.button>
             ))}
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Policy board */}
+      {policies.length > 0 && (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-3">
+          <p className="text-[10px] font-bold text-green-800 mb-1">Policies enacted:</p>
+          <div className="flex flex-wrap gap-1">
+            {policies.map(p => <span key={p} className="text-[10px] bg-green-200 text-green-800 px-2 py-0.5 rounded-full font-bold">{p}</span>)}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-/* ──────────────────────────────────────────────
-   SDG 4 – Quality Education
-──────────────────────────────────────────────── */
-const EducationPuzzle = ({ onWin }: { onWin: () => void }) => {
-  const activities = [
-    { id: 'club', Sprite: NPC_TeacherThinklet, label: 'Sports Coach', sublabel: '⚽ Join the club!', bubble: 'Physical fun!' },
-    { id: 'class', Sprite: NPC_TeacherThinklet, label: 'Sci Teacher', sublabel: '🔬 Lab time!', bubble: 'Explore science!' },
-    { id: 'counseling', Sprite: NPC_TeacherThinklet, label: 'Counselor', sublabel: '💬 Talk it out', bubble: 'I\'m here for you!' },
-  ];
-  const students = [
-    { id: 1, Sprite: NPC_StudentSam, name: 'Sam', needs: 'club', issue: 'Lonely & needs friends', bubble: '😟 No friends yet...' },
-    { id: 2, Sprite: NPC_StudentAria, name: 'Aria', needs: 'class', issue: 'Loves science, no lab!', bubble: '🔬 I want to experiment!' },
-    { id: 3, Sprite: NPC_StudentLeo, name: 'Leo', needs: 'counseling', issue: 'Stressed & overwhelmed', bubble: '😰 Too much pressure!' },
-  ];
-
-  const [selected, setSelected] = useState<string | null>(null);
-  const [assigned, setAssigned] = useState<Record<number, boolean>>({});
-  const [error, setError] = useState<number | null>(null);
-  const [hint, setHint] = useState('Click a teacher or coach, then click the right student!');
-
-  const handleActivity = (id: string, label: string) => {
-    setSelected(id);
-    setHint(`${label} is ready! Find the right student for them 👇`);
-  };
-
-  const handleStudent = (sid: number, needs: string, name: string) => {
-    if (!selected || assigned[sid]) return;
-    if (selected === needs) {
-      const newA = { ...assigned, [sid]: true };
-      setAssigned(newA);
-      setSelected(null);
-      setHint(Object.keys(newA).length < students.length ? `🎉 ${name} is so happy! Keep going!` : '');
-      if (Object.keys(newA).length === students.length) setTimeout(onWin, 700);
-    } else {
-      setError(sid);
-      setHint(`❌ ${name} needs something different! Try another option.`);
-      setTimeout(() => { setError(null); setSelected(null); }, 900);
-    }
-  };
-
-  return (
-    <div className="flex flex-col items-center gap-6 w-full">
-      <div className="bg-purple-50 border border-purple-200 rounded-xl px-4 py-2 text-sm font-semibold text-purple-800 text-center">
-        {hint}
-      </div>
-
-      <div>
-        <p className="text-xs text-center text-gray-500 mb-3 font-bold uppercase tracking-wide">Staff & Teachers</p>
-        <div className="flex gap-4 justify-center flex-wrap">
-          {activities.map((a, i) => {
-            const used = Object.entries(assigned).some(([sid, ok]) => {
-              if (!ok) return false;
-              return students.find(s => s.id === Number(sid))?.needs === a.id;
-            });
-            return (
-              <NpcCard
-                key={a.id + i}
-                Sprite={a.Sprite}
-                label={a.label}
-                sublabel={a.sublabel}
-                bubble={!used && !selected ? a.bubble : undefined}
-                selected={selected === a.id && !used}
-                matched={used}
-                dim={used}
-                onClick={() => !used && handleActivity(a.id, a.label)}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="w-full flex items-center gap-2">
-        <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-gray-400 text-lg">↓</span>
-        <div className="flex-1 h-px bg-gray-200" />
-      </div>
-
-      <div>
-        <p className="text-xs text-center text-gray-500 mb-3 font-bold uppercase tracking-wide">Students</p>
-        <div className="flex gap-4 justify-center flex-wrap">
-          {students.map(s => (
-            <NpcCard
-              key={s.id}
-              Sprite={s.Sprite}
-              label={s.name}
-              sublabel={s.issue}
-              bubble={assigned[s.id] ? '😊 Thank you!' : s.bubble}
-              matched={assigned[s.id]}
-              error={error === s.id}
-              onClick={() => handleStudent(s.id, s.needs, s.name)}
-            />
-          ))}
-        </div>
-      </div>
-
-      <p className="text-xs text-gray-400">Helped: {Object.keys(assigned).length}/{students.length} students</p>
-    </div>
-  );
-};
-
-/* ──────────────────────────────────────────────
-   SDG 5 – Gender Equality
-──────────────────────────────────────────────── */
-const EqualityPuzzle = ({ onWin }: { onWin: () => void }) => {
-  const scenarios = [
-    {
-      NpcA: NPC_Girl, nameA: 'Zara', bubbleA: '⚽ I want to play!',
-      NpcB: NPC_Worker, nameB: 'Coach Rex', bubbleB: '🚫 Girls can\'t play!',
-      situation: 'Coach Rex won\'t let Zara join the football team because she\'s a girl.',
-      choices: [
-        { Sprite: NPC_Advocate, label: 'Advocate Ana', action: 'Ask the principal to allow all genders on teams', correct: true, feedback: '✅ Yes! Equal access to sports is a right for everyone!' },
-        { Sprite: NPC_Sibling, label: 'Bystander Bo', action: 'Say nothing, it\'s the coach\'s rule', correct: false, feedback: '❌ Silence keeps unfair rules alive. We need to speak up!' },
-        { Sprite: NPC_Worker, label: 'Bystander Cal', action: 'Tell Zara to find a different sport', correct: false, feedback: '❌ She deserves equal access, not to be pushed away!' },
-      ],
-    },
-    {
-      NpcA: NPC_Worker, nameA: 'Priya', bubbleA: '💼 Same work, less pay?',
-      NpcB: NPC_Worker, nameB: 'Manager Ed', bubbleB: '💸 It\'s always been this way',
-      situation: 'Priya does the same job as her colleague but earns 30% less because of her gender.',
-      choices: [
-        { Sprite: NPC_Advocate, label: 'Advocate Ana', action: 'Report the pay gap to HR', correct: true, feedback: '✅ Speaking up creates change! Equal pay for equal work!' },
-        { Sprite: NPC_Sibling, label: 'Bystander Bo', action: 'Accept it quietly', correct: false, feedback: '❌ "It\'s always been this way" is never a good reason!' },
-        { Sprite: NPC_Girl, label: 'Bystander Cam', action: 'Quit and find another job', correct: false, feedback: '❌ Running away doesn\'t fix the system. Advocating does!' },
-      ],
-    },
-    {
-      NpcA: NPC_Sibling, nameA: 'Jamie', bubbleA: '🧹 I do all the chores!',
-      NpcB: NPC_Worker, nameB: 'Parent Pat', bubbleB: '🏠 That\'s just how it is',
-      situation: 'Jamie does all the chores while their sibling is told "that\'s not for you."',
-      choices: [
-        { Sprite: NPC_Advocate, label: 'Fair Fern', action: 'Suggest everyone shares chores equally', correct: true, feedback: '✅ Equal sharing of responsibilities builds a fairer home!' },
-        { Sprite: NPC_Worker, label: 'Bystander Bo', action: 'Agree — some people are better at chores', correct: false, feedback: '❌ Chores aren\'t "for" any one type of person!' },
-        { Sprite: NPC_Girl, label: 'Bystander Cal', action: 'Tell Jamie to complain loudly', correct: false, feedback: '❌ Complaining without suggesting fairness doesn\'t help!' },
-      ],
-    },
-  ];
-
-  const [current, setCurrent] = useState(0);
-  const [feedback, setFeedback] = useState<{ text: string; correct: boolean } | null>(null);
-  const [solved, setSolved] = useState(0);
-  const [equalityBar, setEqualityBar] = useState(15);
-
-  const handleChoice = (choice: { correct: boolean; feedback: string }) => {
-    setFeedback({ text: choice.feedback, correct: choice.correct });
-    if (choice.correct) {
-      setEqualityBar(p => Math.min(100, p + 28));
-      setTimeout(() => {
-        setFeedback(null);
-        const ns = solved + 1;
-        setSolved(ns);
-        if (current < scenarios.length - 1) setCurrent(c => c + 1);
-        else setTimeout(onWin, 400);
-      }, 2100);
-    } else {
-      setTimeout(() => setFeedback(null), 2100);
-    }
-  };
-
-  const s = scenarios[current];
-
-  return (
-    <div className="flex flex-col items-center gap-5 w-full max-w-lg mx-auto">
-      {/* Equality bar */}
-      <div className="w-full">
-        <div className="flex justify-between text-sm font-bold text-orange-700 mb-1">
-          <span>⚡ Equality Index</span>
-          <span>{equalityBar}%</span>
-        </div>
-        <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: 'linear-gradient(90deg, #FF8F00, #FFC107)' }}
-            animate={{ width: `${equalityBar}%` }}
-            transition={{ duration: 0.8 }}
-          />
-        </div>
-      </div>
-
-      {/* Scenario NPCs */}
-      <motion.div key={current} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
-        <div className="flex items-end justify-center gap-6 mb-3">
-          <NpcCard Sprite={s.NpcA} label={s.nameA} bubble={s.bubbleA} size="lg" />
-          <div className="text-3xl self-center pb-8">😤</div>
-          <NpcCard Sprite={s.NpcB} label={s.nameB} bubble={s.bubbleB} size="lg" />
-        </div>
-        <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 text-sm text-center text-gray-700 font-medium">
-          {s.situation}
-        </div>
-      </motion.div>
-
-      <p className="text-xs text-gray-500 font-bold uppercase tracking-wide">Who does the fairest thing?</p>
-
-      <AnimatePresence mode="wait">
-        {feedback ? (
-          <motion.div
-            key="fb"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={cn("w-full p-4 rounded-xl text-center font-semibold text-sm border-2",
-              feedback.correct ? "bg-green-100 text-green-800 border-green-400" : "bg-red-100 text-red-800 border-red-400")}
-          >
-            {feedback.text}
-          </motion.div>
-        ) : (
-          <motion.div key="choices" className="flex gap-3 justify-center flex-wrap" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {s.choices.map((c, i) => (
-              <NpcCard
-                key={i}
-                Sprite={c.Sprite}
-                label={c.label}
-                sublabel={c.action}
-                onClick={() => handleChoice(c)}
-                size="sm"
-              />
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
-/* ──────────────────────────────────────────────
-   Main Puzzle Screen
-──────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   PUZZLE MAP & SCREEN WRAPPER
+═══════════════════════════════════════════════════════════════ */
 const PUZZLE_MAP: Record<ZoneId, React.FC<{ onWin: () => void }>> = {
-  poverty: PovertyPuzzle,
-  hunger: HungerPuzzle,
-  health: HealthPuzzle,
+  poverty:   PovertyPuzzle,
+  hunger:    HungerPuzzle,
+  health:    HealthPuzzle,
   education: EducationPuzzle,
-  equality: EqualityPuzzle,
+  equality:  EqualityPuzzle,
 };
-
-function triggerConfetti() {
-  const end = Date.now() + 3500;
-  const colors = ['#4CAF50', '#81C784', '#FFD700', '#FF80AB', '#64B5F6'];
-  const fire = () => {
-    if (Date.now() > end) return;
-    confetti({ particleCount: 40, spread: 80, origin: { x: Math.random() * 0.6 + 0.2, y: 0.5 }, colors });
-    requestAnimationFrame(fire);
-  };
-  fire();
-}
 
 export default function PuzzleScreen() {
   const [location, setLocation] = useLocation();
@@ -700,11 +1190,8 @@ export default function PuzzleScreen() {
   return (
     <div className="min-h-screen w-full flex flex-col" style={{ background: zone.bgColor }}>
       {/* Header */}
-      <div className="px-4 py-3 flex items-center gap-3 text-white" style={{ background: zone.themeColor }}>
-        <button
-          onClick={() => setLocation('/world')}
-          className="bg-white/20 hover:bg-white/30 rounded-lg px-3 py-1.5 text-sm font-bold transition-colors"
-        >
+      <div className="px-4 py-3 flex items-center gap-3 text-white shrink-0" style={{ background: zone.themeColor }}>
+        <button onClick={() => setLocation('/world')} className="bg-white/20 hover:bg-white/30 rounded-lg px-3 py-1.5 text-sm font-bold transition-colors">
           ← World Map
         </button>
         <div>
@@ -714,9 +1201,9 @@ export default function PuzzleScreen() {
         <div className="ml-auto text-3xl">{zone.emoji}</div>
       </div>
 
-      {/* Puzzle */}
+      {/* Puzzle content */}
       <div className="flex-1 flex items-start justify-center p-4 overflow-y-auto">
-        <div className="w-full max-w-2xl bg-white/90 rounded-2xl p-6 sketch-border screen-enter mt-2">
+        <div className="w-full max-w-2xl bg-white/90 rounded-2xl p-5 sketch-border screen-enter mt-2 mb-6">
           <AnimatePresence mode="wait">
             {!won ? (
               <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -727,26 +1214,15 @@ export default function PuzzleScreen() {
                 <PuzzleComponent onWin={handleWin} />
               </motion.div>
             ) : (
-              <motion.div
-                key="won"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
+              <motion.div key="won" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                 className="flex flex-col items-center gap-5 text-center py-6"
               >
-                <motion.div
-                  animate={{ rotate: [0, -10, 10, -10, 0], y: [0, -15, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="text-7xl"
-                >🏆</motion.div>
+                <motion.div animate={{ rotate: [0, -10, 10, -10, 0], y: [0, -15, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="text-7xl">🏆</motion.div>
                 <h3 className="font-display text-3xl" style={{ color: zone.themeColor }}>Zone Healed!</h3>
                 <div className="bg-green-50 border-2 border-green-300 rounded-xl p-4 max-w-md">
                   <p className="text-sm leading-relaxed text-gray-700">{zone.successFact}</p>
                 </div>
-                <button
-                  onClick={() => setLocation('/world')}
-                  className="text-lg py-3 px-8 text-white font-bold rounded-xl shadow-lg sketch-border"
-                  style={{ background: zone.themeColor }}
-                >
+                <button onClick={() => setLocation('/world')} className="text-lg py-3 px-8 text-white font-bold rounded-xl shadow-lg sketch-border" style={{ background: zone.themeColor }}>
                   🌟 Return to World!
                 </button>
               </motion.div>
