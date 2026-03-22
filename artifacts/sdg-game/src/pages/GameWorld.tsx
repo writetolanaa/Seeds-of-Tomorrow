@@ -380,6 +380,7 @@ export default function GameWorld() {
   const [, setLocation] = useLocation();
   const { completedZones, playerCharacter, playerName, getWorldHealPercent } = useGame();
 
+  const containerRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const playerElemRef = useRef<HTMLDivElement>(null);
   const playerPos = useRef({ ...PLAYER_SPAWN });
@@ -389,6 +390,7 @@ export default function GameWorld() {
   const isMovingRef = useRef(false);
   const facingRef = useRef<'left' | 'right'>('right');
   const walkFrameRef = useRef(0);
+  const [focused, setFocused] = useState(false);
 
   const [nearNPC, setNearNPC] = useState<WorldNPC | null>(null);
   const nearNPCIdRef = useRef<string | null>(null);
@@ -441,9 +443,18 @@ export default function GameWorld() {
     }
   }, []);
 
+  /* ── auto-focus so arrow keys work immediately ── */
+  useEffect(() => {
+    const t = setTimeout(() => containerRef.current?.focus(), 100);
+    return () => clearTimeout(t);
+  }, []);
+
   /* ── game loop ── */
   useEffect(() => {
+    const MOVE_KEYS = new Set(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','w','a','s','d','W','A','S','D',' ']);
+
     const onKeyDown = (e: KeyboardEvent) => {
+      if (MOVE_KEYS.has(e.key)) e.preventDefault(); // stop page scroll
       keysRef.current.add(e.key);
       if ((e.key === 'e' || e.key === 'E' || e.key === ' ') && nearNPCIdRef.current) {
         const npc = WORLD_NPCS.find(n => n.id === nearNPCIdRef.current);
@@ -451,7 +462,7 @@ export default function GameWorld() {
       }
     };
     const onKeyUp = (e: KeyboardEvent) => keysRef.current.delete(e.key);
-    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keydown', onKeyDown, { passive: false });
     window.addEventListener('keyup', onKeyUp);
 
     let frameCount = 0;
@@ -536,7 +547,28 @@ export default function GameWorld() {
   const healPct = getWorldHealPercent();
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-black" style={{ cursor: 'default' }}>
+    <div
+      ref={containerRef}
+      tabIndex={0}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      onClick={() => containerRef.current?.focus()}
+      className="fixed inset-0 overflow-hidden bg-black outline-none"
+      style={{ cursor: 'default' }}
+    >
+      {/* ── CLICK TO PLAY overlay ── */}
+      {!focused && (
+        <div
+          className="absolute inset-0 z-[999] flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(2px)' }}
+        >
+          <div className="bg-white rounded-3xl px-10 py-6 text-center shadow-2xl animate-bounce">
+            <div className="text-4xl mb-2">🎮</div>
+            <div className="text-2xl font-black text-amber-700" style={{ fontFamily: 'Patrick Hand, sans-serif' }}>Click to Play!</div>
+            <div className="text-sm text-gray-500 mt-1">Then use Arrow Keys or WASD to walk</div>
+          </div>
+        </div>
+      )}
       {/* ── WORLD CONTAINER ── */}
       <div
         ref={worldRef}

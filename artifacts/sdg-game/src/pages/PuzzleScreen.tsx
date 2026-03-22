@@ -55,198 +55,322 @@ function TokenChip({ count, max }: { count: number; max: number }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SDG 1 – No Poverty: Kind Neighborhood
-   Week-based resource allocation simulation
+   SDG 1 – No Poverty: Community Helper
+   Two-phase RPG chapter: Emergency Aid → Long-term Development
+   Based on UN SDG 1 design principles
 ═══════════════════════════════════════════════════════════════ */
-type NpcFamily = {
-  id: number; Sprite: React.FC; name: string; role: string;
-  income: number; housing: number; employment: number;
-  actions: string[];
+
+type VillagerState = 'struggling' | 'surviving' | 'thriving';
+
+type Villager = {
+  id: number;
+  Sprite: React.FC;
+  name: string;
+  story: string;
+  food: number;
+  health: number;
+  income: number;
+  education: number;
+  housing: number;
+  state: VillagerState;
+  helpedThisRound: string[];
+};
+
+const INITIAL_VILLAGERS: Villager[] = [
+  { id: 1, Sprite: NPC_LeeFather, name: 'Papa Kofi', story: 'Lost his job, family is hungry', food: 15, health: 25, income: 10, education: 20, housing: 50, state: 'struggling', helpedThisRound: [] },
+  { id: 2, Sprite: NPC_LeeMom, name: 'Amara', story: 'Single mom, leaking roof, no income', food: 30, health: 45, income: 15, education: 35, housing: 15, state: 'struggling', helpedThisRound: [] },
+  { id: 3, Sprite: NPC_YoungMaya, name: 'Teen Jada', story: 'Dropped out of school, no skills', food: 50, health: 60, income: 5, education: 10, housing: 40, state: 'surviving', helpedThisRound: [] },
+  { id: 4, Sprite: NPC_GrandmaRosa, name: 'Elder Rosa', story: 'No pension, health declining', food: 35, health: 20, income: 20, education: 30, housing: 45, state: 'struggling', helpedThisRound: [] },
+];
+
+const getState = (v: Villager): VillagerState => {
+  if (v.food < 40 || v.health < 40) return 'struggling';
+  if (v.income >= 55 && v.education >= 55 && v.housing >= 55) return 'thriving';
+  return 'surviving';
+};
+
+const communityStability = (vs: Villager[]) => {
+  const scores = vs.map(v => {
+    const s = getState(v);
+    if (s === 'thriving') return 100;
+    if (s === 'surviving') return 50;
+    return 0;
+  });
+  return Math.round(scores.reduce((a, b) => a + b, 0) / vs.length);
+};
+
+const EMERGENCY_ACTIONS = [
+  { id: 'food', emoji: '🍚', label: 'Food Pack', desc: 'Food +35', cost: 1, apply: (v: Villager) => ({ ...v, food: Math.min(100, v.food + 35) }) },
+  { id: 'medicine', emoji: '💊', label: 'Medicine', desc: 'Health +30', cost: 2, apply: (v: Villager) => ({ ...v, health: Math.min(100, v.health + 30) }) },
+  { id: 'shelter', emoji: '⛺', label: 'Temp Shelter', desc: 'Housing +20', cost: 1, apply: (v: Villager) => ({ ...v, housing: Math.min(100, v.housing + 20) }) },
+];
+
+const DEVELOPMENT_ACTIONS = [
+  { id: 'job', emoji: '💼', label: 'Job Training', desc: 'Income +40, Education +15', cost: 3, requiresBasics: true, apply: (v: Villager) => ({ ...v, income: Math.min(100, v.income + 40), education: Math.min(100, v.education + 15) }) },
+  { id: 'school', emoji: '📚', label: 'School Enroll', desc: 'Education +45, Income +10', cost: 2, requiresBasics: true, apply: (v: Villager) => ({ ...v, education: Math.min(100, v.education + 45), income: Math.min(100, v.income + 10) }) },
+  { id: 'housing', emoji: '🏠', label: 'Fix Housing', desc: 'Housing +40', cost: 2, requiresBasics: false, apply: (v: Villager) => ({ ...v, housing: Math.min(100, v.housing + 40) }) },
+  { id: 'micro', emoji: '🌱', label: 'Microfinance', desc: 'Income +50', cost: 3, requiresBasics: true, apply: (v: Villager) => ({ ...v, income: Math.min(100, v.income + 50) }) },
+];
+
+const COMMUNITY_EVENTS = [
+  { text: '🏭 A community factory opened! All employed villagers earn +10 income.', apply: (vs: Villager[]) => vs.map(v => ({ ...v, income: getState(v) !== 'struggling' && v.income > 30 ? Math.min(100, v.income + 10) : v.income })) },
+  { text: '⚡ Power outage! Housing suffers -15 for struggling families.', apply: (vs: Villager[]) => vs.map(v => ({ ...v, housing: getState(v) === 'struggling' ? Math.max(0, v.housing - 15) : v.housing })) },
+  { text: '🏫 Free community class! Educated villagers gain +10 more education.', apply: (vs: Villager[]) => vs.map(v => ({ ...v, education: v.education >= 40 ? Math.min(100, v.education + 10) : v.education })) },
+];
+
+const STATE_LABEL: Record<VillagerState, { emoji: string; label: string; color: string; bg: string }> = {
+  struggling: { emoji: '😢', label: 'Struggling', color: '#EF4444', bg: '#FEF2F2' },
+  surviving:  { emoji: '😐', label: 'Surviving',  color: '#F59E0B', bg: '#FFFBEB' },
+  thriving:   { emoji: '😊', label: 'Thriving',   color: '#10B981', bg: '#F0FDF4' },
 };
 
 const PovertyPuzzle = ({ onWin }: { onWin: () => void }) => {
-  const BUDGET = 8;
-  const WEEKS = 2;
-
-  const initialFamilies: NpcFamily[] = [
-    { id: 1, Sprite: NPC_LeeFather, name: 'Lee Family', role: 'Dad unemployed', income: 15, housing: 60, employment: 0, actions: [] },
-    { id: 2, Sprite: NPC_GrandmaRosa, name: 'Grandma Rosa', role: 'Leaky roof, no income', income: 20, housing: 20, employment: 0, actions: [] },
-    { id: 3, Sprite: NPC_YoungMaya, name: 'Young Maya', role: 'No skills or job', income: 10, housing: 50, employment: 0, actions: [] },
-    { id: 4, Sprite: NPC_LeeMom, name: 'The Tans', role: 'Low income, renting', income: 35, housing: 40, employment: 30, actions: [] },
-    { id: 5, Sprite: NPC_BakerHelper, name: 'Baker\'s Kid', role: 'Part-time, struggling', income: 40, housing: 55, employment: 40, actions: [] },
-  ];
-
-  const [families, setFamilies] = useState<NpcFamily[]>(initialFamilies);
-  const [budget, setBudget] = useState(BUDGET);
-  const [week, setWeek] = useState(1);
-  const [phase, setPhase] = useState<'plan' | 'results' | 'event' | 'final'>('plan');
+  const TOTAL_BUDGET = 12;
+  const [villagers, setVillagers] = useState<Villager[]>(INITIAL_VILLAGERS.map(v => ({ ...v })));
+  const [budget, setBudget] = useState(TOTAL_BUDGET);
+  const [phase, setPhase] = useState<'emergency' | 'develop' | 'event' | 'final'>('emergency');
+  const [round, setRound] = useState(1);
   const [selected, setSelected] = useState<number | null>(null);
-  const [event, setEvent] = useState('');
-  const [hint, setHint] = useState('Select a family, then use a resource action. Budget: 8 tokens.');
+  const [msg, setMsg] = useState<{ text: string; type: 'info' | 'warn' | 'ok' | 'locked' }>({ text: 'PHASE 1: Emergency Aid — food and medicine first! Select a villager, then choose an action.', type: 'info' });
+  const [eventText, setEventText] = useState('');
 
-  const ACTIONS = [
-    { id: 'job', label: '💼 Give Job', cost: 3, desc: '+35 employment, +25 income', effect: (f: NpcFamily) => ({ ...f, employment: Math.min(100, f.employment + 35), income: Math.min(100, f.income + 25) }) },
-    { id: 'housing', label: '🏠 Fix Housing', cost: 2, desc: '+30 housing quality', effect: (f: NpcFamily) => ({ ...f, housing: Math.min(100, f.housing + 30) }) },
-    { id: 'training', label: '📚 Skills Training', cost: 1, desc: '+15 income potential', effect: (f: NpcFamily) => ({ ...f, income: Math.min(100, f.income + 15), employment: Math.min(100, f.employment + 10) }) },
-  ];
+  const vs = villagers.map(v => ({ ...v, state: getState(v) }));
+  const stability = communityStability(vs);
 
-  const EVENTS = [
-    { text: '⚡ Power outage hits the neighborhood! Housing -10 for all.', apply: (fs: NpcFamily[]) => fs.map(f => ({ ...f, housing: Math.max(0, f.housing - 10) })) },
-    { text: '🏭 Factory opens! Employed families get +15 income bonus.', apply: (fs: NpcFamily[]) => fs.map(f => ({ ...f, income: f.employment > 30 ? Math.min(100, f.income + 15) : f.income })) },
-    { text: '🌧️ Flooding damages some homes. Trained workers rebuild faster.', apply: (fs: NpcFamily[]) => fs.map(f => ({ ...f, housing: f.employment > 30 ? f.housing : Math.max(0, f.housing - 15) })) },
-  ];
-
-  const povertyRate = () => {
-    const poor = families.filter(f => f.income < 40 || f.employment < 25).length;
-    return Math.round((poor / families.length) * 100);
-  };
-
-  const applyAction = (actionId: string) => {
-    if (selected === null) { setHint('👆 First click a family card to select them!'); return; }
-    const action = ACTIONS.find(a => a.id === actionId)!;
-    if (budget < action.cost) { setHint(`❌ Not enough tokens! This costs ${action.cost} 🪙`); return; }
-    const fam = families.find(f => f.id === selected)!;
-    if (fam.actions.includes(actionId)) { setHint(`Already applied ${action.label} to this family this week!`); return; }
-
-    setFamilies(prev => prev.map(f => f.id === selected ? { ...action.effect(f), actions: [...f.actions, actionId] } : f));
+  const applyEmergency = (actionId: string) => {
+    if (selected === null) { setMsg({ text: '👆 Select a villager card first!', type: 'warn' }); return; }
+    const action = EMERGENCY_ACTIONS.find(a => a.id === actionId)!;
+    if (budget < action.cost) { setMsg({ text: `❌ Not enough tokens! Need ${action.cost} 🪙`, type: 'warn' }); return; }
+    const v = villagers.find(v => v.id === selected)!;
+    if (v.helpedThisRound.includes(actionId)) { setMsg({ text: `Already gave ${action.label} to ${v.name} this round!`, type: 'warn' }); return; }
+    setVillagers(prev => prev.map(p => p.id === selected ? { ...action.apply(p), helpedThisRound: [...p.helpedThisRound, actionId] } : p));
     setBudget(b => b - action.cost);
     setSelected(null);
-    setHint(`✅ Applied! ${budget - action.cost} tokens remaining.`);
+    setMsg({ text: `✅ Gave ${action.label} to ${v.name}! ${budget - action.cost} tokens left.`, type: 'ok' });
   };
 
-  const endWeek = () => {
-    if (week < WEEKS) {
-      const ev = EVENTS[Math.floor(Math.random() * EVENTS.length)];
-      setEvent(ev.text);
-      setFamilies(ev.apply);
+  const applyDevelopment = (actionId: string) => {
+    if (selected === null) { setMsg({ text: '👆 Select a villager card first!', type: 'warn' }); return; }
+    const action = DEVELOPMENT_ACTIONS.find(a => a.id === actionId)!;
+    if (budget < action.cost) { setMsg({ text: `❌ Not enough tokens! Need ${action.cost} 🪙`, type: 'warn' }); return; }
+    const v = villagers.find(v => v.id === selected)!;
+    const vState = getState(v);
+    if (action.requiresBasics && vState === 'struggling') {
+      setMsg({ text: `🔒 ${v.name} can't focus on ${action.label} while hungry or sick! Help their basic needs first.`, type: 'locked' });
+      return;
+    }
+    if (v.helpedThisRound.includes(actionId)) { setMsg({ text: `Already applied ${action.label} to ${v.name} this round!`, type: 'warn' }); return; }
+    setVillagers(prev => prev.map(p => p.id === selected ? { ...action.apply(p), helpedThisRound: [...p.helpedThisRound, actionId] } : p));
+    setBudget(b => b - action.cost);
+    setSelected(null);
+    setMsg({ text: `✅ ${action.label} for ${v.name}! ${budget - action.cost} tokens left.`, type: 'ok' });
+  };
+
+  const advancePhase = () => {
+    if (phase === 'emergency') {
+      // Community effect: employed villagers inspire others
+      const employedCount = vs.filter(v => v.income > 40).length;
+      setVillagers(prev => prev.map(v => ({
+        ...v, helpedThisRound: [],
+        food: employedCount >= 2 ? Math.min(100, v.food + 5) : v.food,
+      })));
+      setBudget(TOTAL_BUDGET);
+      setPhase('develop');
+      setSelected(null);
+      setMsg({ text: 'PHASE 2: Long-term Development — jobs, school, and housing! Note: struggling villagers cannot train until fed and healthy.', type: 'info' });
+    } else if (phase === 'develop') {
+      const ev = COMMUNITY_EVENTS[Math.floor(Math.random() * COMMUNITY_EVENTS.length)];
+      setEventText(ev.text);
+      setVillagers(ev.apply);
       setPhase('event');
-    } else {
-      setPhase('final');
-      const rate = povertyRate();
-      if (rate <= 30) setTimeout(onWin, 600);
     }
   };
 
-  const startNextWeek = () => {
-    setWeek(w => w + 1);
-    setBudget(BUDGET);
-    setFamilies(prev => prev.map(f => ({ ...f, actions: [] })));
-    setPhase('plan');
-    setHint(`Week 2! Budget reset to 8 🪙. Keep improving the neighborhood!`);
-    setSelected(null);
+  const finishRound = () => {
+    const updatedVs = villagers.map(v => ({ ...v, state: getState(v) }));
+    const stab = communityStability(updatedVs);
+    setPhase('final');
+    if (stab >= 65) setTimeout(onWin, 800);
   };
 
-  const rate = povertyRate();
+  const MSG_COLORS = { info: '#3B82F6', warn: '#F59E0B', ok: '#10B981', locked: '#EF4444' };
 
+  const resetGame = () => {
+    setVillagers(INITIAL_VILLAGERS.map(v => ({ ...v })));
+    setBudget(TOTAL_BUDGET);
+    setPhase('emergency');
+    setRound(1);
+    setSelected(null);
+    setMsg({ text: 'PHASE 1: Emergency Aid — food and medicine first!', type: 'info' });
+  };
+
+  /* ── EVENT SCREEN ── */
   if (phase === 'event') return (
-    <div className="flex flex-col items-center gap-6 text-center max-w-md mx-auto">
-      <div className="text-6xl">📰</div>
-      <h3 className="font-display text-xl text-orange-700">Week {week} Event!</h3>
-      <div className="bg-orange-50 border-2 border-orange-300 rounded-2xl p-5 text-sm font-medium text-gray-700">{event}</div>
-      <StatBar label="Poverty Rate" value={rate} color="#EF4444" />
-      <button onClick={startNextWeek} className="px-6 py-3 bg-green-500 text-white font-bold rounded-xl shadow-lg hover:bg-green-600 transition-colors">
-        Start Week 2 →
+    <div className="flex flex-col items-center gap-5 text-center max-w-md mx-auto">
+      <div className="text-5xl">📰</div>
+      <h3 className="font-display text-xl text-orange-700">Community Event!</h3>
+      <div className="bg-orange-50 border-2 border-orange-300 rounded-2xl p-4 text-sm font-medium text-gray-700 leading-relaxed">{eventText}</div>
+      <div className="w-full bg-white rounded-2xl border-2 border-green-200 p-4">
+        <p className="text-xs font-bold text-gray-500 mb-2">COMMUNITY STABILITY</p>
+        <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden">
+          <motion.div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg, #F59E0B, #10B981)' }} animate={{ width: `${stability}%` }} />
+        </div>
+        <p className="text-sm font-bold text-gray-700 mt-1">{stability}% stable</p>
+      </div>
+      <button onClick={finishRound} className="px-8 py-3 bg-green-500 text-white font-bold rounded-xl shadow-lg hover:bg-green-600 transition-colors">
+        See Final Results →
       </button>
     </div>
   );
 
-  if (phase === 'final') return (
-    <div className="flex flex-col items-center gap-5 text-center max-w-md mx-auto">
-      {rate <= 30 ? (
-        <>
-          <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} className="text-6xl">🏘️</motion.div>
-          <h3 className="font-display text-2xl text-green-700">Neighborhood Thriving!</h3>
-          <p className="text-sm text-gray-600">Poverty rate down to <strong>{rate}%</strong>! Your resource allocation made a real difference.</p>
-        </>
-      ) : (
-        <>
-          <div className="text-6xl">😔</div>
-          <h3 className="font-display text-xl text-red-700">Still struggling... ({rate}% poverty)</h3>
-          <p className="text-sm text-gray-600">Focus jobs on the most unemployed families next time!</p>
-          <button onClick={() => { setFamilies(initialFamilies); setWeek(1); setBudget(BUDGET); setPhase('plan'); setHint('Try again! Allocate resources wisely.'); }} className="px-5 py-2 bg-orange-500 text-white font-bold rounded-xl">↩ Try Again</button>
-        </>
-      )}
-      <div className="w-full space-y-2">
-        {families.map(f => (
-          <div key={f.id} className="bg-white rounded-xl border p-3 text-left">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-10 h-10"><f.Sprite /></div>
-              <div><p className="font-bold text-sm">{f.name}</p><p className="text-xs text-gray-500">{f.role}</p></div>
-              <span className={cn('ml-auto text-sm font-bold', f.income >= 40 && f.employment >= 25 ? 'text-green-600' : 'text-red-500')}>
-                {f.income >= 40 && f.employment >= 25 ? '✅ Out of poverty' : '❌ Still struggling'}
-              </span>
-            </div>
-          </div>
-        ))}
+  /* ── FINAL SCREEN ── */
+  if (phase === 'final') {
+    const won = stability >= 65;
+    const updatedVs = villagers.map(v => ({ ...v, state: getState(v) }));
+    const thrivingCount = updatedVs.filter(v => v.state === 'thriving').length;
+    const onlyShortTerm = updatedVs.every(v => v.income < 40 && v.education < 40);
+    return (
+      <div className="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
+        {won ? (
+          <>
+            <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} className="text-6xl">🏘️</motion.div>
+            <h3 className="font-display text-2xl text-green-700">Village is Thriving!</h3>
+            <p className="text-sm text-gray-600"><strong>{thrivingCount}/4</strong> villagers reached stability. Community Stability: <strong>{stability}%</strong></p>
+          </>
+        ) : (
+          <>
+            <div className="text-5xl">😔</div>
+            <h3 className="font-display text-xl text-red-700">Still Struggling... ({stability}% stability)</h3>
+            {onlyShortTerm
+              ? <p className="text-sm text-amber-700 bg-amber-50 rounded-xl p-3 border border-amber-200">💡 You kept people alive, but long-term development is what ends poverty. Jobs, education and housing create lasting change!</p>
+              : <p className="text-sm text-gray-600">Try helping villagers' basic needs first (food, medicine), then invest in long-term development.</p>
+            }
+            <button onClick={resetGame} className="px-6 py-2.5 bg-orange-500 text-white font-bold rounded-xl mt-1 hover:bg-orange-600">↩ Try Again</button>
+          </>
+        )}
+        <div className="w-full space-y-2 mt-2">
+          {updatedVs.map(v => {
+            const s = STATE_LABEL[v.state];
+            return (
+              <div key={v.id} className="flex items-center gap-3 rounded-xl border p-2.5 text-left" style={{ background: s.bg }}>
+                <div className="w-9 h-11 shrink-0"><v.Sprite /></div>
+                <div className="flex-1">
+                  <p className="font-bold text-xs">{v.name}</p>
+                  <p className="text-[10px] text-gray-500">{v.story}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-base">{s.emoji}</p>
+                  <p className="text-[10px] font-bold" style={{ color: s.color }}>{s.label}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  /* ── MAIN GAMEPLAY ── */
+  const isEmergency = phase === 'emergency';
+  const activeActions = isEmergency ? EMERGENCY_ACTIONS : DEVELOPMENT_ACTIONS;
+  const selectedVillager = selected !== null ? vs.find(v => v.id === selected) : null;
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-3 w-full">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="bg-yellow-50 border border-yellow-300 rounded-xl px-3 py-1.5 text-sm font-bold text-yellow-800">📅 Week {week}/{WEEKS}</div>
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className={cn('px-3 py-1.5 rounded-xl text-sm font-bold border', isEmergency ? 'bg-red-50 border-red-300 text-red-700' : 'bg-blue-50 border-blue-300 text-blue-700')}>
+          {isEmergency ? '🚨 Phase 1: Emergency Aid' : '🌱 Phase 2: Development'}
+        </div>
         <div className="flex flex-col items-center">
-          <TokenChip count={budget} max={BUDGET} />
+          <TokenChip count={budget} max={TOTAL_BUDGET} />
           <p className="text-[10px] text-gray-500 mt-0.5">{budget} tokens left</p>
         </div>
-        <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-1.5 text-sm font-bold text-red-700">📊 Poverty: {rate}%</div>
+        <div className="bg-green-50 border border-green-200 rounded-xl px-3 py-1.5 text-sm font-bold text-green-700">
+          🏘️ {stability}% stable
+        </div>
       </div>
 
-      <HintBox text={hint} />
-
-      {/* Action buttons */}
-      <div className="flex gap-2 justify-center flex-wrap">
-        {ACTIONS.map(a => (
-          <motion.button key={a.id} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
-            onClick={() => applyAction(a.id)}
-            disabled={budget < a.cost}
-            className={cn('flex flex-col items-center px-3 py-2 rounded-xl border-2 text-xs font-bold transition-all',
-              budget >= a.cost ? 'bg-white border-amber-400 hover:bg-amber-50 cursor-pointer' : 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed'
-            )}
-          >
-            <span className="text-base">{a.label}</span>
-            <span className="text-gray-500 font-normal">{a.desc}</span>
-            <span className="text-amber-600">Cost: {a.cost} 🪙</span>
-          </motion.button>
-        ))}
+      {/* Community stability bar */}
+      <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+        <motion.div className="h-full rounded-full" style={{ background: 'linear-gradient(90deg, #EF4444, #F59E0B, #10B981)' }} animate={{ width: `${stability}%` }} transition={{ duration: 0.8 }} />
       </div>
 
-      {/* Family cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {families.map(f => (
-          <motion.div key={f.id} whileHover={{ scale: 1.02 }} onClick={() => { setSelected(f.id); setHint(`Selected ${f.name}! Now pick an action above.`); }}
-            className={cn('bg-white rounded-2xl border-2 p-3 cursor-pointer transition-all',
-              selected === f.id ? 'border-amber-500 shadow-lg bg-amber-50' : 'border-gray-200 hover:border-amber-300'
-            )}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-10 h-12 shrink-0"><f.Sprite /></div>
-              <div>
-                <p className="font-bold text-xs leading-tight">{f.name}</p>
-                <p className="text-[10px] text-gray-500 leading-tight">{f.role}</p>
+      {/* Message */}
+      <div className="w-full px-4 py-2 rounded-xl text-xs font-semibold border-2 leading-relaxed"
+        style={{ background: MSG_COLORS[msg.type] + '15', borderColor: MSG_COLORS[msg.type] + '55', color: '#374151' }}>
+        {msg.text}
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-2 flex-wrap justify-center">
+        {(activeActions as Array<{ id: string; emoji: string; label: string; desc: string; cost: number; requiresBasics?: boolean }>).map(a => {
+          const isLocked = !isEmergency && a.requiresBasics && selectedVillager && getState(selectedVillager) === 'struggling';
+          return (
+            <motion.button key={a.id} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
+              onClick={() => isEmergency ? applyEmergency(a.id) : applyDevelopment(a.id)}
+              disabled={budget < a.cost}
+              className={cn('flex flex-col items-center px-3 py-2 rounded-xl border-2 text-xs font-bold transition-all min-w-[80px]',
+                isLocked ? 'bg-red-50 border-red-200 text-red-400 cursor-not-allowed' :
+                budget >= a.cost ? 'bg-white border-amber-400 hover:bg-amber-50 cursor-pointer' : 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed'
+              )}
+            >
+              <span className="text-xl">{a.emoji}</span>
+              <span className="leading-tight">{a.label}</span>
+              <span className="text-gray-400 font-normal text-[10px]">{a.desc}</span>
+              <span className="text-amber-600 mt-0.5">{a.cost} 🪙</span>
+              {isLocked && <span className="text-[9px] text-red-400">🔒 needs basics first</span>}
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Villager cards */}
+      <div className="grid grid-cols-2 gap-2">
+        {vs.map(v => {
+          const s = STATE_LABEL[v.state];
+          return (
+            <motion.div key={v.id} whileHover={{ scale: 1.02 }}
+              onClick={() => { setSelected(v.id); setMsg({ text: `Selected ${v.name}! Now pick an action above.`, type: 'info' }); }}
+              className={cn('rounded-2xl border-2 p-3 cursor-pointer transition-all',
+                selected === v.id ? 'border-amber-500 shadow-lg' : 'border-gray-200 hover:border-amber-300'
+              )}
+              style={{ background: selected === v.id ? '#FFFBEB' : s.bg }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-9 h-11 shrink-0"><v.Sprite /></div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-[11px] leading-tight truncate">{v.name}</p>
+                  <p className="text-[9px] text-gray-500 leading-tight">{v.story}</p>
+                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full mt-0.5" style={{ background: s.color + '20', color: s.color }}>
+                    {s.emoji} {s.label}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="space-y-1">
-              <StatBar label="💰 Income" value={f.income} color="#F59E0B" />
-              <StatBar label="🏠 Housing" value={f.housing} color="#3B82F6" />
-              <StatBar label="💼 Employment" value={f.employment} color="#10B981" />
-            </div>
-            {f.actions.length > 0 && (
-              <div className="mt-1.5 flex gap-1 flex-wrap">
-                {f.actions.map(a => <span key={a} className="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-bold">✓ {a}</span>)}
+              <div className="space-y-1">
+                <StatBar label="🍚 Food" value={v.food} color="#F59E0B" />
+                <StatBar label="💊 Health" value={v.health} color="#EF4444" />
+                <StatBar label="💰 Income" value={v.income} color="#8B5CF6" />
+                {!isEmergency && <StatBar label="📚 Education" value={v.education} color="#3B82F6" />}
+                {!isEmergency && <StatBar label="🏠 Housing" value={v.housing} color="#10B981" />}
               </div>
-            )}
-          </motion.div>
-        ))}
+              {v.helpedThisRound.length > 0 && (
+                <div className="mt-1.5 flex gap-1 flex-wrap">
+                  {v.helpedThisRound.map(a => <span key={a} className="text-[8px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-bold">✓ {a}</span>)}
+                </div>
+              )}
+            </motion.div>
+          );
+        })}
       </div>
 
-      <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-        onClick={endWeek}
-        className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md transition-colors"
+      <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+        onClick={advancePhase}
+        className={cn('w-full py-3 font-bold rounded-xl shadow-md transition-colors text-white',
+          isEmergency ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'
+        )}
       >
-        ⏭ End Week {week} & See Results
+        {isEmergency ? '✅ Done with Emergency Aid → Move to Development' : '🎯 Apply Investments & See Community Impact'}
       </motion.button>
     </div>
   );
