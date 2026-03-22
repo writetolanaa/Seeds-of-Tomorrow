@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme inline {
+  --font-display: 'Fredoka', sans-serif;
+  --font-body: 'Nunito', sans-serif;
+
+  /* Warm parchment & ink palette */
+  --color-background: hsl(40, 60%, 95%); /* Warm cream parchment */
+  --color-foreground: hsl(15, 30%, 25%); /* Dark ink brown */
+  
+  --color-primary: hsl(140, 50%, 60%); /* Soft leaf green */
+  --color-primary-foreground: hsl(15, 30%, 15%);
+  
+  --color-secondary: hsl(35, 80%, 75%); /* Warm tan */
+  --color-secondary-foreground: hsl(15, 30%, 25%);
+  
+  --color-muted: hsl(40, 30%, 85%);
+  --color-muted-foreground: hsl(15, 20%, 45%);
+  
+  --color-accent: hsl(200, 70%, 70%); /* Splashy blue */
+  --color-accent-foreground: hsl(15, 30%, 15%);
+
+  --color-destructive: hsl(0, 60%, 65%);
+  --color-destructive-foreground: hsl(0, 0%, 100%);
+  
+  --color-border: hsl(15, 30%, 25%); /* Ink borders */
+  --color-ring: hsl(140, 50%, 60%);
+  
+  --color-card: hsl(40, 50%, 98%);
+  --color-card-foreground: hsl(15, 30%, 25%);
+
+  /* Zone specific colors */
+  --color-zone-water: hsl(200, 70%, 65%);
+  --color-zone-earth: hsl(30, 40%, 60%);
+  --color-zone-life: hsl(120, 50%, 60%);
+  --color-zone-energy: hsl(45, 90%, 65%);
+  --color-zone-justice: hsl(280, 40%, 70%);
+  --color-zone-knowledge: hsl(170, 50%, 60%);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    background-image: url('/images/parchment-bg.png');
+    background-blend-mode: multiply;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply tracking-wide font-semibold text-foreground;
+  }
+}
+
+@layer utilities {
+  .sketch-border {
+    border: 3px solid hsl(15, 30%, 25%);
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+  
+  .sketch-border-sm {
+    border: 2px solid hsl(15, 30%, 25%);
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+
+  .sketch-shadow {
+    box-shadow: 4px 4px 0px 0px hsl(15, 30%, 25%);
+  }
+
+  .sketch-shadow-hover:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px 0px hsl(15, 30%, 25%);
+  }
+  
+  .sketch-shadow-active:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px hsl(15, 30%, 25%);
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Custom Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes walk {
+  0% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-4px) rotate(3deg); }
+  50% { transform: translateY(0px) rotate(0deg); }
+  75% { transform: translateY(-4px) rotate(-3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-walk {
+  animation: walk 0.5s ease-in-out infinite;
+}

@@ -48,6 +48,18 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 - `pnpm run build` — runs `typecheck` first, then recursively runs `build` in all packages that define it
 - `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly` using project references
 
+## Artifacts
+
+### `artifacts/sdg-game` (`@workspace/sdg-game`)
+
+A cute fantasy RPG browser game about the UN SDGs (Sustainable Development Goals). Players pick a warden character, explore a world map with 6 zones, and solve mini-puzzles to restore the broken world.
+
+- **Style**: Hand-drawn sketch aesthetic, warm parchment tones, whimsical RPG
+- **Zones**: Splashy (Water), Pebblepuff (Earth), Leaflet (Life), Sparkleflame (Energy), Baloo (Equality), Thinklet (Knowledge)
+- **Tech**: React + Vite + Framer Motion + canvas-confetti, no backend needed
+- **State**: localStorage-persisted game progress
+- **Pages**: TitleScreen, WorldMap, ZoneInterior, PuzzleScreen
+
 ## Packages
 
 ### `artifacts/api-server` (`@workspace/api-server`)
