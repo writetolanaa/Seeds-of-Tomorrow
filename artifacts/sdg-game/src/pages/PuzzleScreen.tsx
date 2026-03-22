@@ -684,7 +684,7 @@ export default function PuzzleScreen() {
   const [won, setWon] = useState(false);
 
   if (!zoneId || !ZONES[zoneId]) {
-    setLocation('/map');
+    setLocation('/world');
     return null;
   }
 
@@ -702,10 +702,10 @@ export default function PuzzleScreen() {
       {/* Header */}
       <div className="px-4 py-3 flex items-center gap-3 text-white" style={{ background: zone.themeColor }}>
         <button
-          onClick={() => setLocation(`/zone/${zoneId}`)}
+          onClick={() => setLocation('/world')}
           className="bg-white/20 hover:bg-white/30 rounded-lg px-3 py-1.5 text-sm font-bold transition-colors"
         >
-          ← Back
+          ← World Map
         </button>
         <div>
           <div className="font-display text-xl">{zone.name} Challenge</div>
@@ -743,11 +743,11 @@ export default function PuzzleScreen() {
                   <p className="text-sm leading-relaxed text-gray-700">{zone.successFact}</p>
                 </div>
                 <button
-                  onClick={() => setLocation(`/zone/${zoneId}`)}
+                  onClick={() => setLocation('/world')}
                   className="text-lg py-3 px-8 text-white font-bold rounded-xl shadow-lg sketch-border"
                   style={{ background: zone.themeColor }}
                 >
-                  🌟 See the Healed Zone!
+                  🌟 Return to World!
                 </button>
               </motion.div>
             )}

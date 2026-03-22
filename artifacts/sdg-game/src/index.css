@@ -185,4 +185,22 @@
     border-radius: 4px;
     transition: width 1s ease-out;
   }
+
+  /* RPG bounce (for NPC ! indicator) */
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-5px); }
+  }
+
+  /* Player shadow */
+  .player-shadow {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 12px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 50%;
+  }
 }

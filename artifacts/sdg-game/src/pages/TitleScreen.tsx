@@ -13,11 +13,11 @@ export default function TitleScreen() {
 
   const handleStart = () => {
     startGame(name || 'Warden', selectedChar);
-    setLocation('/map');
+    setLocation('/world');
   };
 
   const handleContinue = () => {
-    setLocation('/map');
+    setLocation('/world');
   };
 
   const handleReset = () => {
