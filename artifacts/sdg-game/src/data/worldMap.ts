@@ -2,9 +2,9 @@ import type { ZoneId } from './gameData';
 
 export const WORLD_W = 2800;
 export const WORLD_H = 2000;
-export const PLAYER_SPEED = 3.2;
-export const INTERACT_RADIUS = 85;
-export const PLAYER_SPAWN = { x: 1380, y: 980 };
+export const PLAYER_SPEED = 5;
+export const INTERACT_RADIUS = 100;
+export const PLAYER_SPAWN = { x: 1380, y: 1180 };
 
 export interface ZoneRegion {
   id: ZoneId;
@@ -225,12 +225,14 @@ export const WORLD_BUILDINGS: WorldBuilding[] = [
 ];
 
 /* ── Collision boxes (can't walk through buildings) ── */
-export const COLLISION_RECTS: CollisionRect[] = WORLD_BUILDINGS.map(b => ({
-  x: b.x, y: b.y, w: b.w, h: b.h,
-})).concat([
-  // World border (invisible walls)
-  { x: -50, y: -50, w: 50, h: WORLD_H + 100 },
-  { x: WORLD_W, y: -50, w: 50, h: WORLD_H + 100 },
-  { x: -50, y: -50, w: WORLD_W + 100, h: 50 },
-  { x: -50, y: WORLD_H, w: WORLD_W + 100, h: 50 },
-]);
+// Only solid structures get collision (not wells/signs). Inset by 8px so edges feel natural.
+export const COLLISION_RECTS: CollisionRect[] = WORLD_BUILDINGS
+  .filter(b => b.type !== 'well' && b.type !== 'sign')
+  .map(b => ({ x: b.x + 8, y: b.y + 8, w: b.w - 16, h: b.h - 16 }))
+  .concat([
+    // World border (invisible walls)
+    { x: -50, y: -50, w: 50, h: WORLD_H + 100 },
+    { x: WORLD_W, y: -50, w: 50, h: WORLD_H + 100 },
+    { x: -50, y: -50, w: WORLD_W + 100, h: 50 },
+    { x: -50, y: WORLD_H, w: WORLD_W + 100, h: 50 },
+  ]);
