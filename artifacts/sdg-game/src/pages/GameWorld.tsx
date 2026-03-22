@@ -553,6 +553,16 @@ export default function GameWorld() {
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       onClick={() => containerRef.current?.focus()}
+      onKeyDown={(e) => {
+        const MOVE_KEYS = new Set(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','w','a','s','d','W','A','S','D',' ']);
+        if (MOVE_KEYS.has(e.key)) e.preventDefault();
+        keysRef.current.add(e.key);
+        if ((e.key === 'e' || e.key === 'E' || e.key === ' ') && nearNPCIdRef.current) {
+          const npc = WORLD_NPCS.find(n => n.id === nearNPCIdRef.current);
+          if (npc) { setTalkingNPC(npc); setDialogIndex(0); }
+        }
+      }}
+      onKeyUp={(e) => keysRef.current.delete(e.key)}
       className="fixed inset-0 overflow-hidden bg-black outline-none"
       style={{ cursor: 'default' }}
     >
@@ -716,29 +726,26 @@ export default function GameWorld() {
         </div>
       </div>
 
-      {/* ── MOBILE D-PAD ── */}
-      <div className="absolute bottom-6 left-6 z-40 select-none md:hidden">
-        <div style={{ display: 'grid', gridTemplateColumns: '52px 52px 52px', gridTemplateRows: '52px 52px 52px', gap: 4 }}>
-          {/* Up */}
+      {/* ── D-PAD (always visible) ── */}
+      <div className="absolute bottom-6 left-6 z-40 select-none">
+        <div style={{ display: 'grid', gridTemplateColumns: '68px 68px 68px', gridTemplateRows: '68px 68px 68px', gap: 6 }}>
           <div />
-          <DPadBtn label="▲" onStart={() => startTouch(0, -PLAYER_SPEED)} onEnd={stopTouch} />
+          <DPadBtn label="▲" onStart={() => startTouch(0, -PLAYER_SPEED * 2)} onEnd={stopTouch} />
           <div />
-          {/* Left / Down / Right */}
-          <DPadBtn label="◀" onStart={() => startTouch(-PLAYER_SPEED, 0)} onEnd={stopTouch} />
-          <DPadBtn label="●" onStart={() => {}} onEnd={stopTouch} />
-          <DPadBtn label="▶" onStart={() => startTouch(PLAYER_SPEED, 0)} onEnd={stopTouch} />
-          {/* Down */}
+          <DPadBtn label="◀" onStart={() => startTouch(-PLAYER_SPEED * 2, 0)} onEnd={stopTouch} />
+          <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 12 }} />
+          <DPadBtn label="▶" onStart={() => startTouch(PLAYER_SPEED * 2, 0)} onEnd={stopTouch} />
           <div />
-          <DPadBtn label="▼" onStart={() => startTouch(0, PLAYER_SPEED)} onEnd={stopTouch} />
+          <DPadBtn label="▼" onStart={() => startTouch(0, PLAYER_SPEED * 2)} onEnd={stopTouch} />
           <div />
         </div>
       </div>
 
-      {/* ── TALK BUTTON (mobile) ── */}
+      {/* ── TALK BUTTON ── */}
       {nearNPC && !talkingNPC && (
         <button
-          className="absolute bottom-6 right-6 z-40 bg-yellow-400 border-4 border-yellow-600 rounded-full w-16 h-16 text-2xl font-bold shadow-xl md:hidden"
-          onTouchStart={() => { setTalkingNPC(nearNPC); setDialogIndex(0); }}
+          className="absolute bottom-6 right-6 z-40 bg-yellow-400 border-4 border-yellow-600 rounded-full w-20 h-20 text-3xl font-bold shadow-xl"
+          onTouchStart={(e) => { e.preventDefault(); setTalkingNPC(nearNPC); setDialogIndex(0); }}
           onClick={() => { setTalkingNPC(nearNPC); setDialogIndex(0); }}
         >
           💬
