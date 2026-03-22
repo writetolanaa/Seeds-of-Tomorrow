@@ -486,10 +486,14 @@ export default function GameWorld() {
         isMovingRef.current = false;
       }
 
-      // walk animation via class
+      // walk animation — flip + CSS walking class
       if (playerElemRef.current) {
-        const walking = isMovingRef.current && frameCount % 12 < 6;
-        playerElemRef.current.style.transform = `scaleX(${facingRef.current === 'left' ? -1 : 1}) ${walking ? 'rotate(-4deg)' : 'rotate(0deg)'}`;
+        playerElemRef.current.style.transform = `scaleX(${facingRef.current === 'left' ? -1 : 1})`;
+        if (isMovingRef.current) {
+          playerElemRef.current.classList.add('player-walking');
+        } else {
+          playerElemRef.current.classList.remove('player-walking');
+        }
       }
 
       updateDOM();

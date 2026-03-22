@@ -207,9 +207,13 @@ export const ChibiCharacter = ({
         </>
       )}
 
-      {/* ── ARMS ── */}
-      <ellipse cx="24" cy="75" rx="7" ry="10" fill={skinColor} stroke={hairColor} strokeWidth="2" transform="rotate(-15 24 75)" />
-      <ellipse cx="76" cy="75" rx="7" ry="10" fill={skinColor} stroke={hairColor} strokeWidth="2" transform="rotate(15 76 75)" />
+      {/* ── ARMS (grouped for walk-swing animation) ── */}
+      <g className="chibi-arm-l">
+        <ellipse cx="24" cy="75" rx="7" ry="10" fill={skinColor} stroke={hairColor} strokeWidth="2" />
+      </g>
+      <g className="chibi-arm-r">
+        <ellipse cx="76" cy="75" rx="7" ry="10" fill={skinColor} stroke={hairColor} strokeWidth="2" />
+      </g>
 
       {/* Item / prop held in right arm */}
       {item && (
@@ -218,12 +222,15 @@ export const ChibiCharacter = ({
         </g>
       )}
 
-      {/* ── LEGS / BOOTS ── */}
-      <rect x="38" y="92" width="11" height="18" rx="5" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-      <rect x="51" y="92" width="11" height="18" rx="5" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-      {/* boots */}
-      <rect x="35" y="104" width="17" height="12" rx="6" fill={bootColor} stroke={hairColor} strokeWidth="2" />
-      <rect x="48" y="104" width="17" height="12" rx="6" fill={bootColor} stroke={hairColor} strokeWidth="2" />
+      {/* ── LEGS / BOOTS (grouped for walk-step animation) ── */}
+      <g className="chibi-leg-l">
+        <rect x="38" y="92" width="11" height="18" rx="5" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
+        <rect x="35" y="104" width="17" height="12" rx="6" fill={bootColor} stroke={hairColor} strokeWidth="2" />
+      </g>
+      <g className="chibi-leg-r">
+        <rect x="51" y="92" width="11" height="18" rx="5" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
+        <rect x="48" y="104" width="17" height="12" rx="6" fill={bootColor} stroke={hairColor} strokeWidth="2" />
+      </g>
     </svg>
   );
 };
