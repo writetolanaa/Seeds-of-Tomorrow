@@ -1,0 +1,97 @@
+Core Gameplay Loop
+	1.	Player selects a character with a specific gender (male, female, non-binary).
+	2.	Navigate daily life scenarios: school, work, public spaces, social interactions.
+	3.	Identify and respond to biased situations or barriers.
+	4.	Make systemic changes: policies, rules, and environmental adjustments.
+	5.	Track equality metrics and citizen satisfaction.
+	6.	Repeat across multiple days/scenarios to measure long-term impact.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Character Selection
+	•	Player chooses a gender for their avatar.
+	•	Each gender experiences different systemic biases and reactions in the world.
+
+Step 1: Navigate Daily Scenarios
+	•	Player moves through locations (school, workplace, public spaces).
+	•	Encounters challenges: unequal pay, unfair rules, social stereotypes.
+	•	Player can choose responses or attempt creative solutions.
+
+Step 2: Identify Inequities
+	•	Highlight scenarios where bias affects opportunity or treatment.
+	•	Examples: denied promotion, lack of access, different societal expectations.
+
+Step 3: Implement Changes
+	•	Apply solutions:
+	•	Advocate for policy changes
+	•	Modify environmental systems (e.g., workplace rules, school protocols)
+	•	Educate NPCs through interactions
+	•	Actions have delayed effects on equality metrics and NPC behavior.
+
+Step 4: Track Metrics
+	•	After each scenario, player sees:
+	•	Equality Index (overall fairness score)
+	•	Opportunity distribution across genders
+	•	NPC satisfaction and happiness
+
+Step 5: End of Day / Scenario
+	•	Visual feedback: citizens react positively or negatively to changes
+	•	Update world state → modified rules and systems persist in next day/scenario
+
+⸻
+
+3. Key Variables & Objects
+
+Player Attributes
+	•	Gender
+	•	Skill in advocacy / problem-solving
+	•	Reputation or influence in the world
+
+NPC Attributes
+	•	Gender, age, role (student, worker, official)
+	•	Happiness / satisfaction
+	•	Access to opportunities (education, jobs, resources)
+
+Scenario Attributes
+	•	Location type (school, workplace, public space)
+	•	Bias events list (predefined inequalities)
+	•	Policy/system parameters affecting NPC outcomes
+
+Global Variables
+	•	Day / scenario count
+	•	Equality Index (0–100)
+	•	Gender-specific opportunity metrics
+	•	NPC satisfaction averages
+
+⸻
+
+4. UI Elements
+	•	Top bar: day/scenario, Equality Index, NPC satisfaction
+	•	Scenario panel: current location, pending bias events, possible interventions
+	•	Character panel: gender, influence/reputation score, skills
+	•	Alerts: bias detected, NPC complaint, successful intervention
+	•	End-of-day report: equality progress, NPC reactions, opportunity distribution
+
+⸻
+
+5. Feedback Systems
+	•	NPC animations: happy when fairness improves, frustrated when ignored
+	•	Visual indicators in locations for bias or fairness levels
+	•	Alerts for unresolved inequities or successful interventions
+	•	Equality Index bar updates in real-time
+
+⸻
+
+6. Progression
+	•	Unlock new locations and more complex scenarios as player improves advocacy skill
+	•	Gain tools for systemic change: laws, policies, educational campaigns
+	•	Introduce unexpected challenges: societal pushback, stubborn NPC behaviors
+	•	Metrics carry over, so long-term planning affects overall world equality
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Equality Index reaches maximum, opportunities are fairly distributed, and NPC satisfaction is high across all genders
+	•	Loss: Persistent inequality, low Equality Index, or high dissatisfaction among NPCs leads to systemic failure in scenarios

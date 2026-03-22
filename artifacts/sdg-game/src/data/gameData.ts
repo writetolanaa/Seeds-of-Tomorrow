@@ -1,96 +1,121 @@
-export type ZoneId = 'water' | 'earth' | 'life' | 'energy' | 'justice' | 'knowledge';
+export type ZoneId = 'poverty' | 'hunger' | 'health' | 'education' | 'equality';
 
 export interface ZoneData {
   id: ZoneId;
+  number: number;
   name: string;
   lordName: string;
-  sdgs: number[];
-  colorClass: string;
-  bgColorClass: string;
+  sdg: number;
+  sdgTitle: string;
+  themeColor: string;
+  bgColor: string;
+  textColor: string;
+  emoji: string;
   description: string;
   brokenDesc: string;
   healedDesc: string;
   puzzleIntro: string;
   successFact: string;
+  mapX: number;
+  mapY: number;
 }
 
 export const ZONES: Record<ZoneId, ZoneData> = {
-  water: {
-    id: 'water',
-    name: "Splashy's Domain",
-    lordName: 'Splashy',
-    sdgs: [6, 14],
-    colorClass: 'text-zone-water',
-    bgColorClass: 'bg-zone-water',
-    description: 'Oceans and Clean Water',
-    brokenDesc: 'The rivers are clogged with strange sludge, and the ocean waves are crying out in murky grey tones.',
-    healedDesc: 'The waters run crystal clear, sparkling under the sun, and the fish are happily swimming again!',
-    puzzleIntro: 'Help me fix the water flow! The pipes got all twisted when the world cracked.',
-    successFact: 'Did you know? By 2030, we aim to achieve universal and equitable access to safe and affordable drinking water for all. Protecting our oceans helps regulate the global climate!',
-  },
-  earth: {
-    id: 'earth',
-    name: "Pebblepuff's Highlands",
-    lordName: 'Pebblepuff',
-    sdgs: [2, 12],
-    colorClass: 'text-zone-earth',
-    bgColorClass: 'bg-zone-earth',
-    description: 'Responsible Land & Food',
-    brokenDesc: 'The soil is dry, rocks are tumbling, and trash is scattered everywhere across the hills.',
-    healedDesc: 'Lush grass blankets the rolling hills, and the crops are growing strong and healthy.',
-    puzzleIntro: 'Oh my, what a mess! Can you help me sort this waste into the right bins so the earth can breathe?',
-    successFact: 'Awesome! Responsible consumption and production (SDG 12) means doing more and better with less. Sorting waste properly reduces landfill size!',
-  },
-  life: {
-    id: 'life',
-    name: "Leaflet's Grove",
-    lordName: 'Leaflet',
-    sdgs: [3, 15],
-    colorClass: 'text-zone-life',
-    bgColorClass: 'bg-zone-life',
-    description: 'Health & Biodiversity',
-    brokenDesc: 'The ancient trees have wilted, and the woodland spirits are hiding from the smog.',
-    healedDesc: 'The canopy is vibrant green, flowers bloom in every color, and the air is fresh and clean.',
-    puzzleIntro: 'The forest needs your knowledge to grow back. Answer my nature questions to plant new saplings!',
-    successFact: 'Hooray! Protecting life on land (SDG 15) halts biodiversity loss. Healthy forests mean healthier lives for everyone (SDG 3)!',
-  },
-  energy: {
-    id: 'energy',
-    name: "Sparkleflame's City",
-    lordName: 'Sparkleflame',
-    sdgs: [7, 9, 11],
-    colorClass: 'text-zone-energy',
-    bgColorClass: 'bg-zone-energy',
-    description: 'Clean Energy & Cities',
-    brokenDesc: 'The city floats precariously in the dark, its sustainable power grids shattered.',
-    healedDesc: 'The city shines brightly with renewable power, humming smoothly in harmony with nature.',
-    puzzleIntro: 'We need a jumpstart! Reconnect the clean energy turbines to power up the floating city.',
-    successFact: 'Zap! Access to affordable, reliable, sustainable, and modern energy for all (SDG 7) transforms cities into hubs of innovation (SDG 9 & 11).',
-  },
-  justice: {
-    id: 'justice',
+  poverty: {
+    id: 'poverty',
+    number: 1,
     name: "Baloo's Village",
     lordName: 'Baloo',
-    sdgs: [1, 5, 10, 16],
-    colorClass: 'text-zone-justice',
-    bgColorClass: 'bg-zone-justice',
-    description: 'Equality & Peace',
-    brokenDesc: 'The scales of fairness have tipped, causing walls to crack and neighbors to argue in the cold.',
-    healedDesc: 'Warmth has returned to the village. Everyone shares, listens, and smiles together.',
-    puzzleIntro: 'The balance is lost. Help me choose the fairest actions to restore harmony to our village scale.',
-    successFact: 'Wonderful! Reducing inequalities (SDG 10) and promoting peace and justice (SDG 16) are key to a world where no one is left behind in poverty.',
+    sdg: 1,
+    sdgTitle: 'No Poverty',
+    themeColor: '#e74c3c',
+    bgColor: '#fce4e4',
+    textColor: '#c0392b',
+    emoji: '🏘️',
+    description: 'Kind Neighborhood',
+    brokenDesc: "The village is crumbling! Families have lost their jobs and homes are falling apart. Baloo looks so sad...",
+    healedDesc: "The village is thriving! Everyone has warm homes and good work. Baloo is dancing with joy!",
+    puzzleIntro: "Help me! Three families in the village need homes and jobs. Can you match each family to the right support?",
+    successFact: "Amazing! SDG 1 is about ending poverty everywhere. Over 700 million people live in extreme poverty today. Every job and home we provide makes a real difference!",
+    mapX: 20,
+    mapY: 55,
   },
-  knowledge: {
-    id: 'knowledge',
+  hunger: {
+    id: 'hunger',
+    number: 2,
+    name: "Pebblepuff's Farm",
+    lordName: 'Pebblepuff',
+    sdg: 2,
+    sdgTitle: 'Zero Hunger',
+    themeColor: '#f39c12',
+    bgColor: '#fef9e7',
+    textColor: '#d35400',
+    emoji: '🌾',
+    description: 'Grow & Serve',
+    brokenDesc: "The crops have wilted and the food stores are empty! Pebblepuff's tummy is rumbling...",
+    healedDesc: "The fields are bursting with vegetables and the pantry is full. Everyone is well-fed!",
+    puzzleIntro: "My crops need water and care! Help me grow and harvest vegetables, then give them to the right citizens.",
+    successFact: "Wonderful! SDG 2 aims to end hunger by 2030. Around 800 million people go to bed hungry each night. Smart farming and fair food sharing can change that!",
+    mapX: 70,
+    mapY: 30,
+  },
+  health: {
+    id: 'health',
+    number: 3,
+    name: "Leaflet's Clinic",
+    lordName: 'Leaflet',
+    sdg: 3,
+    sdgTitle: 'Good Health',
+    themeColor: '#27ae60',
+    bgColor: '#e8f8f0',
+    textColor: '#1e8449',
+    emoji: '🏥',
+    description: 'Oops! Hospital!',
+    brokenDesc: "Patients keep arriving with silly lifestyle problems! Leaflet is overwhelmed and the waiting room is packed...",
+    healedDesc: "The clinic is calm, patients are recovering, and everyone is learning healthy habits!",
+    puzzleIntro: "Patients are arriving! Choose the right treatment for each patient - sometimes the cure is better habits, not just medicine!",
+    successFact: "Brilliant! SDG 3 is about good health for everyone. Many illnesses can be prevented with better habits, clean water, and access to healthcare. Prevention is better than cure!",
+    mapX: 50,
+    mapY: 20,
+  },
+  education: {
+    id: 'education',
+    number: 4,
     name: "Thinklet's Academy",
     lordName: 'Thinklet',
-    sdgs: [4, 8, 17],
-    colorClass: 'text-zone-knowledge',
-    bgColorClass: 'bg-zone-knowledge',
-    description: 'Education & Partnership',
-    brokenDesc: 'Books are flying away, the library is locked, and the bridges to other lands have collapsed.',
-    healedDesc: 'The halls are filled with eager learners, and sturdy bridges connect us to the whole world.',
-    puzzleIntro: 'Knowledge is scattered! Match the concepts to rebuild our library of wisdom.',
-    successFact: 'Brilliant! Quality education (SDG 4) is the foundation for decent work (SDG 8) and forming strong global partnerships (SDG 17).',
-  }
+    sdg: 4,
+    sdgTitle: 'Quality Education',
+    themeColor: '#8e44ad',
+    bgColor: '#f3e8fd',
+    textColor: '#7d3c98',
+    emoji: '🎓',
+    description: 'My Real School',
+    brokenDesc: "The school is in chaos! Students are stressed, teachers are missing, and books are scattered everywhere!",
+    healedDesc: "The school is full of happy, curious learners. Thinklet is so proud of all the students!",
+    puzzleIntro: "My school needs organizing! Help me assign students to the right classes and activities to boost their happiness and learning.",
+    successFact: "Superb! SDG 4 ensures quality education for all. 258 million children worldwide still can't access school. Education unlocks every other SDG by building capable, caring citizens!",
+    mapX: 75,
+    mapY: 65,
+  },
+  equality: {
+    id: 'equality',
+    number: 5,
+    name: "Sparkleflame's City",
+    lordName: 'Sparkleflame',
+    sdg: 5,
+    sdgTitle: 'Gender Equality',
+    themeColor: '#e67e22',
+    bgColor: '#fef0e6',
+    textColor: '#ba4a00',
+    emoji: '⚡',
+    description: 'Switch the Shoes',
+    brokenDesc: "The city is full of unfair rules! Some people are being treated differently just because of who they are. Sparkleflame is frustrated...",
+    healedDesc: "The city glows with fairness! Everyone has equal opportunities, and Sparkleflame shines bright!",
+    puzzleIntro: "Unfair situations are happening across the city. Spot the inequality and choose the fair solution to fix it!",
+    successFact: "Fantastic! SDG 5 is about gender equality. Women and girls make up half the world, but still face barriers in education, jobs, and leadership. Equal opportunities make the whole world stronger!",
+    mapX: 30,
+    mapY: 25,
+  },
 };
+
+export const ZONE_ORDER: ZoneId[] = ['poverty', 'hunger', 'health', 'education', 'equality'];

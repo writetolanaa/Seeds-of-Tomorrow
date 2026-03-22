@@ -3,7 +3,7 @@ import type { ZoneId } from '@/data/gameData';
 
 interface GameState {
   playerName: string;
-  playerCharacter: number; // 1, 2, or 3
+  playerCharacter: number;
   completedZones: ZoneId[];
   isStarted: boolean;
 }
@@ -23,17 +23,15 @@ const defaultState: GameState = {
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
-
-const STORAGE_KEY = 'sdg_game_save';
+const STORAGE_KEY = 'sdg_game_save_v2';
+const TOTAL_ZONES = 5;
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<GameState>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error("Failed to load save", e);
-    }
+    } catch (e) {}
     return defaultState;
   });
 
@@ -42,23 +40,19 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   }, [state]);
 
   const startGame = (name: string, character: number) => {
-    setState((prev) => ({ ...prev, playerName: name || 'Warden', playerCharacter: character, isStarted: true }));
+    setState(prev => ({ ...prev, playerName: name || 'Warden', playerCharacter: character, isStarted: true }));
   };
 
   const completeZone = (zoneId: ZoneId) => {
-    setState((prev) => {
+    setState(prev => {
       if (prev.completedZones.includes(zoneId)) return prev;
       return { ...prev, completedZones: [...prev.completedZones, zoneId] };
     });
   };
 
-  const resetGame = () => {
-    setState(defaultState);
-  };
+  const resetGame = () => setState(defaultState);
 
-  const getWorldHealPercent = () => {
-    return Math.round((state.completedZones.length / 6) * 100);
-  };
+  const getWorldHealPercent = () => Math.round((state.completedZones.length / TOTAL_ZONES) * 100);
 
   return (
     <GameContext.Provider value={{ ...state, startGame, completeZone, resetGame, getWorldHealPercent }}>
@@ -69,6 +63,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
 export function useGame() {
   const context = useContext(GameContext);
-  if (!context) throw new Error("useGame must be used within GameProvider");
+  if (!context) throw new Error('useGame must be used within GameProvider');
   return context;
 }

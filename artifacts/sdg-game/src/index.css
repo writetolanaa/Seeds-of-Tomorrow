@@ -1,110 +1,189 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Patrick+Hand&display=swap');
+
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-display: 'Fredoka', sans-serif;
-  --font-body: 'Nunito', sans-serif;
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --font-display: var(--app-font-display);
+  --font-sans: var(--app-font-sans);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
 
-  /* Warm parchment & ink palette */
-  --color-background: hsl(40, 60%, 95%); /* Warm cream parchment */
-  --color-foreground: hsl(15, 30%, 25%); /* Dark ink brown */
-  
-  --color-primary: hsl(140, 50%, 60%); /* Soft leaf green */
-  --color-primary-foreground: hsl(15, 30%, 15%);
-  
-  --color-secondary: hsl(35, 80%, 75%); /* Warm tan */
-  --color-secondary-foreground: hsl(15, 30%, 25%);
-  
-  --color-muted: hsl(40, 30%, 85%);
-  --color-muted-foreground: hsl(15, 20%, 45%);
-  
-  --color-accent: hsl(200, 70%, 70%); /* Splashy blue */
-  --color-accent-foreground: hsl(15, 30%, 15%);
-
-  --color-destructive: hsl(0, 60%, 65%);
-  --color-destructive-foreground: hsl(0, 0%, 100%);
-  
-  --color-border: hsl(15, 30%, 25%); /* Ink borders */
-  --color-ring: hsl(140, 50%, 60%);
-  
-  --color-card: hsl(40, 50%, 98%);
-  --color-card-foreground: hsl(15, 30%, 25%);
-
-  /* Zone specific colors */
-  --color-zone-water: hsl(200, 70%, 65%);
-  --color-zone-earth: hsl(30, 40%, 60%);
-  --color-zone-life: hsl(120, 50%, 60%);
-  --color-zone-energy: hsl(45, 90%, 65%);
-  --color-zone-justice: hsl(280, 40%, 70%);
-  --color-zone-knowledge: hsl(170, 50%, 60%);
+:root {
+  /* Warm parchment / cozy RPG palette */
+  --background: 42 30% 96%;
+  --foreground: 25 50% 20%;
+  --border: 30 30% 75%;
+  --input: 42 30% 90%;
+  --ring: 140 50% 45%;
+  --card: 42 35% 99%;
+  --card-foreground: 25 50% 20%;
+  --popover: 42 35% 99%;
+  --popover-foreground: 25 50% 20%;
+  --primary: 140 50% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 42 60% 85%;
+  --secondary-foreground: 25 50% 20%;
+  --muted: 42 20% 88%;
+  --muted-foreground: 25 20% 50%;
+  --accent: 25 80% 65%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --app-font-display: 'Patrick Hand', cursive;
+  --app-font-sans: 'Nunito', sans-serif;
+  --radius: 0.75rem;
 }
 
 @layer base {
+  * { box-sizing: border-box; }
   body {
-    @apply bg-background text-foreground font-body antialiased;
-    background-image: url('/images/parchment-bg.png');
-    background-blend-mode: multiply;
+    font-family: var(--app-font-sans);
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+    overflow-x: hidden;
   }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
-    @apply tracking-wide font-semibold text-foreground;
+  h1, h2, h3, h4 {
+    font-family: var(--app-font-display);
   }
 }
 
+/* ── Sketch / hand-drawn utilities ── */
 @layer utilities {
   .sketch-border {
-    border: 3px solid hsl(15, 30%, 25%);
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    border: 3px solid hsl(var(--foreground));
+    border-radius: 8px;
+    box-shadow: 3px 3px 0 hsl(var(--foreground));
   }
-  
   .sketch-border-sm {
-    border: 2px solid hsl(15, 30%, 25%);
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    border: 2px solid hsl(var(--foreground));
+    border-radius: 6px;
+    box-shadow: 2px 2px 0 hsl(var(--foreground));
   }
-
   .sketch-shadow {
-    box-shadow: 4px 4px 0px 0px hsl(15, 30%, 25%);
+    box-shadow: 4px 4px 0 hsl(var(--foreground));
   }
-
   .sketch-shadow-hover:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px 0px hsl(15, 30%, 25%);
-  }
-  
-  .sketch-shadow-active:active {
+    box-shadow: 2px 2px 0 hsl(var(--foreground));
     transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0px 0px hsl(15, 30%, 25%);
+  }
+  .sketch-shadow-active:active {
+    box-shadow: 0px 0px 0 hsl(var(--foreground));
+    transform: translate(4px, 4px);
   }
 
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
+  /* Zone colors */
+  .zone-poverty  { --zone-color: #e74c3c; --zone-bg: #fce4e4; }
+  .zone-hunger   { --zone-color: #f39c12; --zone-bg: #fef9e7; }
+  .zone-health   { --zone-color: #27ae60; --zone-bg: #e8f8f0; }
+  .zone-education{ --zone-color: #8e44ad; --zone-bg: #f3e8fd; }
+  .zone-equality { --zone-color: #e67e22; --zone-bg: #fef0e6; }
+
+  /* Floating animation */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
   }
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
   }
-}
 
-/* Custom Animations */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
+  /* Bounce in */
+  .animate-bounce-in {
+    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  @keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+  }
 
-@keyframes walk {
-  0% { transform: translateY(0px) rotate(0deg); }
-  25% { transform: translateY(-4px) rotate(3deg); }
-  50% { transform: translateY(0px) rotate(0deg); }
-  75% { transform: translateY(-4px) rotate(-3deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
-}
+  /* Healing shimmer */
+  .animate-heal {
+    animation: healPulse 2s ease-in-out infinite;
+  }
+  @keyframes healPulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2) saturate(1.3); }
+  }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
+  /* Walk wobble */
+  .animate-walk {
+    animation: walkWobble 0.4s ease-in-out infinite alternate;
+  }
+  @keyframes walkWobble {
+    0% { transform: rotate(-3deg) translateY(0); }
+    100% { transform: rotate(3deg) translateY(-4px); }
+  }
 
-.animate-walk {
-  animation: walk 0.5s ease-in-out infinite;
+  /* Sparkle particle */
+  .sparkle {
+    position: absolute;
+    pointer-events: none;
+    animation: sparkleFly 1.2s ease-out forwards;
+  }
+  @keyframes sparkleFly {
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx, 0), var(--ty, -60px)) scale(0); opacity: 0; }
+  }
+
+  /* Isometric map tile glow */
+  .map-glow {
+    filter: drop-shadow(0 0 12px var(--zone-color));
+  }
+
+  /* Pulsing ring for available zones */
+  .zone-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 3px solid var(--zone-color, #4CAF50);
+    animation: zonePing 1.5s ease-out infinite;
+  }
+  @keyframes zonePing {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  /* Game screen transition */
+  .screen-enter {
+    animation: screenEnter 0.4s ease-out forwards;
+  }
+  @keyframes screenEnter {
+    from { opacity: 0; transform: scale(0.97) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* Progress bar fill */
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #81C784);
+    border-radius: 4px;
+    transition: width 1s ease-out;
+  }
 }

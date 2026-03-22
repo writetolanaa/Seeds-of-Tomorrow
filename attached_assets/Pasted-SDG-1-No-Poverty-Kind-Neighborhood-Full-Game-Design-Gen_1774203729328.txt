@@ -1,0 +1,90 @@
+SDG 1 – No Poverty: Kind Neighborhood – Full Game Design
+
+Genre: Simulation / Management
+Target Audience: Teens, adults, casual players
+Tone: Cozy, hopeful, system-focused
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Assess the neighborhood: check NPC income, housing, and employment.
+	2.	Allocate resources: assign jobs, provide housing, fund skills programs.
+	3.	Respond to events: emergencies, layoffs, illness, or disasters.
+	4.	Track metrics: poverty rate, happiness, health, employment.
+	5.	Repeat each in-game week or month.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Begin Week
+	•	Player sees neighborhood overview with key stats: poverty rate, employment rate, housing quality.
+	•	Alerts highlight urgent issues: jobless NPCs, unsafe housing, or sick citizens.
+
+Step 1: Allocate Jobs
+	•	Select NPCs and assign available jobs.
+	•	Jobs have attributes: salary and required skill level.
+	•	NPC income increases, improving their overall well-being.
+
+Step 2: Housing & Infrastructure
+	•	Assign NPCs to housing units or upgrade existing homes.
+	•	Upgrading improves health, happiness, and safety indexes.
+	•	Costs resources, so planning is required.
+
+Step 3: Social Programs & Skills Training
+	•	Players choose programs like vocational training, workshops, or microloans.
+	•	NPC skill levels and employability improve, boosting long-term income.
+
+Step 4: Respond to Random Events
+	•	Random events occur: illness, job loss, natural disaster, or social unrest.
+	•	Player allocates resources and actions quickly to minimize negative impact.
+	•	NPC variables like income, happiness, and health are updated accordingly.
+
+Step 5: End of Week
+	•	Update overall neighborhood stats: poverty rate, average income, happiness.
+	•	Visual feedback shows neighborhood changes (e.g., upgraded buildings, happy NPCs).
+
+⸻
+
+3. Key Variables & Objects
+
+NPCs
+	•	Attributes: name, age, income, skill level (0–100), health (0–100), happiness (0–100), housing quality.
+
+Neighborhood
+	•	Attributes: total NPCs, poverty rate (0–100), employment rate (0–100), safety index (0–100), average happiness (0–100).
+
+Global Variables
+	•	Week count
+	•	Available resources (funds for jobs, upgrades, training)
+	•	Event queue for random incidents
+
+⸻
+
+4. UI Elements
+	•	Top bar: current week, resources, poverty rate, happiness
+	•	Side panel: NPC list, job assignments, housing upgrades, training programs
+	•	Neighborhood map: visual indicators of wealth, employment, and housing quality
+	•	Event notifications: pop-ups for emergencies or critical issues
+
+⸻
+
+5. Feedback Systems
+	•	NPC animations: smiles when happy, frowns when stressed or poor
+	•	Neighborhood visuals: dilapidated vs upgraded housing
+	•	Alerts for emergencies, low resources, or critical stats
+	•	Weekly report: shows poverty rate, average income, health, happiness
+
+⸻
+
+6. Progression
+	•	Unlock new jobs, community programs, and housing options as weeks progress
+	•	Expand to multiple neighborhoods for larger challenges
+	•	Introduce economic fluctuations, disasters, or social issues as difficulty ramps up
+	•	Skills training improves NPC long-term income potential
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: All NPCs are above the defined poverty threshold for a set number of weeks/months
+	•	Loss: Poverty rate exceeds critical level or neighborhood collapses financially
