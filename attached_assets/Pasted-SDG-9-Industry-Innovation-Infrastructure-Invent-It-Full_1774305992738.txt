@@ -1,0 +1,104 @@
+SDG 9 – Industry, Innovation & Infrastructure: Invent It! – Full Coder-Ready Design
+
+Genre: Strategy / Puzzle / Innovation Simulation
+Target Audience: Teens, casual players, creative learners
+Tone: Fun, creative, inventive, problem-solving
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Player receives challenges or problems from cities, industries, or communities.
+	2.	Design and build innovative solutions: machines, bridges, factories, or renewable systems.
+	3.	Test prototypes and optimize them for efficiency, cost, and sustainability.
+	4.	Deploy solutions and measure impact on infrastructure and society.
+	5.	Track innovation metrics: efficiency, sustainability, and community satisfaction.
+	6.	Repeat with progressively complex challenges.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start Challenge
+	•	Display scenario: problem type (transport, energy, industrial, disaster mitigation).
+	•	Show resources: budget, materials, tools, and tech options.
+	•	Highlight constraints: time, space, environmental impact, safety.
+
+Step 1: Design Solution
+	•	Player selects materials and components to assemble a prototype:
+	•	Structural elements (beams, supports)
+	•	Functional devices (motors, gears, solar panels)
+	•	Infrastructure elements (bridges, roads, water systems)
+	•	Drag-and-drop interface allows placement and connection of parts.
+
+Step 2: Test Prototype
+	•	Activate simulation:
+	•	Measure efficiency (energy use, material efficiency)
+	•	Measure safety (stability, durability)
+	•	Measure sustainability (resource consumption, emissions)
+	•	Identify weaknesses or failures in the design.
+
+Step 3: Optimize Design
+	•	Adjust materials, components, or layout to improve performance.
+	•	Repeat testing until thresholds for efficiency, safety, and sustainability are met.
+
+Step 4: Deploy Solution
+	•	Place final solution into the scenario world.
+	•	Observe real-time impact: traffic flow, energy delivery, industrial efficiency, or disaster mitigation.
+	•	Update metrics: city satisfaction, production efficiency, environmental impact.
+
+Step 5: End Challenge
+	•	Score based on: efficiency, sustainability, budget adherence, innovation creativity.
+	•	Unlock next challenge with higher complexity and new materials/technologies.
+
+⸻
+
+3. Key Variables & Objects
+
+Component Attributes
+	•	Type: structural, functional, energy, transport
+	•	Material: wood, metal, concrete, renewable components
+	•	Efficiency rating
+	•	Durability / safety rating
+
+Scenario Attributes
+	•	Problem type: transport, energy, industrial, disaster mitigation
+	•	Constraints: budget, space, environmental regulations, time
+	•	Success thresholds: efficiency %, safety %, sustainability %
+
+Global Variables
+	•	Innovation score (cumulative creativity and success)
+	•	Budget remaining
+	•	Resources inventory
+	•	Challenge number / difficulty
+
+⸻
+
+4. UI Elements
+	•	Top bar: challenge number, budget, efficiency score, sustainability score
+	•	Component panel: materials, tools, machines
+	•	Scenario view: area to place and connect components
+	•	Test simulation button: visual feedback on performance
+	•	Alerts: failures, budget overspend, unsafe designs
+	•	End-of-challenge report: efficiency, safety, sustainability, creativity score
+
+⸻
+
+5. Feedback Systems
+	•	Visual: components animate during testing, fail or succeed visibly
+	•	Audio: construction sounds, alarms for failures, completion chimes
+	•	Metrics update dynamically: efficiency, safety, sustainability
+	•	Real-time scenario animations: traffic flows, energy delivery, structural integrity
+
+⸻
+
+6. Progression
+	•	Unlock advanced components: motors, renewable energy tech, smart infrastructure
+	•	Increase complexity: larger projects, multiple constraints, simultaneous problems
+	•	Introduce environmental challenges: emissions limits, resource scarcity, disaster risks
+	•	Track cumulative innovation score to unlock awards or bonus projects
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Prototype meets or exceeds efficiency, safety, and sustainability thresholds, stays within budget, and positively impacts the scenario
+	•	Loss: Prototype fails testing, exceeds budget, or harms community/environmental metrics

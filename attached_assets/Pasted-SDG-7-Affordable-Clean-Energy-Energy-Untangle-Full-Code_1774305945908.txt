@@ -1,0 +1,105 @@
+SDG 7 – Affordable & Clean Energy: Energy Untangle – Full Coder-Ready Design
+
+Genre: Puzzle / Logic Simulation
+Target Audience: Teens, casual players
+Tone: Relaxing, strategic, visually satisfying
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Display an energy grid connecting power sources (solar, wind, hydro) to buildings.
+	2.	Identify tangled, inefficient, or incomplete connections.
+	3.	Player untangles and reconnects energy sources to buildings for maximum efficiency.
+	4.	Monitor energy flow in real-time.
+	5.	Complete each level/puzzle before time, cable, or resource limits are exceeded.
+	6.	Progress to increasingly complex grids.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start Level
+	•	Show a visual grid of nodes (energy sources) and buildings needing power.
+	•	Highlight tangled or broken connections.
+	•	Display metrics: current energy efficiency, number of powered buildings, cable usage.
+
+Step 1: Select Energy Node
+	•	Player clicks a solar panel, wind turbine, or hydro node.
+	•	Node shows possible connections to buildings or other nodes.
+
+Step 2: Connect or Reconfigure Cables
+	•	Drag cables to link nodes to buildings.
+	•	Rules:
+	•	Each building requires a specific energy type or combination.
+	•	Overlapping or incorrect cables reduce efficiency.
+	•	Real-time feedback shows energy flow and efficiency.
+
+Step 3: Test Grid
+	•	Activate grid: energy flows through cables.
+	•	Efficiency, coverage, and losses are calculated dynamically.
+	•	Player adjusts connections to maximize efficiency.
+
+Step 4: Monitor Building Power
+	•	Buildings indicate power status: fully powered (green), partially powered (yellow), unpowered (red).
+	•	Energy efficiency calculated as percentage of total potential energy delivered.
+
+Step 5: End Level
+	•	Score calculated: efficiency %, time taken, minimal cable use.
+	•	Visual feedback: all buildings powered, smooth energy flow animations.
+	•	Unlock next level with additional nodes, buildings, and challenges.
+
+⸻
+
+3. Key Variables & Objects
+
+Energy Node Attributes
+	•	Type: solar, wind, hydro
+	•	Energy output per unit time
+	•	Connection status
+
+Cable Attributes
+	•	Start node and end node
+	•	Transmission efficiency
+	•	Penalty for overlaps or misconnections
+
+Building Attributes
+	•	Energy requirement (type or combination)
+	•	Power status (0–100%)
+	•	Connected nodes list
+
+Global Variables
+	•	Grid efficiency percentage
+	•	Total energy delivered
+	•	Cable usage count
+	•	Level number / complexity
+
+⸻
+
+4. UI Elements
+	•	Top bar: level, energy efficiency, powered buildings, cable usage, timer (optional)
+	•	Grid view: nodes, cables, buildings, real-time energy flow
+	•	Node panel: select node, view output, connection info
+	•	Alerts: buildings unpowered, energy loss, cable misconnection
+	•	End-of-level report: energy efficiency, cable usage, score
+
+⸻
+
+5. Feedback Systems
+	•	Visual: buildings light up when powered, energy flows along cables, tangled cables glow red
+	•	Audio: connection sounds, energy flow humming, alert sounds
+	•	Efficiency meter updates dynamically
+	•	Completion animations and score feedback
+
+⸻
+
+6. Progression
+	•	Unlock additional energy types: advanced solar panels, offshore wind turbines, pumped hydro
+	•	Introduce larger grids with multiple nodes and buildings
+	•	Add constraints: limited cable length, fluctuating energy output, time limits
+	•	Optional challenges: maximize efficiency while minimizing cable use or losses
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: All buildings fully powered, energy efficiency above threshold (e.g., 90%)
+	•	Loss: Buildings unpowered, efficiency falls below threshold, or resources/time exceeded
