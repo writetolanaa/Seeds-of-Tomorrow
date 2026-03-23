@@ -102,7 +102,7 @@ export const ChibiCharacter = ({
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 100 134"
-      className={cn("w-full h-full", isWalking && "animate-walk", className)}
+      className={cn("w-full h-full", className)}
       style={{ filter: 'drop-shadow(1px 4px 8px rgba(0,0,0,0.28))', ...style }}
     >
       <defs>
@@ -345,49 +345,48 @@ export const ChibiCharacter = ({
         </>
       )}
 
-      {/* ════ ARMS — short rounded stubs (sevenbooom proportions) ════ */}
-      {/* Left arm */}
-      <ellipse cx="13" cy="94" rx="11" ry="14" fill={outfitColor} />
-      <ellipse cx="13" cy="94" rx="11" ry="14" fill={BHL} />
-      <ellipse cx="13" cy="106" rx="8" ry="5.5" fill={skinColor} />
-      <ellipse cx="13" cy="106" rx="8" ry="5.5" fill={HL} opacity="0.5" />
-      {/* Right arm */}
-      <ellipse cx="87" cy="94" rx="11" ry="14" fill={outfitColor} />
-      <ellipse cx="87" cy="94" rx="11" ry="14" fill={BHL} />
-      <ellipse cx="87" cy="106" rx="8" ry="5.5" fill={skinColor} />
-      <ellipse cx="87" cy="106" rx="8" ry="5.5" fill={HL} opacity="0.5" />
+      {/* ════ ARMS — animated stubs (chibi-arm-l/r for CSS walk anim) ════ */}
+      <g className="chibi-arm-l">
+        <ellipse cx="13" cy="94" rx="11" ry="14" fill={outfitColor} />
+        <ellipse cx="13" cy="94" rx="11" ry="14" fill={BHL} />
+        <ellipse cx="13" cy="106" rx="8" ry="5.5" fill={skinColor} />
+        <ellipse cx="13" cy="106" rx="8" ry="5.5" fill={HL} opacity="0.5" />
+      </g>
+      <g className="chibi-arm-r">
+        <ellipse cx="87" cy="94" rx="11" ry="14" fill={outfitColor} />
+        <ellipse cx="87" cy="94" rx="11" ry="14" fill={BHL} />
+        <ellipse cx="87" cy="106" rx="8" ry="5.5" fill={skinColor} />
+        <ellipse cx="87" cy="106" rx="8" ry="5.5" fill={HL} opacity="0.5" />
+      </g>
 
       {/* Item / prop held in right hand area */}
       {item && <g transform="translate(72, 82)">{item}</g>}
 
-      {/* ════ PANTS ════ */}
+      {/* ════ PANTS waistband ════ */}
       <rect x="24" y="106" width="52" height="10" rx="8" fill={pantsColor} />
       <rect x="24" y="106" width="52" height="10" rx="8" fill={BSH} opacity="0.25" />
 
-      {/* ════ LEGS ════ */}
-      {/* Left leg */}
-      <rect x="29" y="112" width="17" height="13" rx="7" fill={pantsColor} />
-      <rect x="29" y="112" width="17" height="13" rx="7" fill={BSH} opacity="0.25" />
-      {/* Left sock */}
-      <rect x="29" y="121" width="17" height="5" rx="3" fill="white" opacity="0.88" />
-      {/* Left shoe — white chunky sneaker */}
-      <path d="M 25 124 L 25 129 Q 25 132 31 132 L 48 132 Q 54 132 54 127 L 52 124 Q 50 122 46 122 L 30 122 Z"
-        fill={bootColor} />
-      <path d="M 25 124 L 25 129 Q 25 132 31 132 L 48 132 Q 54 132 54 127 L 52 124 Q 50 122 46 122 L 30 122 Z"
-        fill={HL} opacity="0.4" />
-      <ellipse cx="38" cy="126" rx="9" ry="3.5" fill="white" opacity="0.22" />
-
-      {/* Right leg */}
-      <rect x="54" y="112" width="17" height="13" rx="7" fill={pantsColor} />
-      <rect x="54" y="112" width="17" height="13" rx="7" fill={BSH} opacity="0.25" />
-      {/* Right sock */}
-      <rect x="54" y="121" width="17" height="5" rx="3" fill="white" opacity="0.88" />
-      {/* Right shoe */}
-      <path d="M 46 124 L 46 129 Q 46 132 52 132 L 69 132 Q 75 132 75 127 L 75 124 Q 73 122 69 122 L 50 122 Z"
-        fill={bootColor} />
-      <path d="M 46 124 L 46 129 Q 46 132 52 132 L 69 132 Q 75 132 75 127 L 75 124 Q 73 122 69 122 L 50 122 Z"
-        fill={HL} opacity="0.4" />
-      <ellipse cx="62" cy="126" rx="9" ry="3.5" fill="white" opacity="0.22" />
+      {/* ════ LEGS — animated (chibi-leg-l/r) ════ */}
+      <g className="chibi-leg-l">
+        <rect x="29" y="112" width="17" height="13" rx="7" fill={pantsColor} />
+        <rect x="29" y="112" width="17" height="13" rx="7" fill={BSH} opacity="0.25" />
+        <rect x="29" y="121" width="17" height="5" rx="3" fill="white" opacity="0.88" />
+        <path d="M 25 124 L 25 129 Q 25 132 31 132 L 48 132 Q 54 132 54 127 L 52 124 Q 50 122 46 122 L 30 122 Z"
+          fill={bootColor} />
+        <path d="M 25 124 L 25 129 Q 25 132 31 132 L 48 132 Q 54 132 54 127 L 52 124 Q 50 122 46 122 L 30 122 Z"
+          fill={HL} opacity="0.4" />
+        <ellipse cx="38" cy="126" rx="9" ry="3.5" fill="white" opacity="0.22" />
+      </g>
+      <g className="chibi-leg-r">
+        <rect x="54" y="112" width="17" height="13" rx="7" fill={pantsColor} />
+        <rect x="54" y="112" width="17" height="13" rx="7" fill={BSH} opacity="0.25" />
+        <rect x="54" y="121" width="17" height="5" rx="3" fill="white" opacity="0.88" />
+        <path d="M 46 124 L 46 129 Q 46 132 52 132 L 69 132 Q 75 132 75 127 L 75 124 Q 73 122 69 122 L 50 122 Z"
+          fill={bootColor} />
+        <path d="M 46 124 L 46 129 Q 46 132 52 132 L 69 132 Q 75 132 75 127 L 75 124 Q 73 122 69 122 L 50 122 Z"
+          fill={HL} opacity="0.4" />
+        <ellipse cx="62" cy="126" rx="9" ry="3.5" fill="white" opacity="0.22" />
+      </g>
     </svg>
   );
 };
@@ -396,78 +395,94 @@ export const ChibiCharacter = ({
    PLAYER WARDENS
 ──────────────────────────────────────────────────────── */
 
+/* Warden1 — Eco Saver (Environment archetype)
+   Forest-green jacket, earthy browns, carries a seedling, determined look */
 export const Warden1 = ({ className, isWalking }: { className?: string; isWalking?: boolean }) => (
   <ChibiCharacter
-    skinColor="#F5D8B8"
-    hairColor="#1A1A1A"
-    hairStyle="snapback"
+    skinColor="#F2D5B0"
+    hairColor="#2C1A08"
+    hairStyle="sidePart"
     eyeStyle="dots"
-    cheekColor="#E8907A"
+    cheekColor="#C8A878"
     blush={true}
-    expression="happy"
-    outfitColor="#8B3A3A"
-    outfitStyle="hoodie"
-    pantsColor="#2E3A4A"
-    collarColor="#F0EDE8"
-    bootColor="#E8E4DC"
+    expression="determined"
+    outfitColor="#3A6B3A"
+    outfitStyle="jacket"
+    pantsColor="#4A3A20"
+    collarColor="#D4E8C8"
+    bootColor="#5C4020"
     item={<>
-      <rect x="-6" y="0" width="20" height="14" rx="4" fill="#2A2A2A" />
-      <circle cx="4" cy="7" r="5" fill="#3A4A50" />
-      <circle cx="4" cy="7" r="3" fill="#1A1A2A" />
-      <circle cx="2.5" cy="5.5" r="1.2" fill="white" opacity="0.8" />
-      <rect x="8" y="1" width="5" height="4" rx="1.5" fill="#3A4A50" />
+      {/* Small seedling sprout */}
+      <line x1="4" y1="16" x2="4" y2="4" stroke="#2C5C18" strokeWidth="2" />
+      <ellipse cx="4" cy="4" rx="4" ry="6" fill="#4CAF50" />
+      <ellipse cx="4" cy="4" rx="4" ry="6" fill="white" opacity="0.22" />
+      <ellipse cx="0" cy="8" rx="3.5" ry="2" fill="#66BB6A" transform="rotate(-30 0 8)" />
+      <ellipse cx="8" cy="8" rx="3.5" ry="2" fill="#66BB6A" transform="rotate(30 8 8)" />
+      <rect x="2" y="14" width="4" height="4" rx="2" fill="#8B5E3C" opacity="0.85" />
     </>}
     className={className}
     isWalking={isWalking}
   />
 );
 
+/* Warden2 — Scholar (Educational archetype)
+   Navy jacket, glasses, side-part hair, carries a book, bright curious eyes */
 export const Warden2 = ({ className, isWalking }: { className?: string; isWalking?: boolean }) => (
   <ChibiCharacter
     skinColor="#F0D4AA"
     hairColor="#1A1A1A"
-    hairStyle="bucketHat"
-    eyeStyle="dots"
-    cheekColor="#E8A090"
+    hairStyle="sidePart"
+    eyeStyle="starry"
+    cheekColor="#E8A880"
     blush={true}
+    glasses={true}
     expression="happy"
-    outfitColor="#7A8F7A"
-    outfitStyle="jacket"
-    pantsColor="#3A3A2E"
-    collarColor="#F0EDE8"
-    bootColor="#E8E4DC"
+    outfitColor="#1E3A6E"
+    outfitStyle="uniform"
+    pantsColor="#16294E"
+    collarColor="#E8F0FF"
+    bootColor="#2A2A3A"
     item={<>
-      <rect x="-5" y="-2" width="14" height="18" rx="4" fill="#A8C8D8" opacity="0.85" stroke="#7AAAB8" strokeWidth="1" />
-      <ellipse cx="2" cy="-2" rx="7" ry="3" fill="#C8E4EE" opacity="0.9" />
-      <line x1="2" y1="-5" x2="2" y2="-14" stroke="#4A6A74" strokeWidth="2" />
-      {[0,3,6].map(i => <circle key={i} cx={2 + (i-1)*2} cy={10+i} r="2.5" fill="#4E342E" opacity="0.8" />)}
+      {/* Open book */}
+      <rect x="-6" y="0" width="20" height="15" rx="2" fill="#F5F0E8" stroke="#8B6A3A" strokeWidth="1.2" />
+      <line x1="4" y1="0" x2="4" y2="15" stroke="#8B6A3A" strokeWidth="1.2" />
+      <line x1="-3" y1="4" x2="2" y2="4" stroke="#9AACCA" strokeWidth="1" opacity="0.7" />
+      <line x1="-3" y1="7" x2="2" y2="7" stroke="#9AACCA" strokeWidth="1" opacity="0.7" />
+      <line x1="-3" y1="10" x2="2" y2="10" stroke="#9AACCA" strokeWidth="1" opacity="0.7" />
+      <line x1="6" y1="4" x2="11" y2="4" stroke="#9AACCA" strokeWidth="1" opacity="0.7" />
+      <line x1="6" y1="7" x2="11" y2="7" stroke="#9AACCA" strokeWidth="1" opacity="0.7" />
+      <line x1="6" y1="10" x2="11" y2="10" stroke="#9AACCA" strokeWidth="1" opacity="0.7" />
     </>}
     className={className}
     isWalking={isWalking}
   />
 );
 
+/* Warden3 — Community Activist (Social archetype) — COMPLETELY redesigned
+   Warm coral coat, single bun, earthy skin, carries a globe, no hearts/purple */
 export const Warden3 = ({ className, isWalking }: { className?: string; isWalking?: boolean }) => (
   <ChibiCharacter
-    skinColor="#F5D8B8"
-    hairColor="#1A0A2A"
-    hairStyle="pigtails"
-    eyeStyle="hearts"
-    cheekColor="#CC8EA0"
+    skinColor="#E8C49A"
+    hairColor="#3A1808"
+    hairStyle="bun"
+    eyeStyle="dots"
+    cheekColor="#D48A6A"
     blush={true}
-    outfitColor="#8A6FA8"
-    outfitStyle="dress"
-    pantsColor="#5A4A7A"
-    collarColor="#F0EBF5"
-    bootColor="#E8E4DC"
+    expression="determined"
+    outfitColor="#C4572A"
+    outfitStyle="coat"
+    pantsColor="#6B3A20"
+    collarColor="#F5E8D8"
+    bootColor="#3A2010"
     item={<>
-      <line x1="4" y1="16" x2="4" y2="0" stroke="#4A2A7A" strokeWidth="2" />
-      <polygon points="4,-2 0,4 8,4" fill="#D4A830" stroke="#4A2A7A" strokeWidth="1" />
-      <circle cx="4" cy="-2" r="4" fill="#D4A830" stroke="#4A2A7A" strokeWidth="1" />
-    </>}
-    hairAccessory={<>
-      <circle cx="29" cy="18" r="5" fill="#D4A830" stroke="#4A2A7A" strokeWidth="1.5" />
-      <circle cx="71" cy="18" r="5" fill="#D4A830" stroke="#4A2A7A" strokeWidth="1.5" />
+      {/* Small globe */}
+      <circle cx="4" cy="8" r="8" fill="#1565C0" />
+      <circle cx="4" cy="8" r="8" fill="white" opacity="0.12" />
+      <ellipse cx="4" cy="8" rx="3" ry="8" fill="none" stroke="#E3F2FD" strokeWidth="0.8" opacity="0.6" />
+      <ellipse cx="4" cy="8" rx="8" ry="3" fill="none" stroke="#E3F2FD" strokeWidth="0.8" opacity="0.6" />
+      <path d="M -4 8 Q 4 4 12 8" fill="none" stroke="#E3F2FD" strokeWidth="0.8" opacity="0.6" />
+      <ellipse cx="1" cy="5" rx="2" ry="1.5" fill="#388E3C" opacity="0.7" />
+      <ellipse cx="7" cy="10" rx="2.5" ry="1.5" fill="#388E3C" opacity="0.7" />
     </>}
     className={className}
     isWalking={isWalking}

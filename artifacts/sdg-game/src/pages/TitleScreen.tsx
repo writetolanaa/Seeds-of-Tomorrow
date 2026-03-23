@@ -73,20 +73,28 @@ export default function TitleScreen() {
 
             <div>
               <label className="block font-display text-lg mb-4 text-center">Choose your Warden:</label>
-              <div className="flex justify-between gap-4">
-                {[1, 2, 3].map((num) => (
+              <div className="flex justify-between gap-3">
+                {([
+                  { num: 1, label: 'Eco Saver',  sub: 'Environment', color: '#3A6B3A' },
+                  { num: 2, label: 'Scholar',     sub: 'Education',   color: '#1E3A6E' },
+                  { num: 3, label: 'Activist',    sub: 'Community',   color: '#C4572A' },
+                ] as const).map(({ num, label, sub, color }) => (
                   <button
                     key={num}
                     onClick={() => setSelectedChar(num)}
-                    className={`flex-1 aspect-square p-2 rounded-xl transition-all ${
-                      selectedChar === num 
-                        ? 'bg-primary/20 sketch-border sketch-shadow scale-110' 
+                    className={`flex-1 flex flex-col items-center p-2 rounded-xl transition-all ${
+                      selectedChar === num
+                        ? 'bg-primary/20 sketch-border sketch-shadow scale-105'
                         : 'hover:bg-black/5 sketch-border-sm opacity-70 hover:opacity-100'
                     }`}
                   >
-                    {num === 1 && <Warden1 />}
-                    {num === 2 && <Warden2 />}
-                    {num === 3 && <Warden3 />}
+                    <div className="w-full aspect-square">
+                      {num === 1 && <Warden1 />}
+                      {num === 2 && <Warden2 />}
+                      {num === 3 && <Warden3 />}
+                    </div>
+                    <span className="mt-1 text-xs font-bold leading-tight" style={{ color }}>{label}</span>
+                    <span className="text-[10px] text-gray-500 leading-tight">{sub}</span>
                   </button>
                 ))}
               </div>
