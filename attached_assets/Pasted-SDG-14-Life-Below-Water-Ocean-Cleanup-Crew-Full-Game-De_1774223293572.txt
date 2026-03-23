@@ -1,0 +1,113 @@
+SDG 14 – Life Below Water: Ocean Cleanup Crew – Full Game Design
+
+Genre: Environmental Simulation / Action-Puzzle
+Target Audience: Teens, casual players
+Tone: Fun, satisfying, educational, visually engaging
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Patrol ocean zones for pollution hotspots (plastics, oil, chemical spills).
+	2.	Deploy cleanup tools to remove pollutants and restore marine habitats.
+	3.	Rescue or protect marine life affected by pollution.
+	4.	Track ocean health metrics: water quality, biodiversity, and pollution reduction.
+	5.	Respond to environmental events: storms, oil leaks, or illegal dumping.
+	6.	Repeat patrols across increasingly challenging zones.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start of Mission
+	•	Display ocean map divided into zones: shallow coast, reef, deep sea.
+	•	Show pollution levels and marine life health per zone.
+	•	Display available cleanup tools and resources.
+
+Step 1: Detect Pollution
+	•	Player scans or navigates zones to locate pollution hotspots.
+	•	Pollution types: plastics, oil, chemical waste, ghost nets.
+	•	Severity affects how much effort and resources are needed to clean.
+
+Step 2: Deploy Cleanup Tools
+	•	Tools include:
+	•	Skimmer boats for oil
+	•	Nets and grabbers for plastics
+	•	Filters for chemical pollutants
+	•	Bioremediation kits for long-term cleanup
+	•	Player assigns tools to pollution hotspots.
+	•	Each tool has efficiency based on pollution type and severity.
+
+Step 3: Rescue or Protect Marine Life
+	•	Identify affected species: fish, turtles, coral, marine mammals.
+	•	Player performs actions: disentangle animals, relocate endangered species, restore coral reefs.
+	•	Success improves biodiversity index and citizen satisfaction metrics.
+
+Step 4: Manage Resources
+	•	Limited tools and energy require prioritization.
+	•	Overuse reduces effectiveness or breaks tools.
+	•	Resources replenish gradually or via mission rewards.
+
+Step 5: End of Mission / Day
+	•	Update metrics: cleaned pollution, biodiversity recovered, marine health improved.
+	•	Visual feedback: clear water, healthy fish, thriving coral reefs.
+	•	Prepare next zone with higher pollution complexity or new hazards.
+
+⸻
+
+3. Key Variables & Objects
+
+Ocean Zone Attributes
+	•	Type: coast, reef, deep sea
+	•	Pollution level (0–100)
+	•	Pollution type: plastics, oil, chemicals, ghost nets
+	•	Marine life health (0–100)
+
+Tool Attributes
+	•	Type: skimmer, net, filter, bioremediation kit
+	•	Efficiency per pollution type
+	•	Availability / durability
+
+Marine Life Attributes
+	•	Species type
+	•	Health (0–100)
+	•	Population count
+	•	Pollution impact level
+
+Global Variables
+	•	Mission / day count
+	•	Total pollution removed
+	•	Ocean health index (0–100)
+	•	Biodiversity index (0–100)
+	•	Tool inventory and energy/resources
+
+⸻
+
+4. UI Elements
+	•	Top bar: mission/day, ocean health index, biodiversity index, tool inventory
+	•	Ocean map: zones with visual pollution indicators
+	•	Tool panel: available cleanup tools and efficiency ratings
+	•	Marine life panel: species health, population, alerts
+	•	Alerts: pollution spikes, tool breakage, endangered species in danger
+	•	End-of-day report: pollution removed, biodiversity recovered, ocean health improvements
+
+⸻
+
+5. Feedback Systems
+	•	Visual: water clarity improves, fish swim happily, coral colors restored
+	•	Audio: splashing, cleanup equipment sounds, alert tones for endangered species
+	•	Efficiency meter updates dynamically
+	•	Alerts and animations for pollution, tool usage, and wildlife recovery
+
+⸻
+
+6. Progression
+	•	Unlock advanced cleanup tools and faster boats
+	•	Introduce larger ocean zones with multiple pollution types
+	•	Add complex events: oil spills, storms, illegal dumping ships
+	•	Track cumulative ocean health and marine biodiversity over multiple missions
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Ocean health and biodiversity indices reach target thresholds, all pollution hotspots cleaned, and marine life restored
+	•	Loss: Pollution persists or increases, marine life dies or endangered species lost, tools depleted before completing cleanup

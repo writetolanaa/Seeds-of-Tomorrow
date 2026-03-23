@@ -11,22 +11,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Warden1, Warden2, Warden3 } from '@/components/Sprites';
 import {
   BalooSprite, PebblepuffSprite, LeafletSprite, ThinkletSprite, SparkleflameSprite,
-  NPC_GrandmaRosa, NPC_YoungMaya, NPC_LeeFather,
+  NPC_GrandmaRosa, NPC_YoungMaya,
   NPC_FarmerAli, NPC_CitizenMia, NPC_CitizenTom,
   NPC_MrBun, NPC_LittleZoe, NPC_GrandpaJoe,
-  NPC_StudentSam, NPC_StudentAria, NPC_StudentLeo,
-  NPC_Girl, NPC_Worker, NPC_Sibling,
+  NPC_StudentSam, NPC_StudentAria,
+  NPC_Girl, NPC_Worker,
+  AquaSprite, CoralinaSprite, FerraSprite, GaiaSprite, ReevoSprite,
 } from '@/components/Sprites';
 
 /* ── sprite map ── */
 const SPRITE_MAP: Record<string, React.FC<any>> = {
   baloo: BalooSprite, pebblepuff: PebblepuffSprite, leaflet: LeafletSprite,
   thinklet: ThinkletSprite, sparkleflame: SparkleflameSprite,
-  grandma: NPC_GrandmaRosa, youngmaya: NPC_YoungMaya, leefather: NPC_LeeFather,
+  grandma: NPC_GrandmaRosa, youngmaya: NPC_YoungMaya,
   farmerali: NPC_FarmerAli, citizenmia: NPC_CitizenMia, citizentom: NPC_CitizenTom,
   mrbun: NPC_MrBun, littlezoe: NPC_LittleZoe, grandpajoe: NPC_GrandpaJoe,
-  studentsam: NPC_StudentSam, studentaria: NPC_StudentAria, studentleo: NPC_StudentLeo,
-  girl: NPC_Girl, worker: NPC_Worker, sibling: NPC_Sibling,
+  studentsam: NPC_StudentSam, studentaria: NPC_StudentAria,
+  girl: NPC_Girl, worker: NPC_Worker,
+  aqua: AquaSprite, coralina: CoralinaSprite, ferra: FerraSprite,
+  gaia: GaiaSprite, reevo: ReevoSprite,
 };
 
 /* ── check AABB collision ── */
@@ -39,7 +42,7 @@ function wouldCollide(nx: number, ny: number, pw = 28, ph = 40): boolean {
 
 /* ── Dialogue component ── */
 function Dialogue({
-  npc, onNext, onClose, onGoToPuzzle, dialogIndex, completedZones,
+  npc, onNext, onClose, onGoToPuzzle, dialogIndex, completedZones, peopleLevelComplete,
 }: {
   npc: WorldNPC;
   onNext: () => void;
@@ -47,10 +50,14 @@ function Dialogue({
   onGoToPuzzle: (zoneId: string) => void;
   dialogIndex: number;
   completedZones: string[];
+  peopleLevelComplete: boolean;
 }) {
-  const zone = ZONES[npc.zoneId];
+  const zoneData = ZONES[npc.zoneId as keyof typeof ZONES];
+  if (!zoneData) return null;
   const isLast = dialogIndex >= npc.dialogues.length - 1;
   const isCompleted = completedZones.includes(npc.zoneId);
+  const isPlanetZone = zoneData.level === 'planet';
+  const isLocked = isPlanetZone && !peopleLevelComplete;
 
   return (
     <motion.div
@@ -59,15 +66,18 @@ function Dialogue({
       exit={{ y: 80, opacity: 0 }}
       className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-50"
     >
-      <div className="bg-white/97 sketch-border rounded-2xl p-5 shadow-2xl relative">
+      <div className="bg-white/97 rounded-2xl p-5 shadow-2xl relative border-2" style={{ borderColor: zoneData.themeColor }}>
         <div
           className="absolute -top-4 left-6 px-4 py-1 rounded-full text-white font-bold text-sm shadow-md"
-          style={{ background: zone.themeColor }}
+          style={{ background: zoneData.themeColor }}
         >
           {npc.name} {npc.isLord ? '✨' : ''}
+          {isPlanetZone && <span className="ml-1 text-xs opacity-80">🌎</span>}
         </div>
         <p className="text-base text-gray-700 leading-relaxed mt-3 min-h-[2.5rem] font-sans">
-          {npc.dialogues[dialogIndex]}
+          {isLocked && isLast
+            ? "🔒 The Planet level is still sealed... Complete all 5 People challenges first to unlock it!"
+            : npc.dialogues[dialogIndex]}
         </p>
         <div className="flex justify-end gap-3 mt-4">
           <button
@@ -80,24 +90,28 @@ function Dialogue({
             <button
               onClick={onNext}
               className="px-5 py-1.5 rounded-lg text-white text-sm font-bold shadow-md"
-              style={{ background: zone.themeColor }}
+              style={{ background: zoneData.themeColor }}
             >
               Next ▶
             </button>
-          ) : npc.isLord && !isCompleted ? (
+          ) : npc.isLord && !isCompleted && !isLocked ? (
             <button
               onClick={() => { onClose(); onGoToPuzzle(npc.zoneId); }}
               className="px-5 py-1.5 rounded-lg text-white text-sm font-bold shadow-md"
-              style={{ background: zone.themeColor }}
+              style={{ background: zoneData.themeColor }}
             >
               🎮 Accept Quest!
             </button>
+          ) : isLocked ? (
+            <button onClick={onClose} className="px-5 py-1.5 rounded-lg bg-gray-400 text-white text-sm font-bold">
+              🔒 Locked
+            </button>
           ) : isCompleted ? (
-            <button onClick={onClose} className="px-5 py-1.5 rounded-lg text-white text-sm font-bold" style={{ background: zone.themeColor }}>
+            <button onClick={onClose} className="px-5 py-1.5 rounded-lg text-white text-sm font-bold" style={{ background: zoneData.themeColor }}>
               ✨ Zone Healed!
             </button>
           ) : (
-            <button onClick={onClose} className="px-5 py-1.5 rounded-lg text-white text-sm font-bold" style={{ background: zone.themeColor }}>
+            <button onClick={onClose} className="px-5 py-1.5 rounded-lg text-white text-sm font-bold" style={{ background: zoneData.themeColor }}>
               Thanks! ✓
             </button>
           )}
@@ -109,6 +123,10 @@ function Dialogue({
 
 /* ── World Background SVG ── */
 function WorldBackground({ completedZones }: { completedZones: string[] }) {
+  const GATE_Y = 2200;
+  const PLANET_CENTER_X = 1600;
+  const PLANET_CENTER_Y = 3100;
+
   return (
     <svg
       width={WORLD_W}
@@ -117,6 +135,7 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
+        {/* People section textures */}
         <pattern id="grass" patternUnits="userSpaceOnUse" width="40" height="40">
           <rect width="40" height="40" fill="#8BC34A" />
           <ellipse cx="20" cy="20" rx="18" ry="16" fill="#7CB342" opacity="0.3" />
@@ -128,147 +147,333 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
           <rect x="1" y="17" width="14" height="14" rx="2" fill="#90A4AE" />
           <rect x="17" y="17" width="14" height="14" rx="2" fill="#90A4AE" />
         </pattern>
+        {/* Planet section textures */}
+        <pattern id="ocean-bg" patternUnits="userSpaceOnUse" width="60" height="60">
+          <rect width="60" height="60" fill="#0D47A1" />
+          <path d="M 0 30 Q 15 20 30 30 Q 45 40 60 30" stroke="#1565C0" strokeWidth="4" fill="none" />
+        </pattern>
+        <pattern id="forest-bg" patternUnits="userSpaceOnUse" width="50" height="50">
+          <rect width="50" height="50" fill="#1B5E20" />
+          <ellipse cx="25" cy="25" rx="20" ry="18" fill="#2E7D32" opacity="0.4" />
+        </pattern>
+        <pattern id="arctic-bg" patternUnits="userSpaceOnUse" width="50" height="50">
+          <rect width="50" height="50" fill="#ECEFF1" />
+          <ellipse cx="25" cy="25" rx="18" ry="14" fill="#CFD8DC" opacity="0.4" />
+        </pattern>
+        <pattern id="industrial-bg" patternUnits="userSpaceOnUse" width="40" height="40">
+          <rect width="40" height="40" fill="#546E7A" />
+          <rect x="5" y="5" width="12" height="12" fill="#607D8B" opacity="0.4" />
+          <rect x="23" y="23" width="12" height="12" fill="#607D8B" opacity="0.4" />
+        </pattern>
         <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
           <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.2" />
         </filter>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="8" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
       </defs>
 
-      {/* World grass base */}
-      <rect width={WORLD_W} height={WORLD_H} fill="url(#grass)" />
+      {/* ════ PEOPLE SECTION BASE ════ */}
+      <rect x="0" y="0" width={WORLD_W} height={GATE_Y} fill="url(#grass)" />
 
-      {/* Decorative texture overlay */}
-      <rect width={WORLD_W} height={WORLD_H} fill="url(#grass)" opacity="0.3" />
+      {/* ════ TRANSITION / GATE ZONE ════ */}
+      <rect x="0" y={GATE_Y} width={WORLD_W} height="300" fill="#263238" />
+      {/* Transition gradient strips */}
+      {[0,1,2,3,4,5,6,7].map(i => (
+        <rect key={i} x={i * WORLD_W / 8} y={GATE_Y} width={WORLD_W / 8} height="300"
+          fill={i % 2 === 0 ? '#1A2B2E' : '#263238'} opacity="0.8" />
+      ))}
 
-      {/* ── ZONE GROUND AREAS ── */}
-      {ZONE_REGIONS.map(z => {
+      {/* Gate arch */}
+      <ellipse cx={PLANET_CENTER_X} cy={GATE_Y + 40} rx="220" ry="110"
+        fill="none" stroke="#00BCD4" strokeWidth="12" opacity="0.9" filter="url(#glow)" />
+      <ellipse cx={PLANET_CENTER_X} cy={GATE_Y + 40} rx="200" ry="95"
+        fill="none" stroke="#26C6DA" strokeWidth="6" opacity="0.7" />
+      {/* Gate pillars */}
+      <rect x={PLANET_CENTER_X - 230} y={GATE_Y - 40} width="30" height="180" rx="10" fill="#00838F" opacity="0.9" />
+      <rect x={PLANET_CENTER_X + 200} y={GATE_Y - 40} width="30" height="180" rx="10" fill="#00838F" opacity="0.9" />
+      {/* Gate top gems */}
+      <circle cx={PLANET_CENTER_X - 215} cy={GATE_Y - 50} r="18" fill="#00BCD4" stroke="white" strokeWidth="3" />
+      <circle cx={PLANET_CENTER_X + 215} cy={GATE_Y - 50} r="18" fill="#00BCD4" stroke="white" strokeWidth="3" />
+      <text x={PLANET_CENTER_X - 215} y={GATE_Y - 44} textAnchor="middle" fontSize="14">🌎</text>
+      <text x={PLANET_CENTER_X + 215} y={GATE_Y - 44} textAnchor="middle" fontSize="14">🌿</text>
+      {/* Gate text */}
+      <rect x={PLANET_CENTER_X - 180} y={GATE_Y + 55} width="360" height="40" rx="20" fill="#006064" />
+      <text x={PLANET_CENTER_X} y={GATE_Y + 81} textAnchor="middle" fontSize="16" fontWeight="bold"
+        fontFamily="Nunito" fill="white">🌍 Planet Level Gateway 🌎</text>
+      {/* Gate path below */}
+      <rect x={PLANET_CENTER_X - 60} y={GATE_Y + 95} width="120" height="210" rx="8" fill="#004D40" opacity="0.6" />
+
+      {/* Star/sparkle decorations on gate */}
+      {[-160, -100, 100, 160].map((ox, i) => (
+        <text key={i} x={PLANET_CENTER_X + ox} y={GATE_Y + 20} textAnchor="middle" fontSize="18" opacity="0.8">✨</text>
+      ))}
+
+      {/* ════ PLANET SECTION BIOME BACKGROUNDS ════ */}
+      {/* Overall planet base (dark teal) */}
+      <rect x="0" y={GATE_Y + 300} width={WORLD_W} height={WORLD_H - GATE_Y - 300} fill="#1C3A2E" />
+
+      {/* Water/Mountain biome (top-left planet) */}
+      <rect x="0" y={GATE_Y + 300} width="1150" height="1300" fill="#1A3A5C" opacity="0.85" />
+      {/* Mountain peaks */}
+      <polygon points="50,2800 200,2500 350,2800" fill="#455A64" opacity="0.7" />
+      <polygon points="180,2780 350,2450 520,2780" fill="#546E7A" opacity="0.7" />
+      <polygon points="50,2780 150,2550 250,2780" fill="#607D8B" opacity="0.5" />
+      {/* Mountain snow caps */}
+      <polygon points="200,2500 220,2540 180,2540" fill="white" opacity="0.85" />
+      <polygon points="350,2450 375,2495 325,2495" fill="white" opacity="0.85" />
+      {/* River flowing through water zone */}
+      <path d="M 200 2500 Q 400 2700 500 2850 Q 600 3000 700 3100 Q 800 3200 900 3300"
+        stroke="#29B6F6" strokeWidth="40" fill="none" opacity="0.6" />
+      <path d="M 200 2500 Q 400 2700 500 2850 Q 600 3000 700 3100 Q 800 3200 900 3300"
+        stroke="white" strokeWidth="16" fill="none" opacity="0.25" strokeDasharray="30 40" />
+      {/* River ripples */}
+      {[[380, 2700], [480, 2840], [580, 2980], [680, 3100], [800, 3240]].map(([x, y], i) => (
+        <ellipse key={i} cx={x} cy={y} rx="22" ry="7" fill="none" stroke="white" strokeWidth="2" opacity="0.35" />
+      ))}
+
+      {/* Ocean biome (top-right planet) */}
+      <rect x="2050" y={GATE_Y + 300} width="1150" height="1300" fill="url(#ocean-bg)" opacity="0.9" />
+      {/* Ocean waves */}
+      {[2600, 2700, 2800, 2900, 3000, 3100, 3200].map((y, i) => (
+        <path key={i} d={`M 2100 ${y} Q 2350 ${y - 25} 2600 ${y} Q 2850 ${y + 25} 3100 ${y}`}
+          stroke="#1565C0" strokeWidth="6" fill="none" opacity="0.4" />
+      ))}
+      {/* Coral reef circles */}
+      {[[2400, 2750], [2550, 2820], [2700, 2770], [2850, 2840]].map(([x, y], i) => (
+        <g key={i}>
+          <circle cx={x} cy={y} r="22" fill={['#FF7043', '#EC407A', '#AB47BC', '#FF8F00'][i]} opacity="0.5" />
+          <circle cx={x} cy={y} r="12" fill={['#FF5722', '#E91E63', '#9C27B0', '#FF6F00'][i]} opacity="0.6" />
+        </g>
+      ))}
+      {/* Fish silhouettes */}
+      {[[2300, 2680], [2450, 2730], [2650, 2710], [2800, 2760]].map(([x, y], i) => (
+        <text key={i} x={x} y={y} fontSize="18" opacity="0.5">🐠</text>
+      ))}
+      {/* Sandy shore */}
+      <path d="M 2050 2600 Q 2150 2580 2250 2600 Q 2350 2620 2280 2640 L 2050 2640 Z"
+        fill="#FFF176" opacity="0.5" />
+
+      {/* Forest/Jungle biome (bottom-left planet) */}
+      <rect x="0" y="3450" width="1150" height="1150" fill="url(#forest-bg)" opacity="0.95" />
+      {/* Dense jungle trees in background */}
+      {[[60,3520],[150,3480],[230,3510],[320,3490],[400,3520],[480,3480],[560,3505],[640,3490],[720,3520],[800,3480],[880,3510],[950,3490]].map(([x, y], i) => (
+        <g key={i} transform={`translate(${x},${y})`}>
+          <rect x="-4" y="20" width="8" height="40" fill="#3E2723" opacity="0.5" />
+          <ellipse cx="0" cy="0" rx="25" ry="30" fill={i % 3 === 0 ? '#1B5E20' : i % 3 === 1 ? '#2E7D32' : '#33691E'} opacity="0.7" />
+          <ellipse cx="0" cy="-10" rx="18" ry="22" fill={i % 3 === 0 ? '#388E3C' : i % 3 === 1 ? '#43A047' : '#2E7D32'} opacity="0.7" />
+        </g>
+      ))}
+      {/* Jungle floor leaves */}
+      {[[100,3600],[250,3650],[380,3610],[520,3640],[660,3605],[790,3645]].map(([x, y], i) => (
+        <ellipse key={i} cx={x} cy={y} rx="28" ry="12" fill="#558B2F" opacity="0.6" transform={`rotate(${i * 30} ${x} ${y})`} />
+      ))}
+
+      {/* Arctic/Climate biome (bottom-right planet) */}
+      <rect x="2050" y="3450" width="1150" height="1150" fill="url(#arctic-bg)" opacity="0.95" />
+      {/* Melting ice flows */}
+      {[[2150, 3600], [2350, 3550], [2550, 3600], [2750, 3570], [2950, 3600]].map(([x, y], i) => (
+        <ellipse key={i} cx={x} cy={y} rx="80" ry="22" fill="#B3E5FC" opacity="0.6" />
+      ))}
+      {/* Cracked ice patterns */}
+      <path d="M 2100 3750 L 2300 3700 L 2500 3760 L 2700 3710 L 2900 3750" stroke="#90CAF9" strokeWidth="4" fill="none" opacity="0.6" strokeDasharray="20 12" />
+      <path d="M 2200 3850 L 2400 3820 L 2600 3870 L 2800 3830" stroke="#90CAF9" strokeWidth="3" fill="none" opacity="0.5" strokeDasharray="15 10" />
+      {/* Snowflake decorations */}
+      {[[2180, 3550], [2420, 3510], [2650, 3545], [2900, 3520]].map(([x, y], i) => (
+        <text key={i} x={x} y={y} fontSize="20" opacity="0.5">❄️</text>
+      ))}
+      {/* Storm clouds */}
+      <ellipse cx="2600" cy="3490" rx="120" ry="50" fill="#78909C" opacity="0.5" />
+      <ellipse cx="2750" cy="3480" rx="90" ry="40" fill="#607D8B" opacity="0.4" />
+
+      {/* Industrial/Consumption biome (bottom-center) */}
+      <rect x="1000" y="3950" width="1200" height="650" fill="url(#industrial-bg)" opacity="0.95" />
+      {/* Smoke stacks */}
+      {[[1150, 4010], [1280, 3990], [1420, 4010], [1560, 3985], [1700, 4010], [1840, 3990]].map(([x, y], i) => (
+        <g key={i}>
+          <rect x={x - 10} y={y} width="20" height="80" fill="#37474F" opacity="0.8" />
+          <ellipse cx={x} cy={y - 15} rx="16" ry="25" fill="#B0BEC5" opacity="0.5" />
+          <ellipse cx={x + 8} cy={y - 35} rx="12" ry="18" fill="#CFD8DC" opacity="0.4" />
+        </g>
+      ))}
+      {/* Conveyor belt visual */}
+      <path d="M 1080 4350 L 2120 4350" stroke="#455A64" strokeWidth="20" opacity="0.6" />
+      <path d="M 1080 4350 L 2120 4350" stroke="#78909C" strokeWidth="8" strokeDasharray="30 20" opacity="0.5" />
+
+      {/* ════ PEOPLE ZONE GROUND AREAS ════ */}
+      {ZONE_REGIONS.filter(z => z.level === 'people').map(z => {
         const done = completedZones.includes(z.id);
         return (
           <g key={z.id}>
-            <rect
-              x={z.x} y={z.y} width={z.w} height={z.h}
-              rx="20" ry="20"
+            <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="20" ry="20"
               fill={done ? z.color : '#D7CCC8'}
               stroke={done ? z.borderColor : '#9E9E9E'}
-              strokeWidth="4"
-              strokeDasharray={done ? 'none' : '12 6'}
-              filter="url(#shadow)"
-            />
-            {/* Zone name banner */}
-            <rect x={z.x + z.w/2 - 90} y={z.y - 22} width="180" height="28" rx="14"
+              strokeWidth="4" strokeDasharray={done ? 'none' : '12 6'}
+              filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 100} y={z.y - 24} width="200" height="30" rx="15"
               fill={done ? z.borderColor : '#757575'} />
-            <text x={z.x + z.w/2} y={z.y - 4} textAnchor="middle" fill="white"
+            <text x={z.x + z.w / 2} y={z.y - 4} textAnchor="middle" fill="white"
               fontSize="13" fontWeight="bold" fontFamily="Nunito">
-              {z.emoji} SDG {z.sdg}: {done ? '✓' : '?'}
+              {z.emoji} SDG {z.sdg}: {done ? '✓ Healed!' : '?'}
             </text>
           </g>
         );
       })}
 
-      {/* ── DIRT PATHS connecting zones ── */}
+      {/* ════ PLANET ZONE GROUND AREAS ════ */}
+      {ZONE_REGIONS.filter(z => z.level === 'planet').map(z => {
+        const done = completedZones.includes(z.id);
+        return (
+          <g key={z.id}>
+            <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="24" ry="24"
+              fill={done ? z.color : 'rgba(255,255,255,0.12)'}
+              stroke={done ? z.borderColor : '#80CBC4'}
+              strokeWidth="5" strokeDasharray={done ? 'none' : '14 7'}
+              filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 110} y={z.y - 26} width="220" height="32" rx="16"
+              fill={done ? z.borderColor : '#00838F'} />
+            <text x={z.x + z.w / 2} y={z.y - 4} textAnchor="middle" fill="white"
+              fontSize="13" fontWeight="bold" fontFamily="Nunito">
+              {z.emoji} SDG {z.sdg}: {done ? '✓ Healed!' : '🔒 Explore'}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* ════ PEOPLE DIRT PATHS ════ */}
       {/* Center to NW (equality) */}
-      <path d="M 1380 980 Q 900 780 460 620" stroke="#C8A96E" strokeWidth="50" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 1000 700 540 420" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 1000 700 540 420" stroke="#DDB97E" strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.5" />
       {/* Center to N (health) */}
-      <path d="M 1380 980 Q 1370 650 1380 520" stroke="#C8A96E" strokeWidth="50" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 1580 700 1580 370" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 1580 700 1580 370" stroke="#DDB97E" strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.5" />
       {/* Center to NE (hunger) */}
-      <path d="M 1380 980 Q 1800 700 2280 620" stroke="#C8A96E" strokeWidth="50" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 2200 700 2660 420" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 2200 700 2660 420" stroke="#DDB97E" strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.5" />
       {/* Center to SW (poverty) */}
-      <path d="M 1380 980 Q 950 1280 460 1480" stroke="#C8A96E" strokeWidth="50" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 1000 1400 540 1680" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 1000 1400 540 1680" stroke="#DDB97E" strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.5" />
       {/* Center to SE (education) */}
-      <path d="M 1380 980 Q 1800 1280 2280 1480" stroke="#C8A96E" strokeWidth="50" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 2200 1400 2660 1680" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 2200 1400 2660 1680" stroke="#DDB97E" strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.5" />
+      {/* Path from People center down to gate */}
+      <path d="M 1580 1060 Q 1580 1700 1600 2150" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M 1580 1060 Q 1580 1700 1600 2150" stroke="#DDB97E" strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.5" />
 
-      {/* Path surface marks (lighter) */}
-      <path d="M 1380 980 Q 900 780 460 620" stroke="#DDB97E" strokeWidth="24" fill="none" strokeLinecap="round" opacity="0.5" />
-      <path d="M 1380 980 Q 1370 650 1380 520" stroke="#DDB97E" strokeWidth="24" fill="none" strokeLinecap="round" opacity="0.5" />
-      <path d="M 1380 980 Q 1800 700 2280 620" stroke="#DDB97E" strokeWidth="24" fill="none" strokeLinecap="round" opacity="0.5" />
-      <path d="M 1380 980 Q 950 1280 460 1480" stroke="#DDB97E" strokeWidth="24" fill="none" strokeLinecap="round" opacity="0.5" />
-      <path d="M 1380 980 Q 1800 1280 2280 1480" stroke="#DDB97E" strokeWidth="24" fill="none" strokeLinecap="round" opacity="0.5" />
+      {/* ════ PEOPLE CENTRAL PLAZA ════ */}
+      <circle cx="1580" cy="1060" r="180" fill="url(#cobble)" stroke="#78909C" strokeWidth="6" filter="url(#shadow)" />
+      <circle cx="1580" cy="1060" r="180" fill="none" stroke="#90A4AE" strokeWidth="5" />
+      <text x="1580" y="990" textAnchor="middle" fontSize="22" fontWeight="bold" fontFamily="Patrick Hand, cursive" fill="#455A64">🌍 People World</text>
+      <text x="1580" y="1020" textAnchor="middle" fontSize="13" fontFamily="Nunito" fill="#607D8B">Heal 5 zones to unlock the Planet!</text>
 
-      {/* ── CENTRAL PLAZA (cobblestone) ── */}
-      <circle cx="1380" cy="980" r="160" fill="url(#cobble)" stroke="#78909C" strokeWidth="5" filter="url(#shadow)" />
-      <circle cx="1380" cy="980" r="160" fill="none" stroke="#90A4AE" strokeWidth="5" />
-      <text x="1380" y="925" textAnchor="middle" fontSize="22" fontWeight="bold" fontFamily="Patrick Hand, cursive" fill="#455A64">🌍 World Center</text>
-      <text x="1380" y="955" textAnchor="middle" fontSize="13" fontFamily="Nunito" fill="#607D8B">Heal the 5 zones to save the world!</text>
+      {/* ════ PLANET PATHS ════ */}
+      {/* Center to NW (water) */}
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 1000 2900 560 2890`} stroke="#29B6F6" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.5" />
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 1000 2900 560 2890`} stroke="#81D4FA" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.4" />
+      {/* Center to NE (ocean) */}
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 2150 2900 2640 2890`} stroke="#0288D1" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.5" />
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 2150 2900 2640 2890`} stroke="#29B6F6" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.4" />
+      {/* Center to SW (forest) */}
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 1000 3700 560 3790`} stroke="#2E7D32" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.5" />
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 1000 3700 560 3790`} stroke="#66BB6A" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.4" />
+      {/* Center to SE (climate) */}
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 2150 3700 2640 3790`} stroke="#E64A19" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.5" />
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 2150 3700 2640 3790`} stroke="#FF8A65" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.4" />
+      {/* Center to S (consumption) */}
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 1600 3700 1600 4260`} stroke="#558B2F" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.5" />
+      <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 1600 3700 1600 4260`} stroke="#AED581" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.4" />
+      {/* Planet hub down from gate */}
+      <path d={`M ${PLANET_CENTER_X} 2500 Q ${PLANET_CENTER_X} 2800 ${PLANET_CENTER_X} ${PLANET_CENTER_Y}`} stroke="#00BCD4" strokeWidth="52" fill="none" strokeLinecap="round" opacity="0.5" />
+      <path d={`M ${PLANET_CENTER_X} 2500 Q ${PLANET_CENTER_X} 2800 ${PLANET_CENTER_X} ${PLANET_CENTER_Y}`} stroke="#80DEEA" strokeWidth="24" fill="none" strokeLinecap="round" opacity="0.4" />
 
-      {/* World center well */}
-      <circle cx="1380" cy="990" r="30" fill="#90A4AE" stroke="#455A64" strokeWidth="3" />
-      <circle cx="1380" cy="990" r="20" fill="#546E7A" />
-      <text x="1380" y="996" textAnchor="middle" fontSize="16">💧</text>
+      {/* ════ PLANET CENTRAL PLAZA ════ */}
+      <circle cx={PLANET_CENTER_X} cy={PLANET_CENTER_Y} r="190" fill="#00464D" stroke="#00838F" strokeWidth="7" filter="url(#shadow)" />
+      <circle cx={PLANET_CENTER_X} cy={PLANET_CENTER_Y} r="190" fill="none" stroke="#00BCD4" strokeWidth="5" opacity="0.7" />
+      <text x={PLANET_CENTER_X} y={PLANET_CENTER_Y - 50} textAnchor="middle" fontSize="22" fontWeight="bold" fontFamily="Patrick Hand, cursive" fill="#80DEEA">🌎 Planet World</text>
+      <text x={PLANET_CENTER_X} y={PLANET_CENTER_Y - 22} textAnchor="middle" fontSize="13" fontFamily="Nunito" fill="#4DD0E1">Heal 5 planet zones to save Earth!</text>
 
-      {/* ── RIVER (decorative) ── */}
-      <path d="M 0 1180 Q 600 1100 1000 1150 Q 1400 1200 1800 1120 Q 2200 1040 2800 1100"
-        stroke="#64B5F6" strokeWidth="36" fill="none" opacity="0.55" />
-      <path d="M 0 1180 Q 600 1100 1000 1150 Q 1400 1200 1800 1120 Q 2200 1040 2800 1100"
+      {/* ════ PEOPLE SECTION RIVER ════ */}
+      <path d="M 0 1350 Q 700 1280 1200 1320 Q 1600 1360 2100 1290 Q 2600 1220 3200 1280"
+        stroke="#64B5F6" strokeWidth="38" fill="none" opacity="0.5" />
+      <path d="M 0 1350 Q 700 1280 1200 1320 Q 1600 1360 2100 1290 Q 2600 1220 3200 1280"
         stroke="white" strokeWidth="14" fill="none" opacity="0.2" strokeDasharray="30 40" />
-
-      {/* River ripples */}
-      {[200, 500, 850, 1200, 1550, 1900, 2300, 2600].map((x, i) => (
-        <ellipse key={i} cx={x} cy={1145 + (i % 2) * 20} rx="28" ry="8" fill="none" stroke="white" strokeWidth="2" opacity="0.35" />
+      {[200, 500, 850, 1200, 1600, 1950, 2350, 2750, 3050].map((x, i) => (
+        <ellipse key={i} cx={x} cy={1315 + (i % 2) * 20} rx="28" ry="8" fill="none" stroke="white" strokeWidth="2" opacity="0.3" />
       ))}
+      {/* Bridge */}
+      <rect x={1550} y={1290} width="80" height="52" rx="4" fill="#D7CCC8" stroke="#8D6E63" strokeWidth="4" />
+      <rect x={1535} y={1290} width="12" height="52" fill="#8D6E63" />
+      <rect x={1625} y={1290} width="12" height="52" fill="#8D6E63" />
 
-      {/* Bridge over river */}
-      <rect x="1340" y="1130" width="80" height="50" rx="4" fill="#D7CCC8" stroke="#8D6E63" strokeWidth="4" />
-      <rect x="1325" y="1130" width="10" height="50" fill="#8D6E63" />
-      <rect x="1415" y="1130" width="10" height="50" fill="#8D6E63" />
-
-      {/* ── TREES scattered ── */}
+      {/* ════ PEOPLE TREES ════ */}
       {[
-        [720, 200], [820, 300], [950, 180], [1800, 200], [1900, 300], [2000, 180],
-        [700, 1200], [820, 1300], [1800, 1200], [1950, 1280],
-        [100, 700], [100, 800], [2650, 700], [2700, 800],
-        [100, 1050], [120, 1150], [2680, 1050], [2700, 1150],
-        [1050, 400], [1700, 400], [1050, 1550], [1700, 1550],
+        [820, 200], [920, 310], [1060, 190], [2100, 200], [2200, 310], [2300, 190],
+        [820, 1380], [940, 1460], [2100, 1380], [2250, 1440],
+        [100, 800], [110, 950], [2980, 800], [2990, 950],
+        [1150, 480], [2010, 480], [1150, 1680], [2010, 1680],
       ].map(([x, y], i) => (
         <g key={i} transform={`translate(${x},${y})`}>
-          <rect x="-5" y="15" width="10" height="25" fill="#795548" />
-          <ellipse cx="0" cy="0" rx="24" ry="28" fill={i % 3 === 0 ? "#558B2F" : i % 3 === 1 ? "#388E3C" : "#33691E"} />
-          <ellipse cx="0" cy="-10" rx="17" ry="20" fill={i % 3 === 0 ? "#7CB342" : i % 3 === 1 ? "#43A047" : "#2E7D32"} />
+          <rect x="-5" y="15" width="10" height="28" fill="#795548" />
+          <ellipse cx="0" cy="0" rx="26" ry="30" fill={i % 3 === 0 ? '#558B2F' : i % 3 === 1 ? '#388E3C' : '#33691E'} />
+          <ellipse cx="0" cy="-10" rx="18" ry="21" fill={i % 3 === 0 ? '#7CB342' : i % 3 === 1 ? '#43A047' : '#2E7D32'} />
         </g>
       ))}
 
-      {/* ── FLOWERS ── */}
+      {/* Flowers */}
       {[
-        [700, 700], [900, 650], [1150, 850], [1600, 850], [1800, 750],
-        [700, 1350], [900, 1300], [1600, 1350], [1800, 1300],
+        [820, 780], [1000, 740], [1250, 940], [1800, 940], [2050, 850],
+        [820, 1500], [1000, 1460], [1800, 1510], [2050, 1460],
       ].map(([x, y], i) => (
         <g key={i} transform={`translate(${x},${y})`}>
           <circle cx="0" cy="0" r="6" fill={['#FF80AB','#FFCC02','#80DEEA','#FFB74D','#CE93D8','#F48FB1'][i % 6]} />
-          <circle cx="8" cy="-5" r="5" fill={['#F48FB1','#FFE082','#80CBC4','#FFCC80','#CE93D8','#FF80AB'][(i+1) % 6]} />
-          <circle cx="-8" cy="-4" r="5" fill={['#CE93D8','#FFCC02','#80DEEA','#FFB74D','#F48FB1','#FFCC02'][(i+2) % 6]} />
+          <circle cx="9" cy="-5" r="5" fill={['#F48FB1','#FFE082','#80CBC4','#FFCC80','#CE93D8','#FF80AB'][(i+1) % 6]} />
+          <circle cx="-9" cy="-4" r="5" fill={['#CE93D8','#FFCC02','#80DEEA','#FFB74D','#F48FB1','#FFCC02'][(i+2) % 6]} />
         </g>
       ))}
 
-      {/* ── FARM CROPS (hunger zone decoration) ── */}
-      {[2100, 2180, 2260, 2340, 2420, 2500, 2580].map((x, i) => (
+      {/* Farm crops (hunger zone) */}
+      {[2380, 2460, 2540, 2620, 2700, 2780, 2860, 2940].map((x, i) => (
         <g key={i}>
-          <rect x={x} y="590" width="12" height="30" fill="#795548" opacity="0.6" />
-          <ellipse cx={x + 6} cy="590" rx="10" ry="14" fill={i % 2 === 0 ? "#FDD835" : "#8BC34A"} />
-          <rect x={x} y="650" width="12" height="25" fill="#795548" opacity="0.6" />
-          <ellipse cx={x + 6} cy="650" rx="10" ry="12" fill={i % 2 === 0 ? "#EF5350" : "#FDD835"} />
+          <rect x={x} y="600" width="12" height="32" fill="#795548" opacity="0.6" />
+          <ellipse cx={x + 6} cy="600" rx="11" ry="15" fill={i % 2 === 0 ? '#FDD835' : '#8BC34A'} />
+          <rect x={x} y="670" width="12" height="26" fill="#795548" opacity="0.6" />
+          <ellipse cx={x + 6} cy="670" rx="11" ry="13" fill={i % 2 === 0 ? '#EF5350' : '#FDD835'} />
         </g>
       ))}
 
-      {/* ── ZONE-SPECIFIC GROUND DETAILS ── */}
-      {/* Poverty zone rubble */}
-      {completedZones.includes('poverty') ? null : (
-        <>
-          {[200, 350, 500, 620].map((x, i) => (
-            <g key={i} transform={`translate(${x},${1760 + (i%2)*30})`}>
-              <ellipse cx="0" cy="0" rx="18" ry="8" fill="#9E9E9E" opacity="0.5" />
-              <ellipse cx="10" cy="-4" rx="10" ry="6" fill="#BDBDBD" opacity="0.5" />
-            </g>
-          ))}
-        </>
+      {/* ════ PLANET JUNGLE TREES (forest zone detail) ════ */}
+      {[[280,3560],[340,3590],[430,3545],[510,3580],[600,3555],[680,3590],[760,3560],[840,3590]].map(([x, y], i) => (
+        <g key={i} transform={`translate(${x},${y})`}>
+          <rect x="-6" y="20" width="12" height="50" fill="#3E2723" opacity="0.7" />
+          <ellipse cx="0" cy="0" rx="30" ry="35" fill={i % 2 === 0 ? '#1B5E20' : '#2E7D32'} opacity="0.8" />
+          <ellipse cx="10" cy="-15" rx="22" ry="25" fill={i % 2 === 0 ? '#388E3C' : '#43A047'} opacity="0.8" />
+          <ellipse cx="-8" cy="-18" rx="18" ry="20" fill="#558B2F" opacity="0.7" />
+        </g>
+      ))}
+
+      {/* ════ OCEAN ZONE FISH & DETAILS ════ */}
+      {[[2350,2680],[2500,2750],[2700,2700],[2900,2760],[3050,2720]].map(([x, y], i) => (
+        <text key={i} x={x} y={y} fontSize="20" opacity="0.6">{['🐟','🐠','🐬','🦈','🦑'][i]}</text>
+      ))}
+
+      {/* Poverty zone rubble (if not healed) */}
+      {!completedZones.includes('poverty') && (
+        [260, 410, 560, 680].map((x, i) => (
+          <g key={i} transform={`translate(${x},${1960 + (i%2)*30})`}>
+            <ellipse cx="0" cy="0" rx="18" ry="8" fill="#9E9E9E" opacity="0.5" />
+            <ellipse cx="10" cy="-4" rx="10" ry="6" fill="#BDBDBD" opacity="0.5" />
+          </g>
+        ))
       )}
 
-      {/* Education zone scattered books (when not healed) */}
+      {/* Education scattered books (if not healed) */}
       {!completedZones.includes('education') && (
-        <>
-          {[2100, 2250, 2400, 2550].map((x, i) => (
-            <rect key={i} x={x} y={1830 + (i%2)*20} width="20" height="14" rx="2"
-              fill={['#7986CB','#BA68C8','#FF8A65','#4DB6AC'][i]} opacity="0.7"
-              transform={`rotate(${(i-1)*15} ${x+10} ${1840+(i%2)*20})`} />
-          ))}
-        </>
+        [2380, 2530, 2680, 2830].map((x, i) => (
+          <rect key={i} x={x} y={1950 + (i%2)*20} width="20" height="14" rx="2"
+            fill={['#7986CB','#BA68C8','#FF8A65','#4DB6AC'][i]} opacity="0.7"
+            transform={`rotate(${(i-1)*15} ${x+10} ${1960+(i%2)*20})`} />
+        ))
       )}
     </svg>
   );
@@ -280,35 +485,28 @@ function Buildings() {
     <svg width={WORLD_W} height={WORLD_H} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
       {WORLD_BUILDINGS.map((b, i) => {
         const mx = b.x + b.w / 2;
-        if (b.type === 'cottage' || b.type === 'clinic' || b.type === 'shop' || b.type === 'barn') {
+        if (['cottage', 'clinic', 'shop', 'barn'].includes(b.type)) {
           return (
             <g key={i}>
-              {/* Shadow */}
               <ellipse cx={mx} cy={b.y + b.h + 10} rx={b.w * 0.45} ry={10} fill="rgba(0,0,0,0.15)" />
-              {/* Wall */}
               <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="6" fill={b.color} stroke="#5D4037" strokeWidth="2.5" />
-              {/* Roof */}
               <polygon points={`${b.x - 8},${b.y}  ${mx},${b.y - b.h * 0.45}  ${b.x + b.w + 8},${b.y}`}
                 fill={b.roofColor} stroke="#5D4037" strokeWidth="2.5" />
-              {/* Window */}
-              <rect x={b.x + b.w * 0.18} y={b.y + b.h * 0.25} width={b.w * 0.22} height={b.h * 0.25} rx="3"
+              <rect x={b.x + b.w * 0.15} y={b.y + b.h * 0.25} width={b.w * 0.22} height={b.h * 0.25} rx="3"
                 fill="#B3E5FC" stroke="#5D4037" strokeWidth="1.5" />
               <rect x={b.x + b.w * 0.60} y={b.y + b.h * 0.25} width={b.w * 0.22} height={b.h * 0.25} rx="3"
                 fill="#B3E5FC" stroke="#5D4037" strokeWidth="1.5" />
-              {/* Door */}
               <rect x={mx - b.w * 0.12} y={b.y + b.h * 0.55} width={b.w * 0.24} height={b.h * 0.44} rx="4"
                 fill="#5D4037" />
-              {/* Clinic cross */}
               {b.type === 'clinic' && (
                 <>
                   <rect x={mx - 5} y={b.y + b.h * 0.05} width={10} height={26} rx="3" fill="white" stroke="#4CAF50" strokeWidth="1.5" />
                   <rect x={mx - 13} y={b.y + b.h * 0.05 + 8} width={26} height={10} rx="3" fill="white" stroke="#4CAF50" strokeWidth="1.5" />
                 </>
               )}
-              {/* Label */}
               {b.label && (
                 <>
-                  <rect x={mx - 35} y={b.y - 30} width="70" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
+                  <rect x={mx - 40} y={b.y - 30} width="80" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
                   <text x={mx} y={b.y - 17} textAnchor="middle" fontSize="10" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
                 </>
               )}
@@ -323,10 +521,16 @@ function Buildings() {
               <rect x={b.x} y={b.y} width={b.w} height={b.h * 0.2} rx="4" fill={b.roofColor} stroke="#5D4037" strokeWidth="2" />
               {[0, 1, 2].map(r => [0, 1].map(c => (
                 <rect key={`${r}-${c}`}
-                  x={b.x + b.w * 0.15 + c * b.w * 0.45} y={b.y + b.h * 0.28 + r * b.h * 0.22}
-                  width={b.w * 0.25} height={b.h * 0.16} rx="2"
+                  x={b.x + b.w * 0.12 + c * b.w * 0.45} y={b.y + b.h * 0.28 + r * b.h * 0.22}
+                  width={b.w * 0.30} height={b.h * 0.16} rx="2"
                   fill="#FFF9C4" stroke="#5D4037" strokeWidth="1.5" />
               )))}
+              {b.label && (
+                <>
+                  <rect x={mx - 38} y={b.y - 28} width="76" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
+                  <text x={mx} y={b.y - 15} textAnchor="middle" fontSize="10" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
+                </>
+              )}
             </g>
           );
         }
@@ -337,22 +541,82 @@ function Buildings() {
               <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="6" fill={b.color} stroke="#4A148C" strokeWidth="3" />
               <polygon points={`${b.x - 10},${b.y}  ${mx},${b.y - b.h * 0.5}  ${b.x + b.w + 10},${b.y}`}
                 fill={b.roofColor} stroke="#4A148C" strokeWidth="3" />
-              {/* Bell tower */}
               <rect x={mx - 18} y={b.y - b.h * 0.5 - 30} width="36" height="28" rx="4" fill={b.color} stroke="#4A148C" strokeWidth="2" />
               <polygon points={`${mx - 20},${b.y - b.h * 0.5 - 30}  ${mx},${b.y - b.h * 0.5 - 55}  ${mx + 20},${b.y - b.h * 0.5 - 30}`}
                 fill={b.roofColor} stroke="#4A148C" strokeWidth="2" />
               <ellipse cx={mx} cy={b.y - b.h * 0.5 - 18} rx="8" ry="7" fill="#FFD700" />
-              {/* Windows row */}
               {[-0.35, 0, 0.35].map((off, wi) => (
                 <rect key={wi} x={mx + off * b.w - 12} y={b.y + b.h * 0.2} width="24" height={b.h * 0.22} rx="3"
                   fill="#FFF9C4" stroke="#4A148C" strokeWidth="2" />
               ))}
-              {/* Door */}
               <rect x={mx - 18} y={b.y + b.h * 0.52} width="36" height={b.h * 0.47} rx="4" fill="#4A148C" />
               {b.label && (
                 <>
-                  <rect x={mx - 45} y={b.y - 30} width="90" height="20" rx="10" fill="white" stroke="#4A148C" strokeWidth="2" />
+                  <rect x={mx - 48} y={b.y - 32} width="96" height="22" rx="11" fill="white" stroke="#4A148C" strokeWidth="2" />
                   <text x={mx} y={b.y - 15} textAnchor="middle" fontSize="11" fontWeight="bold" fontFamily="Nunito" fill="#4A148C">{b.label}</text>
+                </>
+              )}
+            </g>
+          );
+        }
+        if (b.type === 'factory') {
+          return (
+            <g key={i}>
+              <ellipse cx={mx} cy={b.y + b.h + 8} rx={b.w * 0.4} ry={8} fill="rgba(0,0,0,0.25)" />
+              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="4" fill={b.color} stroke="#263238" strokeWidth="3" />
+              <rect x={b.x} y={b.y} width={b.w} height={b.h * 0.15} fill={b.roofColor} stroke="#263238" strokeWidth="2" />
+              <rect x={mx - 12} y={b.y - 35} width="16" height="40" rx="4" fill="#37474F" />
+              <ellipse cx={mx - 4} cy={b.y - 42} rx="10" ry="18" fill="#B0BEC5" opacity="0.5" />
+              {[0, 1].map(r => [0, 1, 2].map(c => (
+                <rect key={`${r}-${c}`}
+                  x={b.x + b.w * 0.08 + c * b.w * 0.30} y={b.y + b.h * 0.25 + r * b.h * 0.32}
+                  width={b.w * 0.20} height={b.h * 0.22} rx="2"
+                  fill="#FFF9C4" stroke="#455A64" strokeWidth="1.5" opacity="0.8" />
+              )))}
+              {b.label && (
+                <>
+                  <rect x={mx - 45} y={b.y - 55} width="90" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
+                  <text x={mx} y={b.y - 42} textAnchor="middle" fontSize="9" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
+                </>
+              )}
+            </g>
+          );
+        }
+        if (b.type === 'lighthouse') {
+          return (
+            <g key={i}>
+              <ellipse cx={mx} cy={b.y + b.h + 6} rx={b.w * 0.4} ry={6} fill="rgba(0,0,0,0.2)" />
+              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="5"
+                fill={`url(#stripe_${i})`}
+                stroke={b.roofColor} strokeWidth="3" />
+              {/* red/white stripes */}
+              {[0,1,2,3,4].map(si => (
+                <rect key={si} x={b.x} y={b.y + si * b.h / 5} width={b.w} height={b.h / 5}
+                  fill={si % 2 === 0 ? 'white' : '#F44336'} opacity="0.7" />
+              ))}
+              <ellipse cx={mx} cy={b.y} rx={b.w * 0.7} ry={12} fill="#FFF176" stroke={b.roofColor} strokeWidth="2" />
+              <ellipse cx={mx} cy={b.y} rx={8} ry={8} fill="#FFD700" />
+              {b.label && (
+                <>
+                  <rect x={mx - 42} y={b.y - 28} width="84" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
+                  <text x={mx} y={b.y - 15} textAnchor="middle" fontSize="9" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
+                </>
+              )}
+            </g>
+          );
+        }
+        if (b.type === 'treehouse') {
+          return (
+            <g key={i}>
+              <rect x={mx - 8} y={b.y + b.h - 20} width="16" height="60" fill="#5D4037" opacity="0.8" />
+              <ellipse cx={mx} cy={b.y + b.h - 30} rx={b.w * 0.55} ry={b.h * 0.35} fill="#388E3C" opacity="0.9" />
+              <rect x={b.x + 10} y={b.y} width={b.w - 20} height={b.h * 0.7} rx="6" fill={b.color} stroke="#2E7D32" strokeWidth="2" />
+              <polygon points={`${b.x + 5},${b.y}  ${mx},${b.y - b.h * 0.4}  ${b.x + b.w - 5},${b.y}`}
+                fill={b.roofColor} stroke="#2E7D32" strokeWidth="2" />
+              {b.label && (
+                <>
+                  <rect x={mx - 38} y={b.y - 32} width="76" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
+                  <text x={mx} y={b.y - 19} textAnchor="middle" fontSize="9" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
                 </>
               )}
             </g>
@@ -361,9 +625,15 @@ function Buildings() {
         // well
         return (
           <g key={i}>
-            <circle cx={mx} cy={b.y + 50} r="36" fill="#90A4AE" stroke="#455A64" strokeWidth="3" />
-            <circle cx={mx} cy={b.y + 50} r="24" fill="#546E7A" />
+            <circle cx={mx} cy={b.y + 50} r="36" fill={b.color} stroke={b.roofColor} strokeWidth="3" />
+            <circle cx={mx} cy={b.y + 50} r="24" fill={b.roofColor} />
             <text x={mx} y={b.y + 57} textAnchor="middle" fontSize="20">💧</text>
+            {b.label && (
+              <>
+                <rect x={mx - 40} y={b.y - 10} width="80" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
+                <text x={mx} y={b.y + 3} textAnchor="middle" fontSize="9" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
+              </>
+            )}
           </g>
         );
       })}
@@ -378,7 +648,7 @@ const PLAYER_H = 72;
 /* ── MAIN GAME WORLD ── */
 export default function GameWorld() {
   const [, setLocation] = useLocation();
-  const { completedZones, playerCharacter, playerName, getWorldHealPercent } = useGame();
+  const { completedZones, playerCharacter, playerName, getWorldHealPercent, peopleLevelComplete, peopleProgress, planetProgress } = useGame();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
@@ -389,7 +659,6 @@ export default function GameWorld() {
   const touchDirRef = useRef({ dx: 0, dy: 0 });
   const isMovingRef = useRef(false);
   const facingRef = useRef<'left' | 'right'>('right');
-  const walkFrameRef = useRef(0);
   const [focused, setFocused] = useState(false);
 
   const [nearNPC, setNearNPC] = useState<WorldNPC | null>(null);
@@ -397,6 +666,9 @@ export default function GameWorld() {
 
   const [talkingNPC, setTalkingNPC] = useState<WorldNPC | null>(null);
   const [dialogIndex, setDialogIndex] = useState(0);
+
+  const [levelBanner, setLevelBanner] = useState<string | null>(null);
+  const prevLevelRef = useRef<'people' | 'planet'>('people');
 
   const PlayerSprite = [Warden1, Warden2, Warden3][playerCharacter - 1] ?? Warden1;
 
@@ -417,11 +689,18 @@ export default function GameWorld() {
       worldRef.current.style.transform = `translate(${-camX}px, ${-camY}px)`;
     }
 
-    // Update minimap player dot
     const dot = document.getElementById('minimap-player');
     if (dot) {
       dot.setAttribute('cx', String(x));
       dot.setAttribute('cy', String(y));
+    }
+
+    // Level zone transition banner
+    const newLevel: 'people' | 'planet' = y > 2400 ? 'planet' : 'people';
+    if (newLevel !== prevLevelRef.current) {
+      prevLevelRef.current = newLevel;
+      setLevelBanner(newLevel === 'planet' ? '🌎 Welcome to the Planet Level!' : '🌍 Back to the People Level');
+      setTimeout(() => setLevelBanner(null), 3000);
     }
   }, []);
 
@@ -430,12 +709,10 @@ export default function GameWorld() {
     const { x, y } = playerPos.current;
     let closest: WorldNPC | null = null;
     let closestDist = INTERACT_RADIUS;
-
     for (const npc of WORLD_NPCS) {
       const d = Math.hypot(npc.x - x, npc.y - y);
       if (d < closestDist) { closest = npc; closestDist = d; }
     }
-
     const newId = closest?.id ?? null;
     if (newId !== nearNPCIdRef.current) {
       nearNPCIdRef.current = newId;
@@ -443,7 +720,7 @@ export default function GameWorld() {
     }
   }, []);
 
-  /* ── auto-focus so arrow keys work immediately ── */
+  /* ── auto-focus ── */
   useEffect(() => {
     const t = setTimeout(() => containerRef.current?.focus(), 100);
     return () => clearTimeout(t);
@@ -452,9 +729,8 @@ export default function GameWorld() {
   /* ── game loop ── */
   useEffect(() => {
     const MOVE_KEYS = new Set(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','w','a','s','d','W','A','S','D',' ']);
-
     const onKeyDown = (e: KeyboardEvent) => {
-      if (MOVE_KEYS.has(e.key)) e.preventDefault(); // stop page scroll
+      if (MOVE_KEYS.has(e.key)) e.preventDefault();
       keysRef.current.add(e.key);
       if ((e.key === 'e' || e.key === 'E' || e.key === ' ') && nearNPCIdRef.current) {
         const npc = WORLD_NPCS.find(n => n.id === nearNPCIdRef.current);
@@ -466,7 +742,6 @@ export default function GameWorld() {
     window.addEventListener('keyup', onKeyUp);
 
     let frameCount = 0;
-
     const loop = () => {
       frameCount++;
       const k = keysRef.current;
@@ -479,17 +754,18 @@ export default function GameWorld() {
       if (k.has('ArrowUp')    || k.has('w') || k.has('W')) dy -= PLAYER_SPEED;
       if (k.has('ArrowDown')  || k.has('s') || k.has('S')) dy += PLAYER_SPEED;
 
-      // normalise diagonal
       if (dx !== 0 && dy !== 0) { dx *= 0.707; dy *= 0.707; }
 
       if (dx !== 0 || dy !== 0) {
         const { x, y } = playerPos.current;
         const nx = x + dx;
         const ny = y + dy;
-
-        if (!wouldCollide(nx - PLAYER_W / 2, ny - PLAYER_H)) playerPos.current.x = Math.max(PLAYER_W / 2, Math.min(WORLD_W - PLAYER_W / 2, nx));
-        if (!wouldCollide(playerPos.current.x - PLAYER_W / 2, ny - PLAYER_H)) playerPos.current.y = Math.max(PLAYER_H, Math.min(WORLD_H - 20, ny));
-
+        if (!wouldCollide(nx - PLAYER_W / 2, ny - PLAYER_H)) {
+          playerPos.current.x = Math.max(PLAYER_W / 2, Math.min(WORLD_W - PLAYER_W / 2, nx));
+        }
+        if (!wouldCollide(playerPos.current.x - PLAYER_W / 2, ny - PLAYER_H)) {
+          playerPos.current.y = Math.max(PLAYER_H, Math.min(WORLD_H - 20, ny));
+        }
         if (dx < 0) facingRef.current = 'left';
         if (dx > 0) facingRef.current = 'right';
         isMovingRef.current = true;
@@ -497,7 +773,6 @@ export default function GameWorld() {
         isMovingRef.current = false;
       }
 
-      // walk animation — flip + CSS walking class
       if (playerElemRef.current) {
         playerElemRef.current.style.transform = `scaleX(${facingRef.current === 'left' ? -1 : 1})`;
         if (isMovingRef.current) {
@@ -522,22 +797,15 @@ export default function GameWorld() {
     };
   }, [updateDOM, checkProximity]);
 
-  /* ── D-PAD touch handler ── */
+  /* ── D-PAD ── */
   const startTouch = (dx: number, dy: number) => { touchDirRef.current = { dx, dy }; };
   const stopTouch = () => { touchDirRef.current = { dx: 0, dy: 0 }; };
 
   /* ── dialogue ── */
   const handleDialogNext = () => {
-    if (talkingNPC && dialogIndex < talkingNPC.dialogues.length - 1) {
-      setDialogIndex(i => i + 1);
-    }
+    if (talkingNPC && dialogIndex < talkingNPC.dialogues.length - 1) setDialogIndex(i => i + 1);
   };
-
-  const handleDialogClose = () => {
-    setTalkingNPC(null);
-    setDialogIndex(0);
-  };
-
+  const handleDialogClose = () => { setTalkingNPC(null); setDialogIndex(0); };
   const handleGoToPuzzle = useCallback((zoneId: string) => {
     setTalkingNPC(null);
     setDialogIndex(0);
@@ -579,20 +847,13 @@ export default function GameWorld() {
           </div>
         </div>
       )}
+
       {/* ── WORLD CONTAINER ── */}
       <div
         ref={worldRef}
-        style={{
-          position: 'absolute',
-          width: WORLD_W,
-          height: WORLD_H,
-          willChange: 'transform',
-        }}
+        style={{ position: 'absolute', width: WORLD_W, height: WORLD_H, willChange: 'transform' }}
       >
-        {/* Terrain SVG */}
         <WorldBackground completedZones={completedZones} />
-
-        {/* Buildings SVG */}
         <Buildings />
 
         {/* ── NPCs ── */}
@@ -601,6 +862,7 @@ export default function GameWorld() {
           if (!Sprite) return null;
           const isNear = nearNPCIdRef.current === npc.id;
           const isDone = completedZones.includes(npc.zoneId);
+          const zoneData = ZONES[npc.zoneId as keyof typeof ZONES];
           return (
             <div
               key={npc.id}
@@ -608,67 +870,39 @@ export default function GameWorld() {
                 position: 'absolute',
                 left: npc.x - 24,
                 top: npc.y - 64,
-                width: 48,
-                height: 64,
+                width: 48, height: 64,
                 cursor: 'pointer',
                 transform: `scaleX(${npc.facing === 'left' ? -1 : 1})`,
               }}
-              onClick={() => {
-                if (!talkingNPC) { setTalkingNPC(npc); setDialogIndex(0); }
-              }}
+              onClick={() => { if (!talkingNPC) { setTalkingNPC(npc); setDialogIndex(0); } }}
             >
-              {/* NPC sprite */}
               <div style={{ width: '100%', height: '100%', filter: isDone && npc.isLord ? 'drop-shadow(0 0 10px gold)' : undefined }}>
                 <Sprite />
               </div>
-
-              {/* Interaction indicator */}
               {isNear && !talkingNPC && (
                 <div style={{
-                  position: 'absolute',
-                  top: -28,
-                  left: '50%',
+                  position: 'absolute', top: -28, left: '50%',
                   transform: 'scaleX(-1) translateX(50%)',
-                  background: '#FFD700',
-                  border: '2px solid #F57F17',
-                  borderRadius: '50%',
-                  width: 24,
-                  height: 24,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 'bold',
-                  fontSize: 13,
+                  background: '#FFD700', border: '2px solid #F57F17',
+                  borderRadius: '50%', width: 24, height: 24,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 'bold', fontSize: 13,
                   animation: 'bounce 0.6s ease-in-out infinite alternate',
                 }}>!</div>
               )}
-
-              {/* Name tag */}
               <div style={{
-                position: 'absolute',
-                bottom: -20,
-                left: '50%',
+                position: 'absolute', bottom: -20, left: '50%',
                 transform: 'scaleX(-1) translateX(50%)',
-                background: 'white',
-                border: '1.5px solid #ccc',
-                borderRadius: 8,
-                padding: '1px 5px',
-                fontSize: 9,
-                fontWeight: 'bold',
-                whiteSpace: 'nowrap',
-                color: '#333',
+                background: 'white', border: `1.5px solid ${zoneData?.themeColor || '#ccc'}`,
+                borderRadius: 8, padding: '1px 5px',
+                fontSize: 9, fontWeight: 'bold', whiteSpace: 'nowrap', color: '#333',
                 pointerEvents: 'none',
               }}>{npc.name}</div>
-
-              {/* Lord crown */}
               {npc.isLord && (
                 <div style={{
-                  position: 'absolute',
-                  top: -14,
-                  left: '50%',
+                  position: 'absolute', top: -14, left: '50%',
                   transform: 'scaleX(-1) translateX(50%)',
-                  fontSize: 14,
-                  pointerEvents: 'none',
+                  fontSize: 14, pointerEvents: 'none',
                 }}>👑</div>
               )}
             </div>
@@ -679,46 +913,51 @@ export default function GameWorld() {
         <div
           ref={playerElemRef}
           style={{
-            position: 'absolute',
-            width: PLAYER_W,
-            height: PLAYER_H,
-            transformOrigin: 'center bottom',
-            zIndex: 100,
+            position: 'absolute', width: PLAYER_W, height: PLAYER_H,
+            transformOrigin: 'center bottom', zIndex: 100,
           }}
         >
           <PlayerSprite />
-          {/* Player label */}
           <div style={{
-            position: 'absolute',
-            bottom: -18,
-            left: '50%',
+            position: 'absolute', bottom: -18, left: '50%',
             transform: 'translateX(-50%)',
-            background: '#4CAF50',
-            color: 'white',
-            borderRadius: 8,
-            padding: '1px 6px',
-            fontSize: 9,
-            fontWeight: 'bold',
-            whiteSpace: 'nowrap',
+            background: '#4CAF50', color: 'white',
+            borderRadius: 8, padding: '1px 6px',
+            fontSize: 9, fontWeight: 'bold', whiteSpace: 'nowrap',
           }}>{playerName}</div>
         </div>
       </div>
 
       {/* ── HUD ── */}
       <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-40 pointer-events-none">
-        {/* Left: World Healing */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 sketch-border-sm shadow-lg min-w-[200px] pointer-events-auto">
+        {/* Left: Dual progress */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg min-w-[220px] pointer-events-auto">
           <div className="flex justify-between text-xs font-bold text-green-700 mb-1">
             <span>🌍 World Healing</span>
             <span>{healPct}%</span>
           </div>
-          <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+          <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden mb-2">
             <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${healPct}%`, background: 'linear-gradient(90deg, #4CAF50, #8BC34A)' }} />
           </div>
-          <div className="text-[10px] text-gray-500 mt-1">{completedZones.length}/5 zones healed</div>
+          {/* People progress */}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold text-amber-700 w-16">👥 People</span>
+            <div className="flex-1 h-2 bg-amber-100 rounded-full overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(peopleProgress / 5) * 100}%`, background: '#FF8F00' }} />
+            </div>
+            <span className="text-[10px] font-bold text-amber-700">{peopleProgress}/5</span>
+          </div>
+          {/* Planet progress */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-teal-700 w-16">🌎 Planet</span>
+            <div className="flex-1 h-2 bg-teal-100 rounded-full overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(planetProgress / 5) * 100}%`, background: '#00838F' }} />
+            </div>
+            <span className="text-[10px] font-bold text-teal-700">{peopleLevelComplete ? `${planetProgress}/5` : '🔒'}</span>
+          </div>
         </div>
 
-        {/* Right: Controls hint */}
+        {/* Right: Controls */}
         <div className="bg-black/60 text-white rounded-2xl px-3 py-2 text-xs font-bold shadow-lg">
           <div>WASD / ↑↓←→ to walk</div>
           <div>E or Space to talk</div>
@@ -726,7 +965,22 @@ export default function GameWorld() {
         </div>
       </div>
 
-      {/* ── D-PAD (always visible) ── */}
+      {/* ── LEVEL BANNER ── */}
+      <AnimatePresence>
+        {levelBanner && (
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -50, opacity: 0 }}
+            className="absolute top-24 left-1/2 -translate-x-1/2 z-50 px-8 py-3 rounded-2xl text-white font-black text-lg shadow-2xl"
+            style={{ background: levelBanner.includes('Planet') ? '#006064' : '#2E7D32' }}
+          >
+            {levelBanner}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── D-PAD ── */}
       <div className="absolute bottom-6 left-6 z-40 select-none">
         <div style={{ display: 'grid', gridTemplateColumns: '68px 68px 68px', gridTemplateRows: '68px 68px 68px', gap: 6 }}>
           <div />
@@ -752,7 +1006,7 @@ export default function GameWorld() {
         </button>
       )}
 
-      {/* ── NEAR NPC PROMPT (desktop) ── */}
+      {/* ── NEAR NPC PROMPT ── */}
       <AnimatePresence>
         {nearNPC && !talkingNPC && (
           <motion.div
@@ -779,25 +1033,32 @@ export default function GameWorld() {
             onGoToPuzzle={handleGoToPuzzle}
             dialogIndex={dialogIndex}
             completedZones={completedZones}
+            peopleLevelComplete={peopleLevelComplete}
           />
         )}
       </AnimatePresence>
 
       {/* ── MINI MAP ── */}
       <div className="absolute top-3 left-1/2 -translate-x-1/2 z-40">
-        <div className="bg-white/90 rounded-xl p-2 shadow-lg sketch-border-sm">
-          <svg width="160" height="110" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`}>
-            <rect width={WORLD_W} height={WORLD_H} fill="#8BC34A" rx="20" />
+        <div className="bg-white/90 rounded-xl p-2 shadow-lg" style={{ border: '1.5px solid #ccc' }}>
+          <svg width="140" height="120" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`}>
+            {/* People section */}
+            <rect x="0" y="0" width={WORLD_W} height="2200" fill="#8BC34A" rx="10" />
+            {/* Gate */}
+            <rect x="0" y="2200" width={WORLD_W} height="300" fill="#263238" />
+            {/* Planet section */}
+            <rect x="0" y="2500" width={WORLD_W} height={WORLD_H - 2500} fill="#1C3A2E" rx="10" />
             {ZONE_REGIONS.map(z => (
               <rect key={z.id} x={z.x} y={z.y} width={z.w} height={z.h}
-                fill={completedZones.includes(z.id) ? z.color : '#D7CCC8'}
+                fill={completedZones.includes(z.id) ? z.color : z.level === 'planet' ? 'rgba(255,255,255,0.15)' : '#D7CCC8'}
                 stroke={z.borderColor} strokeWidth="15" rx="20" />
             ))}
-            {/* River */}
-            <path d="M 0 1180 Q 1400 1200 2800 1100" stroke="#64B5F6" strokeWidth="40" fill="none" />
+            {/* Gate marker */}
+            <rect x={WORLD_W / 2 - 150} y="2200" width="300" height="80" fill="#00BCD4" opacity="0.6" />
             {/* Player dot */}
-            <circle cx={playerPos.current.x} cy={playerPos.current.y} r="40" fill="#E53935" stroke="white" strokeWidth="20" id="minimap-player" />
+            <circle cx={playerPos.current.x} cy={playerPos.current.y} r="45" fill="#E53935" stroke="white" strokeWidth="20" id="minimap-player" />
           </svg>
+          <div className="text-[9px] text-center text-gray-500 mt-0.5 font-bold">🗺️ World Map</div>
         </div>
       </div>
     </div>

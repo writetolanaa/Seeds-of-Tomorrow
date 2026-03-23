@@ -52,13 +52,19 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 
 ### `artifacts/sdg-game` (`@workspace/sdg-game`)
 
-A cute fantasy RPG browser game about the UN SDGs (Sustainable Development Goals). Players pick a warden character, explore a world map with 6 zones, and solve mini-puzzles to restore the broken world.
+A top-down RPG browser game about the UN SDGs (Sustainable Development Goals). Players pick a warden character, walk a 3200×4600px world, talk to NPCs, and complete mini-games to heal 10 zones across 2 levels.
 
-- **Style**: Hand-drawn sketch aesthetic, warm parchment tones, whimsical RPG
-- **Zones**: Splashy (Water), Pebblepuff (Earth), Leaflet (Life), Sparkleflame (Energy), Baloo (Equality), Thinklet (Knowledge)
+- **Style**: Hand-drawn sketch aesthetic, warm parchment tones, whimsical RPG chibi sprites
+- **Level 1 – People** (SDGs 1–5): Baloo/Poverty, Pebblepuff/Hunger, Leaflet/Health, Thinklet/Education, Sparkleflame/Equality
+- **Level 2 – Planet** (SDGs 6,12,13,14,15): Aqua/Water, Coralina/Ocean, Ferra/Forest, Gaia/Climate, Reevo/Consumption
+- **Gate**: Teal portal arch at y≈2200 separates the two levels; Planet NPCs are locked until People is complete
+- **Mini-games**: 10 unique puzzle types (PovertyPuzzle, HungerPuzzle, HealthPuzzle, EducationPuzzle, EqualityPuzzle, WaterPuzzle, OceanPuzzle, ForestPuzzle, ClimatePuzzle, ConsumptionPuzzle)
 - **Tech**: React + Vite + Framer Motion + canvas-confetti, no backend needed
-- **State**: localStorage-persisted game progress
-- **Pages**: TitleScreen, WorldMap, ZoneInterior, PuzzleScreen
+- **State**: localStorage-persisted game progress (`sdg_game_save_v3`)
+- **Pages**: TitleScreen, GameWorld (main walk-around), PuzzleScreen
+- **Key files**: `src/pages/GameWorld.tsx`, `src/pages/PuzzleScreen.tsx`, `src/components/Sprites.tsx`, `src/data/worldMap.ts`, `src/data/gameData.ts`, `src/context/GameContext.tsx`
+- **World constants**: WORLD_W=3200, WORLD_H=4600, PLAYER_SPAWN=(1580,1200), PLAYER_SPEED=5, INTERACT_RADIUS=100
+- **HUD**: Dual progress bars (People 0-5, Planet 0-5) + overall World Healing % + level transition banner
 
 ## Packages
 

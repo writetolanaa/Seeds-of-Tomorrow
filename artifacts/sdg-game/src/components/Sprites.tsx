@@ -628,6 +628,75 @@ export const NPC_Advocate = ({ className }: { className?: string }) => (
     className={className} />
 );
 
+/* ── PLANET LEVEL LORDS ── */
+
+/* Aqua – SDG 6 Clean Water (blue water spirit, flowing hair, droplet wand) */
+export const AquaSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#B3E5FC" hairColor="#0277BD" hairStyle="pigtails" eyeStyle="crescent"
+    cheekColor="#81D4FA" expression="determined" outfitColor="#29B6F6" outfitStyle="dress"
+    collarColor="#E1F5FE" bootColor="#0288D1"
+    item={<text x="-4" y="10" fontSize="14">💧</text>}
+    hairAccessory={<>
+      <ellipse cx="32" cy="12" rx="5" ry="7" fill="#81D4FA" opacity="0.8" />
+      <ellipse cx="68" cy="12" rx="5" ry="7" fill="#81D4FA" opacity="0.8" />
+    </>}
+    className={cn("drop-shadow-md", className)} />
+);
+
+/* Coralina – SDG 14 Ocean (teal coral guardian, star eyes, sea-green outfit) */
+export const CoralinaSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#E0F7FA" hairColor="#004D40" hairStyle="bunDouble" eyeStyle="starry"
+    cheekColor="#80DEEA" expression="happy" outfitColor="#00838F" outfitStyle="dress"
+    collarColor="#E0F7FA" bootColor="#006064"
+    item={<text x="-4" y="10" fontSize="14">🐠</text>}
+    hairAccessory={<>
+      <ellipse cx="32" cy="10" rx="6" ry="6" fill="#4DD0E1" />
+      <ellipse cx="68" cy="10" rx="6" ry="6" fill="#4DD0E1" />
+    </>}
+    className={cn("drop-shadow-md", className)} />
+);
+
+/* Ferra – SDG 15 Forest (deep green jungle spirit, leaf crown, mossy outfit) */
+export const FerraSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#C8E6C9" hairColor="#1B5E20" hairStyle="bun" eyeStyle="crescent"
+    cheekColor="#A5D6A7" expression="happy" outfitColor="#2E7D32" outfitStyle="overalls"
+    collarColor="#E8F5E9" bootColor="#1B5E20"
+    item={<text x="-4" y="10" fontSize="14">🌿</text>}
+    hairAccessory={<>
+      <ellipse cx="50" cy="10" rx="10" ry="5" fill="#388E3C" opacity="0.9" />
+      <ellipse cx="37" cy="13" rx="7" ry="4" fill="#43A047" opacity="0.8" />
+      <ellipse cx="63" cy="13" rx="7" ry="4" fill="#43A047" opacity="0.8" />
+    </>}
+    className={cn("drop-shadow-md", className)} />
+);
+
+/* Gaia – SDG 13 Climate (warm ember tone, fiery hair, glowing eyes, earth outfit) */
+export const GaiaSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#FFE0B2" hairColor="#BF360C" hairStyle="spiky" eyeStyle="starry"
+    cheekColor="#FFAB91" expression="determined" outfitColor="#E64A19" outfitStyle="jacket"
+    collarColor="#FBE9E7" bootColor="#BF360C"
+    item={<text x="-4" y="10" fontSize="14">🌡️</text>}
+    hairAccessory={<>
+      {[35, 42, 50, 58, 65].map((x, i) => (
+        <ellipse key={i} cx={x} cy={9 - i % 2 * 3} rx="3" ry="6" fill={i % 2 === 0 ? '#FF6F00' : '#FFAB40'} opacity="0.9" />
+      ))}
+    </>}
+    className={cn("drop-shadow-md", className)} />
+);
+
+/* Reevo – SDG 12 Consumption (silver-green recycler bot, antenna, eco outfit) */
+export const ReevoSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#DCEDC8" hairColor="#33691E" hairStyle="cap" eyeStyle="dots"
+    cheekColor="#AED581" expression="happy" outfitColor="#558B2F" outfitStyle="uniform"
+    collarColor="#F1F8E9" bootColor="#33691E"
+    item={<text x="-4" y="10" fontSize="14">♻️</text>}
+    hairAccessory={<>
+      <rect x="45" y="4" width="10" height="12" rx="3" fill="#8BC34A" stroke="#33691E" strokeWidth="1.5" />
+      <circle cx="50" cy="3" r="3" fill="#CCFF90" />
+    </>}
+    className={cn("drop-shadow-md", className)} />
+);
+
 /* ── Keep SplashySprite as fallback (unused but exported) ── */
 export const SplashySprite = ({ className }: { className?: string }) => (
   <ChibiCharacter skinColor="#B3E5FC" hairColor="#01579B" hairStyle="spiky" eyeStyle="crescent"

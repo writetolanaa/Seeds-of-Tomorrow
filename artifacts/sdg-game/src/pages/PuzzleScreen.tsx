@@ -1280,14 +1280,853 @@ const EqualityPuzzle = ({ onWin }: { onWin: () => void }) => {
 };
 
 /* ═══════════════════════════════════════════════════════════════
+   SDG 6 – Clean Water: Water Stories
+   Detect pollution in 3 river segments, deploy the right tools
+═══════════════════════════════════════════════════════════════ */
+
+type PollutionType = 'oil' | 'trash' | 'chemicals' | 'waste';
+type ToolType = 'absorbent' | 'net' | 'neutralizer' | 'filter';
+
+interface RiverSegment { id: string; name: string; emoji: string; pollutionType: PollutionType; pollution: number; health: number; }
+interface CleaningTool { id: ToolType; name: string; emoji: string; desc: string; effectOn: PollutionType[]; count: number; }
+
+const INITIAL_SEGMENTS: RiverSegment[] = [
+  { id: 'upstream', name: 'Upstream Mountains', emoji: '🏔️', pollutionType: 'chemicals', pollution: 75, health: 30 },
+  { id: 'midstream', name: 'Midstream Village', emoji: '🏘️', pollutionType: 'trash', pollution: 60, health: 40 },
+  { id: 'downstream', name: 'Downstream Delta', emoji: '🌊', pollutionType: 'oil', pollution: 50, health: 50 },
+];
+const CLEANING_TOOLS: CleaningTool[] = [
+  { id: 'absorbent', name: 'Absorbent Pad', emoji: '🧽', desc: 'Soaks up oil spills', effectOn: ['oil', 'waste'], count: 3 },
+  { id: 'net', name: 'Trash Net', emoji: '🕸️', desc: 'Collects floating trash & debris', effectOn: ['trash'], count: 3 },
+  { id: 'neutralizer', name: 'Neutralizer', emoji: '⚗️', desc: 'Breaks down chemical pollutants', effectOn: ['chemicals', 'waste'], count: 3 },
+  { id: 'filter', name: 'Filter Unit', emoji: '🔬', desc: 'Purifies all pollutant types', effectOn: ['oil', 'trash', 'chemicals', 'waste'], count: 2 },
+];
+
+function WaterPuzzle({ onWin }: { onWin: () => void }) {
+  const [segments, setSegments] = useState<RiverSegment[]>(INITIAL_SEGMENTS.map(s => ({ ...s })));
+  const [tools, setTools] = useState<CleaningTool[]>(CLEANING_TOOLS.map(t => ({ ...t })));
+  const [selectedTool, setSelectedTool] = useState<ToolType | null>(null);
+  const [log, setLog] = useState<string[]>(['💧 River pollution detected! Select a tool, then click a river segment.']);
+  const [feedback, setFeedback] = useState<{ segId: string; msg: string; ok: boolean } | null>(null);
+
+  const allClean = segments.every(s => s.pollution <= 20);
+
+  useEffect(() => { if (allClean) onWin(); }, [allClean, onWin]);
+
+  const applyTool = (seg: RiverSegment) => {
+    if (!selectedTool) { setLog(l => ['⚠️ Pick a tool first!', ...l]); return; }
+    const tool = tools.find(t => t.id === selectedTool)!;
+    if (tool.count <= 0) { setLog(l => ['❌ Out of that tool! Try another.', ...l]); return; }
+
+    const isEffective = tool.effectOn.includes(seg.pollutionType);
+    const reduction = isEffective ? 32 + Math.floor(Math.random() * 15) : 10;
+    const healthGain = isEffective ? 20 : 5;
+
+    setSegments(prev => prev.map(s => s.id === seg.id
+      ? { ...s, pollution: Math.max(0, s.pollution - reduction), health: Math.min(100, s.health + healthGain) }
+      : s));
+    setTools(prev => prev.map(t => t.id === selectedTool ? { ...t, count: t.count - 1 } : t));
+
+    const msg = isEffective
+      ? `✅ ${tool.emoji} ${tool.name} worked great on ${seg.name}! Pollution −${reduction}%`
+      : `⚠️ ${tool.emoji} ${tool.name} isn't ideal here. Only −${reduction}% removed.`;
+    setFeedback({ segId: seg.id, msg, ok: isEffective });
+    setLog(l => [msg, ...l.slice(0, 3)]);
+    setTimeout(() => setFeedback(null), 1500);
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* River segments */}
+      <div className="grid grid-cols-3 gap-3">
+        {segments.map(seg => (
+          <motion.button key={seg.id}
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            onClick={() => applyTool(seg)}
+            className={cn("rounded-xl p-3 text-left border-3 transition-all",
+              selectedTool ? 'border-blue-400 cursor-pointer hover:bg-blue-50' : 'border-gray-200 cursor-default',
+              seg.pollution <= 20 && 'border-green-400 bg-green-50'
+            )}
+            style={{ borderWidth: 3 }}
+          >
+            <div className="text-2xl mb-1">{seg.pollution <= 20 ? '✅' : seg.emoji}</div>
+            <div className="font-bold text-xs mb-1">{seg.name}</div>
+            {/* Pollution bar */}
+            <div className="text-[10px] text-gray-500 mb-0.5">Pollution: {seg.pollution}%</div>
+            <div className="h-2 bg-red-100 rounded-full overflow-hidden mb-1">
+              <motion.div className="h-full rounded-full" animate={{ width: `${seg.pollution}%` }}
+                style={{ background: seg.pollution > 60 ? '#EF5350' : seg.pollution > 30 ? '#FF8F00' : '#66BB6A' }} />
+            </div>
+            {/* Health bar */}
+            <div className="text-[10px] text-gray-500 mb-0.5">Health: {seg.health}%</div>
+            <div className="h-2 bg-green-100 rounded-full overflow-hidden">
+              <motion.div className="h-full rounded-full bg-green-500" animate={{ width: `${seg.health}%` }} />
+            </div>
+            {/* Pollution type badge */}
+            <div className="mt-1.5 text-[9px] px-2 py-0.5 rounded-full font-bold text-center"
+              style={{ background: seg.pollutionType === 'oil' ? '#FF8F00' : seg.pollutionType === 'chemicals' ? '#7B1FA2' : '#00838F', color: 'white' }}>
+              {seg.pollutionType === 'oil' ? '🛢️ Oil' : seg.pollutionType === 'chemicals' ? '⚗️ Chemicals' : '🗑️ Trash'}
+            </div>
+            {feedback?.segId === seg.id && (
+              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className={cn("text-[10px] mt-1 font-bold", feedback.ok ? 'text-green-600' : 'text-orange-500')}>
+                {feedback.ok ? '✅ Effective!' : '⚠️ Weak effect'}
+              </motion.div>
+            )}
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Tool selector */}
+      <div>
+        <div className="text-xs font-bold text-gray-500 mb-2">🧰 Cleanup Tools — select then click a segment:</div>
+        <div className="grid grid-cols-2 gap-2">
+          {tools.map(tool => (
+            <button key={tool.id}
+              onClick={() => setSelectedTool(tool.id === selectedTool ? null : tool.id)}
+              disabled={tool.count <= 0}
+              className={cn("p-2 rounded-xl border-2 text-left transition-all",
+                selectedTool === tool.id ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-200 hover:border-blue-300',
+                tool.count <= 0 && 'opacity-40 cursor-not-allowed'
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{tool.emoji}</span>
+                <div>
+                  <div className="font-bold text-xs">{tool.name}</div>
+                  <div className="text-[10px] text-gray-500">{tool.desc}</div>
+                </div>
+                <div className={cn("ml-auto text-xs font-black px-2 py-0.5 rounded-full", tool.count > 0 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400')}>×{tool.count}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Log */}
+      <div className="bg-blue-50 rounded-xl p-3 text-xs space-y-1 max-h-24 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-blue-800">{l}</div>)}
+      </div>
+      {selectedTool && (
+        <HintBox text={`${tools.find(t=>t.id===selectedTool)?.emoji} ${tools.find(t=>t.id===selectedTool)?.name} selected — now click a river segment to deploy!`} color="#0288D1" />
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SDG 14 – Life Below Water: Ocean Cleanup Crew
+   Clean 4 ocean zones, rescue marine life
+═══════════════════════════════════════════════════════════════ */
+
+type OceanPollution = 'plastics' | 'oil' | 'chemicals' | 'ghost_nets';
+type OceanTool = 'skimmer' | 'nets' | 'filter' | 'rescue';
+
+interface OceanZone { id: string; name: string; emoji: string; pollution: OceanPollution; level: number; marineHealth: number; rescued: boolean; }
+interface OceanCleanTool { id: OceanTool; name: string; emoji: string; desc: string; cleans: OceanPollution[]; count: number; }
+
+const OCEAN_ZONES: OceanZone[] = [
+  { id: 'coast', name: 'Sandy Coast', emoji: '🏖️', pollution: 'plastics', level: 80, marineHealth: 20, rescued: false },
+  { id: 'reef', name: 'Coral Reef', emoji: '🪸', pollution: 'chemicals', level: 70, marineHealth: 25, rescued: false },
+  { id: 'open', name: 'Open Ocean', emoji: '🌊', pollution: 'oil', level: 65, marineHealth: 35, rescued: false },
+  { id: 'deep', name: 'Deep Sea Floor', emoji: '🐙', pollution: 'ghost_nets', level: 60, marineHealth: 30, rescued: false },
+];
+const OCEAN_TOOLS: OceanCleanTool[] = [
+  { id: 'skimmer', name: 'Skimmer Boat', emoji: '⛵', desc: 'Removes oil slicks', cleans: ['oil'], count: 3 },
+  { id: 'nets', name: 'Clean Nets', emoji: '🕸️', desc: 'Collects plastics & ghost nets', cleans: ['plastics', 'ghost_nets'], count: 3 },
+  { id: 'filter', name: 'Chemical Filter', emoji: '🧪', desc: 'Neutralizes chemical waste', cleans: ['chemicals', 'oil'], count: 2 },
+  { id: 'rescue', name: 'Rescue Team', emoji: '🤿', desc: 'Saves marine life from all threats', cleans: ['plastics', 'oil', 'chemicals', 'ghost_nets'], count: 2 },
+];
+
+function OceanPuzzle({ onWin }: { onWin: () => void }) {
+  const [zones, setZones] = useState<OceanZone[]>(OCEAN_ZONES.map(z => ({ ...z })));
+  const [tools, setTools] = useState<OceanCleanTool[]>(OCEAN_TOOLS.map(t => ({ ...t })));
+  const [selectedTool, setSelectedTool] = useState<OceanTool | null>(null);
+  const [log, setLog] = useState<string[]>(['🌊 Ocean under threat! Select a cleanup tool, then click a zone to deploy it.']);
+  const [feedback, setFeedback] = useState<{ zoneId: string; ok: boolean } | null>(null);
+
+  const allClear = zones.every(z => z.level <= 20);
+  useEffect(() => { if (allClear) onWin(); }, [allClear, onWin]);
+
+  const applyOceanTool = (zone: OceanZone) => {
+    if (!selectedTool) { setLog(l => ['⚠️ Choose a tool first!', ...l]); return; }
+    const tool = tools.find(t => t.id === selectedTool)!;
+    if (tool.count <= 0) { setLog(l => ['❌ No more uses left for that tool!', ...l]); return; }
+
+    const effective = tool.cleans.includes(zone.pollution);
+    const reduction = effective ? 35 + Math.floor(Math.random() * 15) : 10;
+    const healthGain = effective ? 25 : 8;
+
+    setZones(prev => prev.map(z => z.id === zone.id
+      ? { ...z, level: Math.max(0, z.level - reduction), marineHealth: Math.min(100, z.marineHealth + healthGain), rescued: effective && zone.level - reduction <= 20 }
+      : z));
+    setTools(prev => prev.map(t => t.id === selectedTool ? { ...t, count: t.count - 1 } : t));
+
+    const msg = effective
+      ? `🌊 ${tool.emoji} ${tool.name} cleared ${zone.name}! Pollution −${reduction}%`
+      : `⚠️ ${tool.emoji} Not the right tool for ${zone.name}. Only −${reduction}% removed.`;
+    setFeedback({ zoneId: zone.id, ok: effective });
+    setLog(l => [msg, ...l.slice(0, 3)]);
+    setTimeout(() => setFeedback(null), 1500);
+  };
+
+  const pollutionColor = (p: OceanPollution) =>
+    p === 'plastics' ? '#29B6F6' : p === 'oil' ? '#795548' : p === 'chemicals' ? '#AB47BC' : '#607D8B';
+  const pollutionLabel = (p: OceanPollution) =>
+    p === 'plastics' ? '♻️ Plastics' : p === 'oil' ? '🛢️ Oil' : p === 'chemicals' ? '⚗️ Chemicals' : '🕸️ Ghost Nets';
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-2 gap-3">
+        {zones.map(zone => (
+          <motion.button key={zone.id}
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            onClick={() => applyOceanTool(zone)}
+            className={cn("rounded-xl p-3 text-left border-3 transition-all",
+              selectedTool ? 'border-cyan-400 hover:bg-cyan-50' : 'border-gray-200',
+              zone.level <= 20 && 'border-green-400 bg-green-50'
+            )}
+            style={{ borderWidth: 3, background: zone.level <= 20 ? '#E8F5E9' : '#E0F7FA' }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-2xl">{zone.level <= 20 ? '✅' : zone.emoji}</span>
+              <span className="font-bold text-xs">{zone.name}</span>
+            </div>
+            <div className="text-[10px] text-gray-500 mb-0.5">Pollution: {zone.level}%</div>
+            <div className="h-2 bg-red-100 rounded-full overflow-hidden mb-1">
+              <motion.div className="h-full rounded-full" animate={{ width: `${zone.level}%` }}
+                style={{ background: zone.level > 60 ? '#EF5350' : zone.level > 30 ? '#FF8F00' : '#66BB6A' }} />
+            </div>
+            <div className="text-[10px] text-gray-500 mb-0.5">Marine Health: {zone.marineHealth}%</div>
+            <div className="h-2 bg-cyan-100 rounded-full overflow-hidden mb-1">
+              <motion.div className="h-full rounded-full bg-cyan-500" animate={{ width: `${zone.marineHealth}%` }} />
+            </div>
+            <div className="text-[9px] px-2 py-0.5 rounded-full font-bold inline-block" style={{ background: pollutionColor(zone.pollution), color: 'white' }}>
+              {pollutionLabel(zone.pollution)}
+            </div>
+            {zone.rescued && <div className="text-[10px] text-green-600 font-bold mt-1">🐠 Marine life rescued!</div>}
+            {feedback?.zoneId === zone.id && (
+              <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                className={cn("text-[10px] font-bold mt-1", feedback.ok ? 'text-green-600' : 'text-orange-500')}>
+                {feedback.ok ? '✅ Effective!' : '⚠️ Wrong tool'}
+              </motion.div>
+            )}
+          </motion.button>
+        ))}
+      </div>
+
+      <div>
+        <div className="text-xs font-bold text-gray-500 mb-2">🧰 Cleanup Fleet:</div>
+        <div className="grid grid-cols-2 gap-2">
+          {tools.map(tool => (
+            <button key={tool.id}
+              onClick={() => setSelectedTool(tool.id === selectedTool ? null : tool.id)}
+              disabled={tool.count <= 0}
+              className={cn("p-2 rounded-xl border-2 text-left transition-all",
+                selectedTool === tool.id ? 'border-cyan-500 bg-cyan-50 shadow-md' : 'border-gray-200 hover:border-cyan-300',
+                tool.count <= 0 && 'opacity-40 cursor-not-allowed'
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{tool.emoji}</span>
+                <div>
+                  <div className="font-bold text-xs">{tool.name}</div>
+                  <div className="text-[10px] text-gray-500">{tool.desc}</div>
+                </div>
+                <div className={cn("ml-auto text-xs font-black px-2 py-0.5 rounded-full", tool.count > 0 ? 'bg-cyan-100 text-cyan-700' : 'bg-gray-100 text-gray-400')}>×{tool.count}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-cyan-50 rounded-xl p-3 text-xs space-y-1 max-h-20 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-cyan-800">{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SDG 15 – Life on Land: Forest Guardian
+   3×3 grid of forest cells, restore across 3 seasons
+═══════════════════════════════════════════════════════════════ */
+
+type CellState = 'degraded' | 'seedling' | 'growing' | 'healthy' | 'fire' | 'logging' | 'disease';
+
+interface ForestCell { id: number; state: CellState; animal?: string; }
+
+const CELL_EMOJI: Record<CellState, string> = {
+  degraded: '🏜️', seedling: '🌱', growing: '🌿', healthy: '🌳', fire: '🔥', logging: '🪓', disease: '🍂',
+};
+const CELL_COLOR: Record<CellState, string> = {
+  degraded: '#EFEBE9', seedling: '#DCEDC8', growing: '#A5D6A7', healthy: '#2E7D32', fire: '#FF5722', logging: '#795548', disease: '#FBC02D',
+};
+const CELL_LABEL: Record<CellState, string> = {
+  degraded: 'Barren', seedling: 'Seedling', growing: 'Growing', healthy: 'Healthy Forest!', fire: 'On Fire!', logging: 'Being Logged', disease: 'Disease',
+};
+const THREAT_ACTIONS: Record<string, { label: string; emoji: string; fixes: CellState[] }> = {
+  plant: { label: 'Plant Tree', emoji: '🌱', fixes: ['degraded'] },
+  water: { label: 'Water & Nurture', emoji: '💧', fixes: ['seedling', 'growing'] },
+  protect: { label: 'Protect Zone', emoji: '🛡️', fixes: ['healthy'] },
+  fight_fire: { label: 'Fight Fire', emoji: '🚒', fixes: ['fire'] },
+  stop_logging: { label: 'Stop Loggers', emoji: '🚔', fixes: ['logging'] },
+  treat_disease: { label: 'Treat Disease', emoji: '💊', fixes: ['disease'] },
+};
+
+function makeCells(): ForestCell[] {
+  return [
+    { id: 0, state: 'degraded' }, { id: 1, state: 'growing' }, { id: 2, state: 'fire' },
+    { id: 3, state: 'logging' }, { id: 4, state: 'degraded' }, { id: 5, state: 'growing' },
+    { id: 6, state: 'seedling' }, { id: 7, state: 'disease' }, { id: 8, state: 'degraded' },
+  ];
+}
+
+const SEASON_EVENTS: { msg: string; threat?: CellState; targetId?: number }[] = [
+  { msg: '🔥 Dry season! A new wildfire breaks out in the east.', threat: 'fire', targetId: 5 },
+  { msg: '🪓 Illegal loggers spotted near the northern grove!', threat: 'logging', targetId: 1 },
+  { msg: '🍂 A disease is spreading through the understory.', threat: 'disease', targetId: 6 },
+];
+
+function ForestPuzzle({ onWin }: { onWin: () => void }) {
+  const [cells, setCells] = useState<ForestCell[]>(makeCells());
+  const [season, setSeason] = useState(1);
+  const [selectedAction, setSelectedAction] = useState<string | null>(null);
+  const [log, setLog] = useState<string[]>(['🌿 The forest needs your help! Select an action, then click a forest cell.']);
+  const [actionsLeft, setActionsLeft] = useState(6);
+  const [phase, setPhase] = useState<'action' | 'event' | 'done'>('action');
+  const [eventMsg, setEventMsg] = useState<string | null>(null);
+
+  const healthyCount = cells.filter(c => c.state === 'healthy').length;
+  const progress = Math.round((healthyCount / 9) * 100);
+
+  const applyAction = (cell: ForestCell) => {
+    if (!selectedAction || actionsLeft <= 0 || phase !== 'action') return;
+    const action = THREAT_ACTIONS[selectedAction];
+    if (!action.fixes.includes(cell.state)) {
+      setLog(l => [`⚠️ ${action.emoji} ${action.label} doesn't help a "${CELL_LABEL[cell.state]}" cell. Try another action!`, ...l.slice(0, 3)]);
+      return;
+    }
+    const nextState: Record<CellState, CellState> = {
+      degraded: 'seedling', seedling: 'growing', growing: 'healthy', healthy: 'healthy',
+      fire: 'degraded', logging: 'degraded', disease: 'growing',
+    };
+    const outcome = nextState[cell.state];
+    setCells(prev => prev.map(c => c.id === cell.id ? { ...c, state: outcome } : c));
+    setLog(l => [`✅ ${action.emoji} Cell #${cell.id + 1}: ${CELL_LABEL[cell.state]} → ${CELL_LABEL[outcome]}`, ...l.slice(0, 3)]);
+    const newActionsLeft = actionsLeft - 1;
+    setActionsLeft(newActionsLeft);
+
+    if (newActionsLeft <= 0) {
+      setPhase('event');
+      const evt = SEASON_EVENTS[season - 1];
+      if (evt) {
+        setEventMsg(evt.msg);
+        if (evt.threat && evt.targetId !== undefined) {
+          setCells(prev => prev.map(c => c.id === evt.targetId ? { ...c, state: evt.threat! } : c));
+        }
+        setTimeout(() => {
+          setEventMsg(null);
+          if (season >= 3) {
+            setPhase('done');
+          } else {
+            setSeason(s => s + 1);
+            setActionsLeft(6);
+            setPhase('action');
+            setLog(l => [`🌻 Season ${season + 1} begins! You have 6 actions.`, ...l.slice(0, 3)]);
+          }
+        }, 2500);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (phase === 'done' && healthyCount >= 6) onWin();
+  }, [phase, healthyCount, onWin]);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Season progress */}
+      <div className="flex items-center justify-between bg-green-50 rounded-xl px-4 py-2">
+        <div className="text-sm font-bold text-green-800">🌿 Season {season}/3 &nbsp;|&nbsp; Actions left: {actionsLeft}</div>
+        <div className="text-sm font-bold text-green-800">Forest Cover: {progress}% ({healthyCount}/9 cells)</div>
+      </div>
+
+      {/* Forest grid */}
+      <div className="grid grid-cols-3 gap-2">
+        {cells.map(cell => (
+          <motion.button key={cell.id}
+            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            onClick={() => applyAction(cell)}
+            disabled={phase !== 'action'}
+            className="rounded-xl p-3 flex flex-col items-center gap-1 border-2 transition-all"
+            style={{ background: CELL_COLOR[cell.state] + '55', borderColor: CELL_COLOR[cell.state] }}
+          >
+            <span className="text-3xl">{CELL_EMOJI[cell.state]}</span>
+            <span className="text-[10px] font-bold" style={{ color: CELL_COLOR[cell.state] === '#2E7D32' ? 'white' : CELL_COLOR[cell.state] }}>
+              {CELL_LABEL[cell.state]}
+            </span>
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Action selector */}
+      <div>
+        <div className="text-xs font-bold text-gray-500 mb-2">🌳 Choose your action:</div>
+        <div className="grid grid-cols-3 gap-1.5">
+          {Object.entries(THREAT_ACTIONS).map(([key, action]) => (
+            <button key={key}
+              onClick={() => setSelectedAction(key === selectedAction ? null : key)}
+              disabled={phase !== 'action'}
+              className={cn("p-2 rounded-lg border-2 text-center transition-all text-xs font-bold",
+                selectedAction === key ? 'border-green-600 bg-green-100 shadow-md' : 'border-gray-200 hover:border-green-400 bg-white',
+                phase !== 'action' && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              <div className="text-xl">{action.emoji}</div>
+              <div className="text-[10px] leading-tight">{action.label}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Event banner */}
+      <AnimatePresence>
+        {eventMsg && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="bg-orange-100 border-2 border-orange-400 rounded-xl px-4 py-3 text-sm font-bold text-orange-800 text-center">
+            {eventMsg}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Log */}
+      <div className="bg-green-50 rounded-xl p-3 text-xs space-y-1 max-h-20 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-green-800">{l}</div>)}
+      </div>
+
+      {phase === 'done' && healthyCount < 6 && (
+        <div className="bg-red-50 border-2 border-red-300 rounded-xl p-3 text-sm text-red-700 font-bold text-center">
+          🌳 {healthyCount}/9 cells healthy. Need 6+ to win. Keep planting! Reload to try again.
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SDG 13 – Climate Action: Climate Diary
+   Choose policies across 3 years, stabilize climate metrics
+═══════════════════════════════════════════════════════════════ */
+
+interface ClimatePolicy { id: string; name: string; emoji: string; desc: string; co2: number; temp: number; bio: number; cost: number; }
+
+const CLIMATE_POLICIES: ClimatePolicy[] = [
+  { id: 'solar', name: 'Solar & Wind Energy', emoji: '☀️', desc: 'Replace fossil fuels with renewables', co2: -18, temp: -0.15, bio: +8, cost: 3 },
+  { id: 'forest', name: 'Reforestation', emoji: '🌳', desc: 'Plant 1 billion trees to absorb CO₂', co2: -12, temp: -0.1, bio: +15, cost: 2 },
+  { id: 'industrial', name: 'Emissions Cap', emoji: '🏭', desc: 'Limit industrial carbon emissions', co2: -15, temp: -0.12, bio: +5, cost: 3 },
+  { id: 'transit', name: 'Green Transport', emoji: '🚌', desc: 'Electrify buses, trains, cars', co2: -10, temp: -0.08, bio: +3, cost: 2 },
+  { id: 'awareness', name: 'Public Education', emoji: '📢', desc: 'Teach sustainable living', co2: -6, temp: -0.05, bio: +6, cost: 1 },
+  { id: 'ocean', name: 'Ocean Protection', emoji: '🌊', desc: 'Restore coastal ecosystems', co2: -8, temp: -0.06, bio: +12, cost: 2 },
+];
+
+const CLIMATE_EVENTS: { msg: string; co2: number; temp: number; bio: number }[] = [
+  { msg: '🌪️ Extreme storm damages coastal cities — CO₂ spikes from emergency power use', co2: +8, temp: +0.1, bio: -5 },
+  { msg: '🌡️ Record heatwave hits — biodiversity takes a hit but clean energy adoption rises', co2: -3, temp: +0.12, bio: -8 },
+  { msg: '🌱 International climate treaty signed! Bonus CO₂ reduction from global cooperation', co2: -10, temp: -0.05, bio: +5 },
+];
+
+function ClimatePuzzle({ onWin }: { onWin: () => void }) {
+  const [year, setYear] = useState(1);
+  const [co2, setCo2] = useState(415); // target < 400
+  const [temp, setTemp] = useState(1.1); // target < 1.5
+  const [bio, setBio] = useState(38); // target > 60
+  const [budget, setBudget] = useState(8);
+  const [chosen, setChosen] = useState<string[]>([]);
+  const [phase, setPhase] = useState<'choose' | 'event' | 'done'>('choose');
+  const [eventMsg, setEventMsg] = useState<string | null>(null);
+  const [log, setLog] = useState<string[]>(['🌍 Climate crisis! Choose wise policies each year to stabilize Earth.']);
+
+  const won = co2 <= 400 && bio >= 60;
+  const lost = year > 3 && !won;
+
+  useEffect(() => { if (won) onWin(); }, [won, onWin]);
+
+  const togglePolicy = (id: string) => {
+    const policy = CLIMATE_POLICIES.find(p => p.id === id)!;
+    if (chosen.includes(id)) {
+      setChosen(c => c.filter(x => x !== id));
+      setBudget(b => b + policy.cost);
+    } else {
+      if (budget < policy.cost) return;
+      setChosen(c => [...c, id]);
+      setBudget(b => b - policy.cost);
+    }
+  };
+
+  const applyYear = () => {
+    if (chosen.length === 0) return;
+    const policies = chosen.map(id => CLIMATE_POLICIES.find(p => p.id === id)!);
+    let dCo2 = policies.reduce((s, p) => s + p.co2, 0);
+    let dTemp = policies.reduce((s, p) => s + p.temp, 0);
+    let dBio = policies.reduce((s, p) => s + p.bio, 0);
+
+    // Natural drift
+    dCo2 += 3; dTemp += 0.05; dBio -= 2;
+
+    const evt = CLIMATE_EVENTS[year - 1];
+    setPhase('event');
+    setEventMsg(evt.msg);
+
+    const finalCo2 = Math.round(co2 + dCo2 + evt.co2);
+    const finalTemp = Math.round((temp + dTemp + evt.temp) * 100) / 100;
+    const finalBio = Math.round(Math.max(0, Math.min(100, bio + dBio + evt.bio)));
+
+    setTimeout(() => {
+      setCo2(finalCo2);
+      setTemp(finalTemp);
+      setBio(finalBio);
+      setLog(l => [`📊 Year ${year}: CO₂ ${co2>finalCo2?'↓':'↑'} → ${finalCo2}ppm | Temp ${finalTemp}°C | Biodiversity ${finalBio}%`, ...l.slice(0, 3)]);
+      setEventMsg(null);
+      if (year >= 3) {
+        setPhase('done');
+      } else {
+        setYear(y => y + 1);
+        setChosen([]);
+        setBudget(8);
+        setPhase('choose');
+      }
+    }, 2500);
+  };
+
+  const co2Target = co2 <= 400;
+  const tempTarget = temp <= 1.5;
+  const bioTarget = bio >= 60;
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Climate dashboard */}
+      <div className="grid grid-cols-3 gap-2 bg-orange-50 rounded-xl p-3">
+        <div className="text-center">
+          <div className="text-xs font-bold text-gray-500">🌡️ CO₂</div>
+          <div className={cn("text-lg font-black", co2Target ? 'text-green-600' : 'text-red-600')}>{co2}ppm</div>
+          <div className="text-[10px] text-gray-400">Target: ≤400</div>
+        </div>
+        <div className="text-center">
+          <div className="text-xs font-bold text-gray-500">🔥 Temp Rise</div>
+          <div className={cn("text-lg font-black", tempTarget ? 'text-green-600' : 'text-red-600')}>{temp}°C</div>
+          <div className="text-[10px] text-gray-400">Target: ≤1.5°C</div>
+        </div>
+        <div className="text-center">
+          <div className="text-xs font-bold text-gray-500">🌿 Biodiversity</div>
+          <div className={cn("text-lg font-black", bioTarget ? 'text-green-600' : 'text-red-600')}>{bio}%</div>
+          <div className="text-[10px] text-gray-400">Target: ≥60%</div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between text-sm font-bold">
+        <span className="text-orange-700">📅 Year {year}/3</span>
+        <span className="text-orange-700">💰 Budget: {budget} points</span>
+        <span className="text-orange-700">✓ Chosen: {chosen.length}</span>
+      </div>
+
+      {/* Policy cards */}
+      {phase === 'choose' && (
+        <div className="grid grid-cols-2 gap-2">
+          {CLIMATE_POLICIES.map(p => {
+            const isChosen = chosen.includes(p.id);
+            const canAfford = budget >= p.cost || isChosen;
+            return (
+              <button key={p.id}
+                onClick={() => togglePolicy(p.id)}
+                disabled={!canAfford}
+                className={cn("p-2.5 rounded-xl border-2 text-left transition-all",
+                  isChosen ? 'border-orange-500 bg-orange-50 shadow-md' : 'border-gray-200 hover:border-orange-400 bg-white',
+                  !canAfford && 'opacity-40 cursor-not-allowed'
+                )}
+              >
+                <div className="flex items-start gap-1.5">
+                  <span className="text-xl">{p.emoji}</span>
+                  <div className="flex-1">
+                    <div className="font-bold text-xs">{p.name}</div>
+                    <div className="text-[10px] text-gray-500">{p.desc}</div>
+                    <div className="flex gap-2 mt-1 text-[9px] font-bold">
+                      <span className="text-green-600">CO₂ {p.co2}</span>
+                      <span className="text-blue-600">Temp {p.temp}</span>
+                      <span className="text-purple-600">Bio +{p.bio}</span>
+                      <span className="text-orange-600 ml-auto">💰{p.cost}</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Simulate year button */}
+      {phase === 'choose' && (
+        <button
+          onClick={applyYear}
+          disabled={chosen.length === 0}
+          className={cn("w-full py-3 rounded-xl font-black text-white text-sm shadow-lg transition-all",
+            chosen.length > 0 ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-300 cursor-not-allowed'
+          )}
+        >
+          🌍 Simulate Year {year} →
+        </button>
+      )}
+
+      {/* Event / Result */}
+      <AnimatePresence>
+        {eventMsg && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="bg-orange-100 border-2 border-orange-400 rounded-xl px-4 py-3 text-sm font-bold text-orange-800 text-center">
+            {eventMsg}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {phase === 'done' && lost && (
+        <div className="bg-red-50 border-2 border-red-300 rounded-xl p-3 text-sm text-red-700 font-bold text-center">
+          🌡️ Climate targets missed. CO₂: {co2} | Biodiversity: {bio}%. Need ≤400ppm & ≥60%. Try again!
+        </div>
+      )}
+
+      {/* Log */}
+      <div className="bg-orange-50 rounded-xl p-3 text-xs space-y-1 max-h-20 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-orange-800">{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SDG 12 – Responsible Consumption: Reuse Please!
+   Sort 12 waste items, then craft new products
+═══════════════════════════════════════════════════════════════ */
+
+type WasteCategory = 'recyclable' | 'reusable' | 'compostable' | 'hazardous';
+
+interface WasteItem { id: number; name: string; emoji: string; category: WasteCategory; hint: string; }
+
+const WASTE_ITEMS: WasteItem[] = [
+  { id: 1,  name: 'Glass Bottle',    emoji: '🍾', category: 'recyclable',  hint: 'Glass can be melted and remade endlessly!' },
+  { id: 2,  name: 'Banana Peel',     emoji: '🍌', category: 'compostable', hint: 'Organic waste turns into rich soil nutrients!' },
+  { id: 3,  name: 'Old Chair',       emoji: '🪑', category: 'reusable',    hint: 'Furniture can be repaired or donated!' },
+  { id: 4,  name: 'Car Battery',     emoji: '🔋', category: 'hazardous',   hint: 'Batteries contain toxic chemicals — handle safely!' },
+  { id: 5,  name: 'Newspaper',       emoji: '📰', category: 'recyclable',  hint: 'Paper can be recycled into new paper products!' },
+  { id: 6,  name: 'Leftover Rice',   emoji: '🍚', category: 'compostable', hint: 'Food scraps decompose into compost!' },
+  { id: 7,  name: 'Broken Phone',    emoji: '📱', category: 'reusable',    hint: 'E-waste has valuable metals that can be extracted!' },
+  { id: 8,  name: 'Paint Can',       emoji: '🪣', category: 'hazardous',   hint: 'Chemical paints require special disposal!' },
+  { id: 9,  name: 'Plastic Bottle',  emoji: '🥤', category: 'recyclable',  hint: 'Plastics 1 and 2 are widely recycled!' },
+  { id: 10, name: 'Coffee Grounds',  emoji: '☕', category: 'compostable', hint: 'Coffee grounds enrich garden soil!' },
+  { id: 11, name: 'Vintage Lamp',    emoji: '🪔', category: 'reusable',    hint: 'Vintage items can be restored and resold!' },
+  { id: 12, name: 'Cleaning Spray',  emoji: '🧴', category: 'hazardous',   hint: 'Chemical cleaners pollute waterways if dumped!' },
+];
+
+const BIN_CONFIG: { category: WasteCategory; label: string; emoji: string; color: string }[] = [
+  { category: 'recyclable',  label: 'Recyclable',  emoji: '♻️', color: '#0288D1' },
+  { category: 'reusable',    label: 'Reusable',    emoji: '🔄', color: '#558B2F' },
+  { category: 'compostable', label: 'Compostable', emoji: '🌱', color: '#795548' },
+  { category: 'hazardous',   label: 'Hazardous',   emoji: '⚠️', color: '#BF360C' },
+];
+
+type CraftRecipe = { name: string; emoji: string; materials: WasteCategory[]; points: number };
+const CRAFT_RECIPES: CraftRecipe[] = [
+  { name: 'Garden Planter', emoji: '🪴', materials: ['recyclable', 'compostable'], points: 15 },
+  { name: 'Refurbished Gadget', emoji: '🖥️', materials: ['reusable', 'recyclable'], points: 20 },
+  { name: 'Compost Bag', emoji: '🌿', materials: ['compostable', 'compostable'], points: 10 },
+  { name: 'Safe Disposal Kit', emoji: '🧯', materials: ['hazardous', 'recyclable'], points: 12 },
+];
+
+function ConsumptionPuzzle({ onWin }: { onWin: () => void }) {
+  const [items] = useState<WasteItem[]>(WASTE_ITEMS);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [phase, setPhase] = useState<'sorting' | 'crafting' | 'done'>('sorting');
+  const [sorted, setSorted] = useState<{ item: WasteItem; correct: boolean }[]>([]);
+  const [craftScores, setCraftScores] = useState<CraftRecipe[]>([]);
+  const [feedback, setFeedback] = useState<{ msg: string; ok: boolean } | null>(null);
+  const [selectedBin, setSelectedBin] = useState<WasteCategory | null>(null);
+  const [craftLog, setCraftLog] = useState<string[]>([]);
+  const [availableMaterials, setAvailableMaterials] = useState<Record<WasteCategory, number>>({
+    recyclable: 0, reusable: 0, compostable: 0, hazardous: 0,
+  });
+
+  const efficiency = sorted.length > 0 ? Math.round((sorted.filter(s => s.correct).length / sorted.length) * 100) : 0;
+
+  const handleSort = (category: WasteCategory) => {
+    if (phase !== 'sorting' || currentIdx >= items.length) return;
+    const item = items[currentIdx];
+    const correct = item.category === category;
+    const newSorted = [...sorted, { item, correct }];
+    setSorted(newSorted);
+    setFeedback({ msg: correct ? `✅ Correct! ${item.hint}` : `❌ ${item.name} goes to ${BIN_CONFIG.find(b=>b.category===item.category)?.label}. ${item.hint}`, ok: correct });
+
+    setAvailableMaterials(prev => ({ ...prev, [item.category]: prev[item.category] + 1 }));
+
+    setTimeout(() => {
+      setFeedback(null);
+      if (currentIdx + 1 >= items.length) {
+        setPhase('crafting');
+      } else {
+        setCurrentIdx(i => i + 1);
+      }
+    }, 1800);
+  };
+
+  const handleCraft = (recipe: CraftRecipe) => {
+    const mats = { ...availableMaterials };
+    const needed = [...recipe.materials];
+    for (const mat of needed) {
+      if ((mats[mat] || 0) <= 0) {
+        setCraftLog(l => [`❌ Not enough ${mat} materials to craft ${recipe.name}!`, ...l]);
+        return;
+      }
+      mats[mat]--;
+    }
+    setAvailableMaterials(mats);
+    setCraftScores(prev => [...prev, recipe]);
+    setCraftLog(l => [`✅ Crafted: ${recipe.emoji} ${recipe.name} (+${recipe.points} points)!`, ...l]);
+  };
+
+  const totalCraftPoints = craftScores.reduce((s, r) => s + r.points, 0);
+
+  useEffect(() => {
+    if (phase === 'done' && efficiency >= 70) onWin();
+  }, [phase, efficiency, onWin]);
+
+  const finishCrafting = () => {
+    setPhase('done');
+    if (efficiency < 70) return;
+    onWin();
+  };
+
+  const currentItem = items[currentIdx];
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Progress bar */}
+      <div className="flex items-center gap-3 bg-green-50 rounded-xl px-4 py-2">
+        <span className="text-xs font-bold text-green-800">Sorted: {sorted.length}/{items.length}</span>
+        <div className="flex-1 h-2.5 bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-full rounded-full bg-green-500 transition-all" style={{ width: `${(sorted.length / items.length) * 100}%` }} />
+        </div>
+        <span className={cn("text-xs font-bold", efficiency >= 70 ? 'text-green-700' : 'text-red-600')}>Accuracy: {efficiency}%</span>
+      </div>
+
+      {phase === 'sorting' && currentItem && (
+        <>
+          {/* Current item */}
+          <motion.div key={currentIdx} initial={{ x: 60, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
+            className="flex flex-col items-center gap-2 py-4 bg-white rounded-2xl border-2 border-gray-200">
+            <span className="text-6xl">{currentItem.emoji}</span>
+            <div className="font-black text-xl">{currentItem.name}</div>
+            <div className="text-sm text-gray-500">Which bin does this go in?</div>
+          </motion.div>
+
+          {/* Bins */}
+          <div className="grid grid-cols-2 gap-2">
+            {BIN_CONFIG.map(bin => (
+              <motion.button key={bin.category}
+                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                onClick={() => handleSort(bin.category)}
+                className="p-3 rounded-xl border-3 font-bold text-white text-sm transition-all shadow-md"
+                style={{ background: bin.color, borderColor: bin.color, borderWidth: 3 }}
+              >
+                <span className="text-2xl block mb-1">{bin.emoji}</span>
+                {bin.label}
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Feedback */}
+          <AnimatePresence>
+            {feedback && (
+              <motion.div key="fb" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className={cn("rounded-xl px-4 py-2.5 text-sm font-semibold text-center",
+                  feedback.ok ? 'bg-green-100 text-green-800 border-2 border-green-300' : 'bg-red-50 text-red-800 border-2 border-red-300'
+                )}>
+                {feedback.msg}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
+
+      {phase === 'crafting' && (
+        <>
+          <div className="bg-green-50 rounded-xl p-3">
+            <div className="font-bold text-sm text-green-800 mb-2">🏭 Sorting Complete! Accuracy: {efficiency}%</div>
+            <div className="text-xs text-gray-600">Materials collected:</div>
+            <div className="flex gap-2 flex-wrap mt-1">
+              {BIN_CONFIG.map(b => (
+                <span key={b.category} className="px-2 py-0.5 rounded-full text-[11px] font-bold text-white" style={{ background: b.color }}>
+                  {b.emoji} {b.label}: {availableMaterials[b.category]}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-xs font-bold text-gray-500">🛠️ Craft products from your sorted materials:</div>
+          <div className="grid grid-cols-2 gap-2">
+            {CRAFT_RECIPES.map(recipe => (
+              <button key={recipe.name}
+                onClick={() => handleCraft(recipe)}
+                className="p-2.5 rounded-xl border-2 border-green-300 hover:border-green-500 bg-white text-left transition-all"
+              >
+                <div className="text-2xl mb-1">{recipe.emoji}</div>
+                <div className="font-bold text-xs">{recipe.name}</div>
+                <div className="text-[10px] text-gray-500 mt-0.5">
+                  Needs: {recipe.materials.map(m => BIN_CONFIG.find(b=>b.category===m)?.emoji).join(' + ')}
+                </div>
+                <div className="text-[10px] text-green-600 font-bold">+{recipe.points} points</div>
+              </button>
+            ))}
+          </div>
+
+          {craftLog.slice(0, 3).map((l, i) => (
+            <div key={i} className="text-xs font-semibold text-center" style={{ color: l.startsWith('✅') ? '#2E7D32' : '#C62828' }}>{l}</div>
+          ))}
+
+          <div className="flex items-center justify-between bg-green-50 rounded-xl px-4 py-2">
+            <span className="text-sm font-bold text-green-800">🏆 Craft Points: {totalCraftPoints}</span>
+            <span className="text-sm font-bold text-green-800">Items Crafted: {craftScores.length}</span>
+          </div>
+
+          <button
+            onClick={finishCrafting}
+            className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-black text-sm shadow-lg"
+          >
+            ✅ Complete Challenge!
+          </button>
+        </>
+      )}
+
+      {phase === 'done' && efficiency < 70 && (
+        <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4 text-center">
+          <div className="text-2xl mb-2">😔</div>
+          <div className="font-bold text-red-700">Accuracy {efficiency}% — need 70%+. Practice makes perfect!</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
    PUZZLE MAP & SCREEN WRAPPER
 ═══════════════════════════════════════════════════════════════ */
-const PUZZLE_MAP: Record<ZoneId, React.FC<{ onWin: () => void }>> = {
+const PUZZLE_MAP: Partial<Record<ZoneId, React.FC<{ onWin: () => void }>>> = {
   poverty:   PovertyPuzzle,
   hunger:    HungerPuzzle,
   health:    HealthPuzzle,
   education: EducationPuzzle,
   equality:  EqualityPuzzle,
+  water:     WaterPuzzle,
+  ocean:     OceanPuzzle,
+  forest:    ForestPuzzle,
+  climate:   ClimatePuzzle,
+  consumption: ConsumptionPuzzle,
 };
 
 export default function PuzzleScreen() {
@@ -1335,7 +2174,10 @@ export default function PuzzleScreen() {
                   🎮 {zone.description}
                 </h2>
                 <p className="text-sm text-center text-gray-500 mb-5">{zone.puzzleIntro}</p>
-                <PuzzleComponent onWin={handleWin} />
+                {PuzzleComponent
+                  ? <PuzzleComponent onWin={handleWin} />
+                  : <div className="text-center text-gray-400 py-8">🚧 Mini-game coming soon!</div>
+                }
               </motion.div>
             ) : (
               <motion.div key="won" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}

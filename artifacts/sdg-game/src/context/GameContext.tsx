@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { ZoneId } from '@/data/gameData';
+import type { ZoneId, LevelId } from '@/data/gameData';
+import { PEOPLE_ZONES, PLANET_ZONES } from '@/data/gameData';
 
 interface GameState {
   playerName: string;
   playerCharacter: number;
   completedZones: ZoneId[];
   isStarted: boolean;
+  currentLevel: LevelId;
 }
 
 interface GameContextType extends GameState {
@@ -13,6 +15,10 @@ interface GameContextType extends GameState {
   completeZone: (zoneId: ZoneId) => void;
   resetGame: () => void;
   getWorldHealPercent: () => number;
+  peopleLevelComplete: boolean;
+  planetLevelComplete: boolean;
+  peopleProgress: number;
+  planetProgress: number;
 }
 
 const defaultState: GameState = {
@@ -20,11 +26,12 @@ const defaultState: GameState = {
   playerCharacter: 1,
   completedZones: [],
   isStarted: false,
+  currentLevel: 'people',
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
-const STORAGE_KEY = 'sdg_game_save_v2';
-const TOTAL_ZONES = 5;
+const STORAGE_KEY = 'sdg_game_save_v3';
+const TOTAL_ZONES = 10;
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<GameState>(() => {
@@ -46,16 +53,34 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const completeZone = (zoneId: ZoneId) => {
     setState(prev => {
       if (prev.completedZones.includes(zoneId)) return prev;
-      return { ...prev, completedZones: [...prev.completedZones, zoneId] };
+      const next = [...prev.completedZones, zoneId];
+      const allPeopleDone = PEOPLE_ZONES.every(id => next.includes(id));
+      return {
+        ...prev,
+        completedZones: next,
+        currentLevel: allPeopleDone ? 'planet' : prev.currentLevel,
+      };
     });
   };
 
-  const resetGame = () => setState(defaultState);
+  const resetGame = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setState(defaultState);
+  };
 
   const getWorldHealPercent = () => Math.round((state.completedZones.length / TOTAL_ZONES) * 100);
 
+  const peopleLevelComplete = PEOPLE_ZONES.every(id => state.completedZones.includes(id));
+  const planetLevelComplete = PLANET_ZONES.every(id => state.completedZones.includes(id));
+  const peopleProgress = PEOPLE_ZONES.filter(id => state.completedZones.includes(id)).length;
+  const planetProgress = PLANET_ZONES.filter(id => state.completedZones.includes(id)).length;
+
   return (
-    <GameContext.Provider value={{ ...state, startGame, completeZone, resetGame, getWorldHealPercent }}>
+    <GameContext.Provider value={{
+      ...state,
+      startGame, completeZone, resetGame, getWorldHealPercent,
+      peopleLevelComplete, planetLevelComplete, peopleProgress, planetProgress,
+    }}>
       {children}
     </GameContext.Provider>
   );

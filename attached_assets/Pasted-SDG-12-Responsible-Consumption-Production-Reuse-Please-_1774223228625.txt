@@ -1,0 +1,106 @@
+SDG 12 – Responsible Consumption & Production: Reuse Please! – Full Game Design
+
+Genre: Crafting / Sorting / Resource Management
+Target Audience: Teens, casual players
+Tone: Fun, educational, creative, satisfying
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Receive incoming waste items from homes, factories, or stores.
+	2.	Sort items into categories: recyclable, reusable, compostable, hazardous.
+	3.	Craft new products from reusable materials.
+	4.	Track environmental impact: waste reduction, material efficiency, and product value.
+	5.	Respond to events: contamination, shortages, or overproduction.
+	6.	Repeat daily or by batch cycles.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start of Day
+	•	Display inventory: materials collected, sorting bins, crafting tools.
+	•	Show incoming waste batch with item types and quantities.
+	•	Display environmental metrics: waste levels, recycling efficiency, production score.
+
+Step 1: Sort Waste
+	•	Player drags items into correct bins:
+	•	Recyclable → metals, plastics, glass
+	•	Reusable → furniture, textiles, electronics
+	•	Compostable → organic waste
+	•	Hazardous → chemicals, batteries
+	•	Incorrect sorting reduces efficiency score and may create penalties.
+
+Step 2: Process Materials
+	•	Convert sorted items into reusable raw materials via processing stations: shredders, cleaners, smelters.
+	•	Processing takes time or energy resources.
+
+Step 3: Craft Products
+	•	Use processed materials to craft new items: furniture, toys, tools, or building materials.
+	•	Player selects recipes based on available materials.
+	•	Product quality depends on material type and processing efficiency.
+
+Step 4: Manage Inventory & Distribution
+	•	Add crafted products to inventory for sale, donation, or deployment in scenarios.
+	•	Track product value and contribution to environmental metrics.
+
+Step 5: End of Day / Batch
+	•	Update metrics: total waste reduced, materials reused, products created, efficiency rating.
+	•	Provide visual and numerical feedback: sorted bins, crafted items, environmental score.
+
+⸻
+
+3. Key Variables & Objects
+
+Item Attributes
+	•	Type: recyclable, reusable, compostable, hazardous
+	•	Quality: low, medium, high (affects final product value)
+	•	Quantity
+
+Material Attributes
+	•	Type: metal, plastic, wood, cloth, organic
+	•	Quantity
+	•	Purity / processing quality
+
+Product Attributes
+	•	Type: furniture, toy, tool, building material
+	•	Quality score (based on raw materials)
+	•	Inventory count
+
+Global Variables
+	•	Day count
+	•	Total waste received, sorted, and reused
+	•	Efficiency score (percentage of waste properly reused)
+	•	Inventory of materials and crafted products
+
+⸻
+
+4. UI Elements
+	•	Top bar: day, environmental efficiency score, inventory count
+	•	Waste batch panel: incoming items, type, quantity
+	•	Sorting bins panel: visual feedback for correct/incorrect sorting
+	•	Processing stations panel: tools and processing progress
+	•	Crafted products panel: inventory, value, and quality
+	•	Alerts: contamination, shortage, or mis-sorted items
+
+⸻
+
+5. Feedback Systems
+	•	Visual: bins fill up, materials move along processing stations, crafted products appear in inventory
+	•	Audio: sorting sounds, processing machine sounds, product completion chime
+	•	Efficiency meter updates dynamically
+	•	Daily report: waste reduced, materials reused, products crafted, efficiency score
+
+⸻
+
+6. Progression
+	•	Unlock advanced processing machines and crafting recipes
+	•	Introduce larger batches and more complex waste types
+	•	Optional challenges: reduce hazardous waste, maximize reuse efficiency, or craft high-value items
+	•	Track cumulative environmental impact for long-term progression
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Waste efficiency reaches a set threshold, material reuse maximized, and high-value products crafted consistently
+	•	Loss: Waste accumulates beyond acceptable limits, efficiency drops critically, or crafting stalls due to mismanagement

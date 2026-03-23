@@ -1,0 +1,108 @@
+SDG 15 – Life on Land: Forest Guardian – Full Game Design
+
+Genre: Environmental Simulation / Strategy
+Target Audience: Teens, casual players
+Tone: Engaging, educational, visually rich
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Monitor a forested region for deforestation, wildfires, poaching, and invasive species.
+	2.	Plant trees, restore habitats, and manage wildlife populations.
+	3.	Track forest health metrics: tree cover, biodiversity, and ecosystem stability.
+	4.	Respond to random events like fires, illegal logging, or droughts.
+	5.	Repeat across days, seasons, or years to restore and maintain a healthy forest.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start of Day/Season
+	•	Display forest dashboard: tree cover %, biodiversity, wildlife population, ecosystem health.
+	•	Highlight urgent issues: fires, logging activity, animal threats, disease outbreaks.
+
+Step 1: Plant & Restore
+	•	Player plants trees and restores habitats in degraded areas.
+	•	Choose tree type based on local ecosystem needs.
+	•	Trees grow over time, improving forest cover and ecosystem stability.
+
+Step 2: Protect Wildlife
+	•	Identify endangered species and protect their habitats.
+	•	Patrol zones to prevent poaching or rescue injured animals.
+	•	Success increases biodiversity index and animal population health.
+
+Step 3: Manage Threats
+	•	Respond to wildfires by assigning firefighting teams or creating firebreaks.
+	•	Handle invasive species or diseases with targeted interventions.
+	•	Prevent illegal logging by placing guards or monitoring activity.
+
+Step 4: Allocate Resources
+	•	Limited manpower, tools, and budget require prioritization of planting, protection, and threat management.
+	•	Efficient use of resources maximizes forest recovery and biodiversity.
+
+Step 5: End of Day/Season
+	•	Update forest metrics: tree cover %, biodiversity, ecosystem health.
+	•	Provide visual feedback: greener forest, thriving wildlife, restored habitats.
+	•	Prepare next day/season with new events or challenges.
+
+⸻
+
+3. Key Variables & Objects
+
+Forest Zone Attributes
+	•	Type: rainforest, temperate forest, savanna, etc.
+	•	Tree cover % (0–100)
+	•	Biodiversity index (0–100)
+	•	Ecosystem health (0–100)
+	•	Threats present: fire, poaching, disease, invasive species
+
+Tree Attributes
+	•	Species type
+	•	Growth stage (seedling → sapling → mature)
+	•	Health (0–100)
+	•	Ecosystem contribution
+
+Wildlife Attributes
+	•	Species type
+	•	Population count
+	•	Health (0–100)
+	•	Habitat area
+
+Global Variables
+	•	Day/season/year count
+	•	Total resources: manpower, budget, tools
+	•	Forest health index
+	•	Biodiversity index
+	•	Threat status flags
+
+⸻
+
+4. UI Elements
+	•	Top bar: day/season/year, forest health index, biodiversity index, resources available
+	•	Forest map: zones with visual tree cover, wildlife icons, and threats
+	•	Wildlife panel: species health, population, and endangered status
+	•	Resource panel: planting tools, firefighting units, monitoring equipment
+	•	Alerts: wildfires, poaching, disease outbreaks, invasive species
+	•	End-of-day/season report: tree growth, biodiversity changes, ecosystem recovery
+
+⸻
+
+5. Feedback Systems
+	•	Visual: trees grow over time, animals move, green canopy expands, threats highlighted
+	•	Audio: forest ambiance, alert sounds for threats, planting and wildlife sounds
+	•	Metrics: forest health, biodiversity, ecosystem stability update dynamically
+	•	Alerts for critical events or poor resource allocation
+
+⸻
+
+6. Progression
+	•	Unlock advanced tools: firefighting units, monitoring drones, habitat restoration kits
+	•	Introduce larger forest areas and more complex threats
+	•	Seasonal challenges: droughts, storms, disease outbreaks
+	•	Track cumulative forest health and biodiversity improvements for long-term progression
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Forest cover, biodiversity, and ecosystem health reach target thresholds over a defined period
+	•	Loss: Forest degraded beyond recovery, biodiversity collapse, or resources depleted before threats are controlled
