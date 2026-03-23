@@ -381,6 +381,110 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
       <text x="1580" y="990" textAnchor="middle" fontSize="22" fontWeight="bold" fontFamily="Patrick Hand, cursive" fill="#455A64">🌍 People World</text>
       <text x="1580" y="1020" textAnchor="middle" fontSize="13" fontFamily="Nunito" fill="#607D8B">Heal 5 zones to unlock the Planet!</text>
 
+      {/* ════ PEOPLE DIRECTIONAL SIGNPOST (center plaza) ════ */}
+      <g transform="translate(1580, 880)">
+        {/* Wooden post */}
+        <rect x="-5" y="-10" width="10" height="240" rx="4" fill="#6D4C41" />
+        <rect x="-2" y="-10" width="3" height="240" rx="2" fill="rgba(255,255,255,0.18)" />
+
+        {/* ↑ HEALTH — top board (straight up) */}
+        {(() => { const done = completedZones.includes('health'); return (
+          <g>
+            <rect x="-70" y="-28" width="140" height="28" rx="7" fill={done ? '#2E7D32' : '#757575'} filter="url(#shadow)" />
+            <text x="0" y="-9" textAnchor="middle" fontSize="11" fill="white" fontFamily="Nunito" fontWeight="bold">🏥 Health ↑</text>
+            {done && <text x="0" y="-26" textAnchor="middle" fontSize="8" fill="#A5D6A7">✓ Healed</text>}
+          </g>
+        ); })()}
+
+        {/* ← EQUALITY (left) and HUNGER → (right) — middle row */}
+        {(() => { const done = completedZones.includes('equality'); return (
+          <g>
+            <rect x="-150" y="12" width="135" height="28" rx="7" fill={done ? '#FF8F00' : '#757575'} filter="url(#shadow)" />
+            <polygon points="-150,12 -150,40 -165,26" fill={done ? '#FF8F00' : '#757575'} />
+            <text x="-83" y="31" textAnchor="middle" fontSize="10" fill="white" fontFamily="Nunito" fontWeight="bold">⚡ Equality</text>
+          </g>
+        ); })()}
+        {(() => { const done = completedZones.includes('hunger'); return (
+          <g>
+            <rect x="15" y="12" width="135" height="28" rx="7" fill={done ? '#F57F17' : '#757575'} filter="url(#shadow)" />
+            <polygon points="150,12 150,40 165,26" fill={done ? '#F57F17' : '#757575'} />
+            <text x="83" y="31" textAnchor="middle" fontSize="10" fill="white" fontFamily="Nunito" fontWeight="bold">🌾 Hunger</text>
+          </g>
+        ); })()}
+
+        {/* ← POVERTY (left) and EDUCATION → (right) — bottom row */}
+        {(() => { const done = completedZones.includes('poverty'); return (
+          <g>
+            <rect x="-150" y="54" width="135" height="28" rx="7" fill={done ? '#C62828' : '#757575'} filter="url(#shadow)" />
+            <polygon points="-150,54 -150,82 -165,68" fill={done ? '#C62828' : '#757575'} />
+            <text x="-83" y="73" textAnchor="middle" fontSize="10" fill="white" fontFamily="Nunito" fontWeight="bold">🏘️ Poverty</text>
+          </g>
+        ); })()}
+        {(() => { const done = completedZones.includes('education'); return (
+          <g>
+            <rect x="15" y="54" width="135" height="28" rx="7" fill={done ? '#4A148C' : '#757575'} filter="url(#shadow)" />
+            <polygon points="150,54 150,82 165,68" fill={done ? '#4A148C' : '#757575'} />
+            <text x="83" y="73" textAnchor="middle" fontSize="10" fill="white" fontFamily="Nunito" fontWeight="bold">🎓 Education</text>
+          </g>
+        ); })()}
+
+        {/* ↓ PLANET GATEWAY — bottom board */}
+        <g>
+          <rect x="-80" y="98" width="160" height="28" rx="7" fill="#006064" filter="url(#shadow)" />
+          <text x="0" y="117" textAnchor="middle" fontSize="10" fill="#80DEEA" fontFamily="Nunito" fontWeight="bold">↓ Planet Gateway</text>
+        </g>
+      </g>
+
+      {/* ════ MID-PATH SIGNS ════ */}
+      {/* Health path — midpoint ~(1580, 550) */}
+      {(() => { const done = completedZones.includes('health'); return (
+        <g transform="translate(1640, 555)">
+          <rect x="-4" y="-5" width="7" height="55" rx="3" fill="#6D4C41" />
+          <rect x="-55" y="-20" width="110" height="22" rx="5" fill={done ? '#2E7D32' : '#9E9E9E'} />
+          <text x="0" y="-5" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">🏥 Leaflet's Clinic ↑</text>
+        </g>
+      ); })()}
+
+      {/* Equality path — midpoint ~(890, 720) */}
+      {(() => { const done = completedZones.includes('equality'); return (
+        <g transform="translate(890, 730)">
+          <rect x="-4" y="-5" width="7" height="55" rx="3" fill="#6D4C41" />
+          <rect x="-105" y="-20" width="100" height="22" rx="5" fill={done ? '#FF8F00' : '#9E9E9E'} />
+          <polygon points="-105,-20 -105,2 -116,-9" fill={done ? '#FF8F00' : '#9E9E9E'} />
+          <text x="-55" y="-5" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">⚡ Equality ←</text>
+        </g>
+      ); })()}
+
+      {/* Hunger path — midpoint ~(2240, 720) */}
+      {(() => { const done = completedZones.includes('hunger'); return (
+        <g transform="translate(2240, 730)">
+          <rect x="-4" y="-5" width="7" height="55" rx="3" fill="#6D4C41" />
+          <rect x="5" y="-20" width="100" height="22" rx="5" fill={done ? '#F57F17' : '#9E9E9E'} />
+          <polygon points="105,-20 105,2 116,-9" fill={done ? '#F57F17' : '#9E9E9E'} />
+          <text x="55" y="-5" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">→ Hunger 🌾</text>
+        </g>
+      ); })()}
+
+      {/* Poverty path — midpoint ~(870, 1340) */}
+      {(() => { const done = completedZones.includes('poverty'); return (
+        <g transform="translate(870, 1340)">
+          <rect x="-4" y="-5" width="7" height="55" rx="3" fill="#6D4C41" />
+          <rect x="-105" y="-20" width="100" height="22" rx="5" fill={done ? '#C62828' : '#9E9E9E'} />
+          <polygon points="-105,-20 -105,2 -116,-9" fill={done ? '#C62828' : '#9E9E9E'} />
+          <text x="-55" y="-5" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">⬅ Poverty 🏘️</text>
+        </g>
+      ); })()}
+
+      {/* Education path — midpoint ~(2250, 1340) */}
+      {(() => { const done = completedZones.includes('education'); return (
+        <g transform="translate(2250, 1340)">
+          <rect x="-4" y="-5" width="7" height="55" rx="3" fill="#6D4C41" />
+          <rect x="5" y="-20" width="100" height="22" rx="5" fill={done ? '#4A148C' : '#9E9E9E'} />
+          <polygon points="105,-20 105,2 116,-9" fill={done ? '#4A148C' : '#9E9E9E'} />
+          <text x="55" y="-5" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">Education 🎓 →</text>
+        </g>
+      ); })()}
+
       {/* ════ PLANET PATHS ════ */}
       {/* Center to NW (water) */}
       <path d={`M ${PLANET_CENTER_X} ${PLANET_CENTER_Y} Q 1000 2900 560 2890`} stroke="#29B6F6" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.5" />
@@ -406,6 +510,51 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
       <circle cx={PLANET_CENTER_X} cy={PLANET_CENTER_Y} r="190" fill="none" stroke="#00BCD4" strokeWidth="5" opacity="0.7" />
       <text x={PLANET_CENTER_X} y={PLANET_CENTER_Y - 50} textAnchor="middle" fontSize="22" fontWeight="bold" fontFamily="Patrick Hand, cursive" fill="#80DEEA">🌎 Planet World</text>
       <text x={PLANET_CENTER_X} y={PLANET_CENTER_Y - 22} textAnchor="middle" fontSize="13" fontFamily="Nunito" fill="#4DD0E1">Heal 5 planet zones to save Earth!</text>
+
+      {/* ════ PLANET DIRECTIONAL SIGNPOST ════ */}
+      <g transform={`translate(${PLANET_CENTER_X + 220}, ${PLANET_CENTER_Y - 80})`}>
+        <rect x="-5" y="-10" width="10" height="200" rx="4" fill="#004D40" />
+        <rect x="-2" y="-10" width="3" height="200" rx="2" fill="rgba(0,188,212,0.3)" />
+        {/* ← WATER */}
+        {(() => { const done = completedZones.includes('water'); return (
+          <g>
+            <rect x="-140" y="0" width="125" height="26" rx="7" fill={done ? '#0277BD' : '#455A64'} filter="url(#shadow)" />
+            <polygon points="-140,0 -140,26 -155,13" fill={done ? '#0277BD' : '#455A64'} />
+            <text x="-77" y="17" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">💧 Water ←</text>
+          </g>
+        ); })()}
+        {/* OCEAN → */}
+        {(() => { const done = completedZones.includes('ocean'); return (
+          <g>
+            <rect x="15" y="0" width="125" height="26" rx="7" fill={done ? '#006064' : '#455A64'} filter="url(#shadow)" />
+            <polygon points="140,0 140,26 155,13" fill={done ? '#006064' : '#455A64'} />
+            <text x="77" y="17" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">🐠 Ocean →</text>
+          </g>
+        ); })()}
+        {/* ← FOREST */}
+        {(() => { const done = completedZones.includes('forest'); return (
+          <g>
+            <rect x="-140" y="40" width="125" height="26" rx="7" fill={done ? '#1B5E20' : '#455A64'} filter="url(#shadow)" />
+            <polygon points="-140,40 -140,66 -155,53" fill={done ? '#1B5E20' : '#455A64'} />
+            <text x="-77" y="57" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">🌿 Forest ←</text>
+          </g>
+        ); })()}
+        {/* CLIMATE → */}
+        {(() => { const done = completedZones.includes('climate'); return (
+          <g>
+            <rect x="15" y="40" width="125" height="26" rx="7" fill={done ? '#BF360C' : '#455A64'} filter="url(#shadow)" />
+            <polygon points="140,40 140,66 155,53" fill={done ? '#BF360C' : '#455A64'} />
+            <text x="77" y="57" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">🌡️ Climate →</text>
+          </g>
+        ); })()}
+        {/* ↓ CONSUMPTION */}
+        {(() => { const done = completedZones.includes('consumption'); return (
+          <g>
+            <rect x="-65" y="80" width="130" height="26" rx="7" fill={done ? '#558B2F' : '#455A64'} filter="url(#shadow)" />
+            <text x="0" y="97" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">♻️ Consumption ↓</text>
+          </g>
+        ); })()}
+      </g>
 
       {/* ════ PEOPLE SECTION RIVER ════ */}
       <path d="M 0 1350 Q 700 1280 1200 1320 Q 1600 1360 2100 1290 Q 2600 1220 3200 1280"

@@ -35,8 +35,8 @@ interface ChibiProps {
 }
 
 export const ChibiCharacter = ({
-  skinColor = '#FDDBB0',
-  hairColor = '#3E2723',
+  skinColor = '#FAC5A0',
+  hairColor = '#2C1A0E',
   hairStyle = 'bun',
   hairAccessory,
   eyeStyle = 'dots',
@@ -61,10 +61,10 @@ export const ChibiCharacter = ({
   const BSH = `url(#${uid}bsh)`;  /* body shadow */
 
   const mouthPath = {
-    happy:      `M 42 49 Q 50 58 58 49`,
-    sad:        `M 43 54 Q 50 48 57 54`,
-    surprised:  `M 47 52 Q 50 59 53 52`,
-    determined: `M 43 51 L 57 51`,
+    happy:      `M 42 48 Q 50 57 58 48`,
+    sad:        `M 43 53 Q 50 47 57 53`,
+    surprised:  `M 47 51 Q 50 58 53 51`,
+    determined: `M 43 50 L 57 50`,
   }[expression];
 
   /* Eyes — each style gets a white highlight dot for that clay-toy shine */
@@ -171,12 +171,14 @@ export const ChibiCharacter = ({
         </>
       )}
 
-      {/* ════ HEAD — clay sphere ════ */}
-      <ellipse cx="50" cy="38" rx="29" ry="28" fill={skinColor} />
-      <ellipse cx="50" cy="38" rx="29" ry="28" fill={HL} />
-      <ellipse cx="50" cy="38" rx="29" ry="28" fill={SH} />
-      {/* Specular shine — the defining clay toy highlight */}
-      <ellipse cx="36" cy="24" rx="10" ry="7" fill="white" opacity="0.42" />
+      {/* ════ HEAD — realistic 3D clay toy ════ */}
+      <ellipse cx="50" cy="37" rx="26" ry="25" fill={skinColor} />
+      <ellipse cx="50" cy="37" rx="26" ry="25" fill={HL} />
+      <ellipse cx="50" cy="37" rx="26" ry="25" fill={SH} />
+      {/* Specular shine — the defining 3D vinyl highlight */}
+      <ellipse cx="37" cy="24" rx="9" ry="6" fill="white" opacity="0.50" />
+      {/* Subtle secondary highlight */}
+      <ellipse cx="58" cy="46" rx="5" ry="3" fill="white" opacity="0.14" />
 
       {/* ════ HAIR FRONT FRINGE ════ */}
       {(hairStyle === 'bun' || hairStyle === 'short') && (
@@ -199,21 +201,21 @@ export const ChibiCharacter = ({
       )}
 
       {/* ════ EYES ════ */}
-      {eyeEl(38, 38)}
-      {eyeEl(62, 38)}
+      {eyeEl(38, 37)}
+      {eyeEl(62, 37)}
 
       {/* ════ BLUSH (soft blurred circles for clay look) ════ */}
       {blush && (
         <>
-          <ellipse cx="25" cy="45" rx="9.5" ry="6.5" fill={cheekColor} opacity="0.82"
+          <ellipse cx="25" cy="44" rx="9.5" ry="6.5" fill={cheekColor} opacity="0.82"
             filter={`url(#${uid}blush)`} />
-          <ellipse cx="75" cy="45" rx="9.5" ry="6.5" fill={cheekColor} opacity="0.82"
+          <ellipse cx="75" cy="44" rx="9.5" ry="6.5" fill={cheekColor} opacity="0.82"
             filter={`url(#${uid}blush)`} />
         </>
       )}
 
       {/* ════ NOSE ════ */}
-      <circle cx="50" cy="44" r="2.5" fill={cheekColor} opacity="0.75" />
+      <circle cx="50" cy="43" r="2.5" fill={cheekColor} opacity="0.75" />
 
       {/* ════ MOUTH ════ */}
       <path d={mouthPath} fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />
@@ -284,16 +286,28 @@ export const ChibiCharacter = ({
         </>
       )}
 
-      {/* ════ ARMS — clay rounded ════ */}
+      {/* ════ ARMS — outfit sleeves with skin hands ════ */}
       <g className="chibi-arm-l">
-        <ellipse cx="22" cy="75" rx="8.5" ry="11.5" fill={skinColor} />
-        <ellipse cx="22" cy="75" rx="8.5" ry="11.5" fill={HL} />
-        <ellipse cx="22" cy="75" rx="8.5" ry="11.5" fill={SH} />
+        {/* Sleeve */}
+        <ellipse cx="21" cy="76" rx="9" ry="14" fill={outfitColor} />
+        <ellipse cx="21" cy="76" rx="9" ry="14" fill={BHL} />
+        <ellipse cx="21" cy="76" rx="9" ry="14" fill={BSH} />
+        {/* Cuff highlight */}
+        <ellipse cx="21" cy="85" rx="7" ry="3.5" fill={collarColor} opacity="0.7" />
+        {/* Hand */}
+        <ellipse cx="21" cy="89" rx="7" ry="5.5" fill={skinColor} />
+        <ellipse cx="21" cy="89" rx="7" ry="5.5" fill={HL} />
       </g>
       <g className="chibi-arm-r">
-        <ellipse cx="78" cy="75" rx="8.5" ry="11.5" fill={skinColor} />
-        <ellipse cx="78" cy="75" rx="8.5" ry="11.5" fill={HL} />
-        <ellipse cx="78" cy="75" rx="8.5" ry="11.5" fill={SH} />
+        {/* Sleeve */}
+        <ellipse cx="79" cy="76" rx="9" ry="14" fill={outfitColor} />
+        <ellipse cx="79" cy="76" rx="9" ry="14" fill={BHL} />
+        <ellipse cx="79" cy="76" rx="9" ry="14" fill={BSH} />
+        {/* Cuff highlight */}
+        <ellipse cx="79" cy="85" rx="7" ry="3.5" fill={collarColor} opacity="0.7" />
+        {/* Hand */}
+        <ellipse cx="79" cy="89" rx="7" ry="5.5" fill={skinColor} />
+        <ellipse cx="79" cy="89" rx="7" ry="5.5" fill={HL} />
       </g>
 
       {/* Item / prop */}

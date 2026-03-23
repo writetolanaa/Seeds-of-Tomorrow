@@ -826,8 +826,144 @@ type Student = {
   morning: string | null; afternoon: string | null;
 };
 
-const EducationPuzzle = ({ onWin }: { onWin: () => void }) => {
-  const [students, setStudents] = useState<Student[]>([
+/* ═══════════════════════════════════════════════════════════════
+   SDG 4 – General Knowledge Quiz
+   20 fascinating world facts — score 70%+ to win!
+═══════════════════════════════════════════════════════════════ */
+const GK_QUESTIONS = [
+  { q: "What percentage of Earth's surface is covered by water?", choices: ["50%","60%","71%","85%"], answer: 2, fact: "Despite this, only 3% is fresh water — and most of that is frozen in glaciers!" },
+  { q: "Which country has more natural lakes than the rest of the world combined?", choices: ["Russia","Finland","Canada","USA"], answer: 2, fact: "Canada has over 2 million lakes — more than 60% of all lakes on Earth!" },
+  { q: "What is the most spoken language by total number of speakers worldwide?", choices: ["English","Spanish","Mandarin Chinese","Hindi"], answer: 2, fact: "Mandarin Chinese has over 1.1 billion total speakers, putting it at #1 in the world!" },
+  { q: "Which is actually the LARGEST desert on Earth by area?", choices: ["Sahara","Gobi","Arabian Desert","Antarctica"], answer: 3, fact: "Antarctica is a cold desert! The Sahara is only the largest HOT desert." },
+  { q: "How many bones does a healthy adult human body have?", choices: ["150","176","206","254"], answer: 2, fact: "Babies are born with ~270 bones; many fuse together as we grow into adulthood!" },
+  { q: "Which tiny creature can survive the vacuum of outer space?", choices: ["Cockroach","Scorpion","Tardigrade","Mite"], answer: 2, fact: "Tardigrades (water bears) can survive space, extreme radiation, and even volcanoes!" },
+  { q: "How many countries are members of the United Nations?", choices: ["150","172","193","215"], answer: 2, fact: "The UN was founded in 1945 with just 51 member states. Now it's nearly 200!" },
+  { q: "What percentage of Earth's fresh water is locked in glaciers and ice caps?", choices: ["25%","40%","55%","~69%"], answer: 3, fact: "That's why melting glaciers are such a serious threat to global freshwater supplies!" },
+  { q: "Which planet in our solar system has the most moons?", choices: ["Jupiter","Saturn","Uranus","Neptune"], answer: 1, fact: "Saturn has 146 confirmed moons — including Titan, which has its own thick atmosphere!" },
+  { q: "Approximately how many languages are spoken around the world?", choices: ["~500","~2,000","~7,000","~15,000"], answer: 2, fact: "Over half of these languages have fewer than 10,000 speakers and are endangered!" },
+  { q: "About how many trees exist on Earth?", choices: ["300 billion","1 trillion","3 trillion","10 trillion"], answer: 2, fact: "That's ~420 trees per person — but we cut down 15 billion trees every year." },
+  { q: "What is the deepest known point on Earth?", choices: ["Java Trench","Tonga Trench","Puerto Rico Trench","Mariana Trench"], answer: 3, fact: "The Mariana Trench reaches 11 km deep — deeper than Mount Everest is tall!" },
+  { q: "Which continent has the most countries?", choices: ["Asia","Africa","Europe","Americas"], answer: 1, fact: "Africa has 54 countries — nearly double Asia (48) or Europe (44)!" },
+  { q: "What gas makes up about 78% of Earth's atmosphere?", choices: ["Oxygen","Carbon Dioxide","Nitrogen","Argon"], answer: 2, fact: "Oxygen is only 21%! Nitrogen is mostly inert but vital for making proteins in living things." },
+  { q: "How long does a single plastic bottle take to decompose?", choices: ["10 years","50 years","200 years","450 years"], answer: 3, fact: "A bottle used for just 10 minutes outlasts you, your children, and your grandchildren!" },
+  { q: "About what fraction of the world's food calories come from just 3 crops?", choices: ["1 in 4","1 in 3","About half","Over 60%"], answer: 3, fact: "Rice, wheat, and corn provide over 60% of all calories humans eat worldwide!" },
+  { q: "What is the smallest country in the world by area?", choices: ["Monaco","Nauru","Vatican City","San Marino"], answer: 2, fact: "Vatican City covers only 0.44 km² — smaller than most large shopping malls!" },
+  { q: "How fast does light travel through space?", choices: ["30,000 km/s","150,000 km/s","300,000 km/s","1,000,000 km/s"], answer: 2, fact: "Light from the Sun takes ~8 minutes to reach Earth, traveling 150 million km!" },
+  { q: "Which material is the most recycled in the world?", choices: ["Plastic","Glass","Paper","Steel"], answer: 3, fact: "Steel is infinitely recyclable without losing quality — and saves 75% of the energy to produce it!" },
+  { q: "How many species of insects are estimated to exist on Earth?", choices: ["~100,000","~1 million","~5.5 million","~50 million"], answer: 2, fact: "We've formally described only ~1 million so far — the rest are still undiscovered!" },
+];
+
+function GeneralKnowledgeQuiz({ onWin }: { onWin: () => void }) {
+  const [questions] = useState(() => [...GK_QUESTIONS].sort(() => Math.random() - 0.5));
+  const [idx, setIdx] = useState(0);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [answered, setAnswered] = useState(false);
+  const [correct, setCorrect] = useState(0);
+  const [done, setDone] = useState(false);
+
+  const q = questions[idx];
+  const WIN_COUNT = Math.ceil(questions.length * 0.7);
+
+  function pick(i: number) {
+    if (answered) return;
+    setSelected(i);
+    setAnswered(true);
+    if (i === q.answer) setCorrect(c => c + 1);
+  }
+
+  function next() {
+    const nextIdx = idx + 1;
+    if (nextIdx >= questions.length) {
+      setDone(true);
+      const finalScore = correct + (selected === q.answer ? 1 : 0);
+      if (finalScore >= WIN_COUNT) setTimeout(onWin, 1500);
+    } else {
+      setIdx(nextIdx);
+      setSelected(null);
+      setAnswered(false);
+    }
+  }
+
+  if (done) {
+    const finalScore = correct;
+    const passed = finalScore >= WIN_COUNT;
+    return (
+      <div className="flex flex-col items-center gap-5 text-center py-4">
+        <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 1.8 }} className="text-6xl">
+          {passed ? '🏆' : '📚'}
+        </motion.div>
+        <h3 className="font-display text-2xl" style={{ color: passed ? '#7C3AED' : '#DC2626' }}>
+          {passed ? 'Brilliant Scholar!' : 'Keep Learning!'}
+        </h3>
+        <div className={cn('rounded-2xl p-4 border-2 w-full max-w-xs', passed ? 'bg-purple-50 border-purple-300' : 'bg-red-50 border-red-300')}>
+          <div className="text-4xl font-black" style={{ color: passed ? '#7C3AED' : '#DC2626' }}>{finalScore}/{questions.length}</div>
+          <div className="text-sm mt-1 text-gray-600">You need {WIN_COUNT}+ to pass (70%)</div>
+        </div>
+        {!passed && <p className="text-xs text-gray-500 max-w-xs">Tip: Some answers are surprising — like Antarctica being the biggest desert!</p>}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-3">
+        <div className="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+          <div className="h-full rounded-full bg-purple-500 transition-all duration-500" style={{ width: `${(idx / questions.length) * 100}%` }} />
+        </div>
+        <span className="text-xs font-bold text-gray-500">{idx}/{questions.length}</span>
+        <span className="text-xs font-bold text-green-600">✓ {correct}</span>
+      </div>
+
+      <motion.div key={idx} initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
+        className="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4">
+        <div className="text-xs font-bold text-purple-400 mb-1">QUESTION {idx + 1} OF {questions.length}</div>
+        <p className="font-bold text-gray-800 text-sm leading-relaxed">{q.q}</p>
+      </motion.div>
+
+      <div className="grid grid-cols-2 gap-2">
+        {q.choices.map((choice, i) => {
+          const isCorrect = i === q.answer;
+          const isSelected = i === selected;
+          let bg = 'bg-white border-gray-200 hover:border-purple-300';
+          if (answered) {
+            if (isCorrect) bg = 'bg-green-100 border-green-500';
+            else if (isSelected) bg = 'bg-red-100 border-red-400';
+            else bg = 'bg-gray-50 border-gray-200 opacity-60';
+          }
+          return (
+            <motion.button key={i} whileHover={!answered ? { scale: 1.02 } : {}} whileTap={!answered ? { scale: 0.97 } : {}}
+              onClick={() => pick(i)}
+              className={cn('border-2 rounded-xl p-3 text-sm font-semibold text-left transition-all', bg)}>
+              <span className="text-purple-500 font-black mr-1">{['A','B','C','D'][i]}.</span>{choice}
+              {answered && isCorrect && <span className="ml-1">✅</span>}
+              {answered && isSelected && !isCorrect && <span className="ml-1">❌</span>}
+            </motion.button>
+          );
+        })}
+      </div>
+
+      <AnimatePresence>
+        {answered && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className={cn('rounded-xl px-4 py-3 text-xs font-semibold border', selected === q.answer ? 'bg-green-50 border-green-300 text-green-800' : 'bg-amber-50 border-amber-300 text-amber-800')}>
+            💡 {q.fact}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {answered && (
+        <button onClick={next} className="w-full py-3 rounded-xl font-bold text-white text-sm" style={{ background: '#7C3AED' }}>
+          {idx + 1 >= questions.length ? '📊 See Results' : 'Next Question →'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+const EducationPuzzle = GeneralKnowledgeQuiz;
+
+const _OriginalEducationPuzzle = ({ onWin: _onWin }: { onWin: () => void }) => {
+  const [students] = useState<Student[]>([
     { id: 1, Sprite: NPC_StudentSam,  name: 'Sam',  knowledge: 20, happiness: 30, energy: 90, morning: null, afternoon: null },
     { id: 2, Sprite: NPC_StudentAria, name: 'Aria', knowledge: 35, happiness: 45, energy: 85, morning: null, afternoon: null },
     { id: 3, Sprite: NPC_StudentLeo,  name: 'Leo',  knowledge: 15, happiness: 20, energy: 70, morning: null, afternoon: null },
@@ -2126,112 +2262,122 @@ function ConsumptionPuzzle({ onWin }: { onWin: () => void }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SDG 2 – Restaurant Food Conveyor
-   Restaurant context: decide to Serve, Donate, or Discard each item
+   SDG 2 – Food Conveyor: Catch to Donate • Let Pass to Compost
 ═══════════════════════════════════════════════════════════════ */
 type ConveyorFood = {
   emoji: string;
   name: string;
-  tag: string;
+  tag: 'DONATE' | 'COMPOST';
   tagColor: string;
-  correctAction: 'serve' | 'donate' | 'discard';
   reason: string;
 };
 
-const FOOD_CATALOG: ConveyorFood[] = [
-  { emoji: '🍲', name: 'Hot Soup',      tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Made fresh today — serve the customer!' },
-  { emoji: '🥤', name: 'Fresh Juice',   tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Just squeezed — serve immediately!' },
-  { emoji: '🍞', name: 'Fresh Bread',   tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Warm from the oven — serve it!' },
-  { emoji: '🥗', name: 'Garden Salad',  tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Just prepared — perfect to serve!' },
-  { emoji: '🍝', name: 'Pasta Bowl',    tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Hot and ready — serve the guest!' },
-  { emoji: '☕', name: 'Fresh Coffee',  tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Freshly brewed — serve now!' },
-  { emoji: '🍱', name: 'Surplus Bento', tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'Extra portions — donate to food bank!' },
-  { emoji: '🥛', name: 'Expiring Milk', tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'Expires today — donate while still safe!' },
-  { emoji: '🧃', name: 'Juice Box',     tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'Closing-time surplus — donate!' },
-  { emoji: '🥧', name: 'Extra Pie',     tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'End-of-day extra — donate!' },
-  { emoji: '🍚', name: 'Leftover Rice', tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'Still safe — donate to shelter!' },
-  { emoji: '🥐', name: 'Day-old Croissant', tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate', reason: 'Yesterday\'s stock — donate!' },
-  { emoji: '🦠', name: 'Moldy Bread',   tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Unsafe mold — discard immediately!' },
-  { emoji: '🥩', name: 'Spoiled Meat',  tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Expired — discard for food safety!' },
-  { emoji: '🥫', name: 'Expired Can',   tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Past expiry date — must discard!' },
-  { emoji: '🍳', name: 'Burnt Dish',    tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Completely burnt — discard!' },
-  { emoji: '🥜', name: 'Rancid Nuts',   tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Gone rancid — discard!' },
+const FOOD_ITEMS: ConveyorFood[] = [
+  { emoji: '🍱', name: 'Surplus Bento',    tag: 'DONATE',  tagColor: '#f59e0b', reason: 'Extra portions — catch for the food bank!' },
+  { emoji: '🥛', name: 'Expiring Milk',    tag: 'DONATE',  tagColor: '#f59e0b', reason: 'Expires today — donate while still safe!' },
+  { emoji: '🧃', name: 'Juice Box',        tag: 'DONATE',  tagColor: '#f59e0b', reason: 'Closing-time surplus — donate!' },
+  { emoji: '🥧', name: 'Extra Pie',        tag: 'DONATE',  tagColor: '#f59e0b', reason: 'End-of-day extra — donate!' },
+  { emoji: '🍚', name: 'Leftover Rice',    tag: 'DONATE',  tagColor: '#f59e0b', reason: 'Still safe — donate to shelter!' },
+  { emoji: '🥐', name: 'Day-old Croissant',tag: 'DONATE',  tagColor: '#f59e0b', reason: "Yesterday's bread — donate!" },
+  { emoji: '🫙', name: 'Canned Beans',     tag: 'DONATE',  tagColor: '#f59e0b', reason: 'Long shelf life — donate to the food pantry!' },
+  { emoji: '🍎', name: 'Extra Apples',     tag: 'DONATE',  tagColor: '#f59e0b', reason: 'Surplus fruit — donate!' },
+  { emoji: '🍞', name: 'Extra Loaves',     tag: 'DONATE',  tagColor: '#f59e0b', reason: 'Too much bread baked — donate!' },
+  { emoji: '🥫', name: 'Tinned Soup',      tag: 'DONATE',  tagColor: '#f59e0b', reason: 'Great for shelters — donate!' },
+  { emoji: '🦠', name: 'Moldy Bread',      tag: 'COMPOST', tagColor: '#22c55e', reason: 'Unsafe mold — compost it!' },
+  { emoji: '🥩', name: 'Spoiled Meat',     tag: 'COMPOST', tagColor: '#22c55e', reason: 'Expired — compost for safety!' },
+  { emoji: '🍳', name: 'Burnt Dish',       tag: 'COMPOST', tagColor: '#22c55e', reason: 'Completely burnt — compost!' },
+  { emoji: '🥜', name: 'Rancid Nuts',      tag: 'COMPOST', tagColor: '#22c55e', reason: 'Gone rancid — compost!' },
+  { emoji: '🥗', name: 'Wilted Salad',     tag: 'COMPOST', tagColor: '#22c55e', reason: 'Limp and brown — compost!' },
+  { emoji: '🍅', name: 'Overripe Tomato',  tag: 'COMPOST', tagColor: '#22c55e', reason: 'Fermented and mushy — compost!' },
+  { emoji: '🍌', name: 'Black Banana',     tag: 'COMPOST', tagColor: '#22c55e', reason: 'Way too overripe — compost!' },
+  { emoji: '🧀', name: 'Fuzzy Cheese',     tag: 'COMPOST', tagColor: '#22c55e', reason: 'Mold all the way through — compost!' },
+  { emoji: '🍄', name: 'Slimy Mushrooms',  tag: 'COMPOST', tagColor: '#22c55e', reason: 'Gone bad — compost!' },
+  { emoji: '🫐', name: 'Crushed Berries',  tag: 'COMPOST', tagColor: '#22c55e', reason: 'Squashed and mouldy — compost!' },
 ];
 
-function shuffleSequence(): ConveyorFood[] {
-  const pool = [...FOOD_CATALOG, ...FOOD_CATALOG.slice(0, 5)].sort(() => Math.random() - 0.5);
-  return pool.slice(0, 20);
+function shuffleItems(): ConveyorFood[] {
+  return [...FOOD_ITEMS].sort(() => Math.random() - 0.5).slice(0, 20);
 }
 
-const ACTION_BTN = {
-  serve:   { label: '🍽️ Serve',   bg: '#22c55e', shadow: '#15803d' },
-  donate:  { label: '💝 Donate',  bg: '#f59e0b', shadow: '#b45309' },
-  discard: { label: '🗑️ Discard', bg: '#ef4444', shadow: '#b91c1c' },
-} as const;
-
-const TIMER_SECONDS = 6;
+const BELT_TOTAL_MS = 7000;
+const ZONE_ENTER_MS = 2200;
+const ZONE_EXIT_MS  = 4800;
+const WIN_THRESHOLD = 13;
 
 function RestaurantConveyorPuzzle({ onWin }: { onWin: () => void }) {
-  const [sequence] = useState<ConveyorFood[]>(() => shuffleSequence());
+  const [items] = useState<ConveyorFood[]>(() => shuffleItems());
   const [idx, setIdx] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
+  const [elapsed, setElapsed] = useState(0);
+  const [acted, setActed] = useState(false);
+  const [actedRef] = useState({ current: false });
+  const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null);
   const [correct, setCorrect] = useState(0);
   const [wrong, setWrong] = useState(0);
-  const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null);
-  const [animKey, setAnimKey] = useState(0);
   const [done, setDone] = useState(false);
-  const busyRef = useRef(false);
 
-  const total = sequence.length;
-  const current = sequence[idx];
+  const current = items[idx];
+  const pos = Math.min(100, (elapsed / BELT_TOTAL_MS) * 100);
+  const inZone = elapsed >= ZONE_ENTER_MS && elapsed < ZONE_EXIT_MS && !acted;
 
   useEffect(() => {
-    if (done || busyRef.current || feedback) return;
-    if (timeLeft <= 0) { advance(null); return; }
-    const t = setTimeout(() => setTimeLeft(t => t - 1), 1000);
-    return () => clearTimeout(t);
-  }, [timeLeft, done, feedback]);
+    actedRef.current = acted;
+  }, [acted]);
 
-  function advance(action: 'serve' | 'donate' | 'discard' | null) {
-    if (busyRef.current) return;
-    busyRef.current = true;
-    const item = sequence[idx];
-    const isCorrect = action === item.correctAction;
-    const skipped = action === null;
+  useEffect(() => {
+    if (done || feedback) return;
+    const t = setInterval(() => {
+      setElapsed(e => e + 80);
+    }, 80);
+    return () => clearInterval(t);
+  }, [idx, done, feedback]);
+
+  useEffect(() => {
+    if (elapsed >= BELT_TOTAL_MS && !actedRef.current && !feedback && !done) {
+      resolveAction(false);
+    }
+  }, [elapsed]);
+
+  function resolveAction(playerCaught: boolean) {
+    if (actedRef.current) return;
+    actedRef.current = true;
+    setActed(true);
+    const item = items[idx];
+    const isCorrect = playerCaught ? item.tag === 'DONATE' : item.tag === 'COMPOST';
     if (isCorrect) setCorrect(c => c + 1);
     else setWrong(w => w + 1);
     setFeedback({
       ok: isCorrect,
-      msg: skipped
-        ? `⏰ Skipped! Should ${item.correctAction}: ${item.reason}`
-        : isCorrect
-          ? `✅ Correct! ${item.reason}`
-          : `❌ Wrong! Should ${item.correctAction}: ${item.reason}`,
+      msg: isCorrect
+        ? `✅ Correct! ${item.reason}`
+        : playerCaught
+          ? `❌ That should be composted! ${item.reason}`
+          : `❌ That needed to be donated! ${item.reason}`,
     });
     setTimeout(() => {
-      setFeedback(null);
-      busyRef.current = false;
       const next = idx + 1;
-      if (next >= total) { setDone(true); }
-      else { setIdx(next); setTimeLeft(TIMER_SECONDS); setAnimKey(k => k + 1); }
-    }, 1700);
+      if (next >= items.length) { setDone(true); }
+      else {
+        actedRef.current = false;
+        setIdx(next); setElapsed(0); setActed(false); setFeedback(null);
+      }
+    }, 2000);
   }
 
   useEffect(() => {
-    if (done && correct >= 13) setTimeout(onWin, 1200);
+    if (done && correct >= WIN_THRESHOLD) setTimeout(onWin, 1200);
   }, [done]);
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Restaurant header */}
+      {/* Header */}
       <div className="rounded-2xl px-4 py-3 flex items-center gap-3" style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)' }}>
         <span className="text-3xl">🍴</span>
         <div className="flex-1 text-white">
-          <div className="font-display text-lg leading-tight">Chef's Kitchen</div>
-          <div className="text-xs opacity-80">Sort items on the conveyor belt!</div>
+          <div className="font-display text-lg leading-tight">Chef's Conveyor</div>
+          <div className="text-xs opacity-80">🤲 CATCH to donate • 🌿 Let PASS to compost</div>
         </div>
         <div className="text-right text-white text-sm font-bold">
-          <div>Item {Math.min(idx + 1, total)}/{total}</div>
+          <div>Item {Math.min(idx + 1, items.length)}/{items.length}</div>
           <div className="flex gap-2 mt-0.5">
             <span className="bg-green-500 rounded px-1.5 py-0.5 text-xs">✅ {correct}</span>
             <span className="bg-red-500 rounded px-1.5 py-0.5 text-xs">❌ {wrong}</span>
@@ -2240,87 +2386,108 @@ function RestaurantConveyorPuzzle({ onWin }: { onWin: () => void }) {
       </div>
 
       {done ? (
-        <div className={cn('rounded-2xl p-6 text-center border-4', correct >= 13 ? 'bg-green-50 border-green-400' : 'bg-red-50 border-red-300')}>
-          <div className="text-5xl mb-3">{correct >= 13 ? '🏆' : '😔'}</div>
-          <div className="font-display text-2xl mb-2" style={{ color: correct >= 13 ? '#16a34a' : '#dc2626' }}>
-            {correct >= 13 ? 'Kitchen Champion!' : 'Keep Practicing!'}
+        <div className={cn('rounded-2xl p-6 text-center border-4', correct >= WIN_THRESHOLD ? 'bg-green-50 border-green-400' : 'bg-red-50 border-red-300')}>
+          <div className="text-5xl mb-3">{correct >= WIN_THRESHOLD ? '🏆' : '😔'}</div>
+          <div className="font-display text-2xl mb-2" style={{ color: correct >= WIN_THRESHOLD ? '#16a34a' : '#dc2626' }}>
+            {correct >= WIN_THRESHOLD ? 'Food Rescue Hero!' : 'Keep Practicing!'}
           </div>
-          <div className="text-lg font-bold text-gray-700 mb-1">{correct}/{total} correct</div>
+          <div className="text-lg font-bold text-gray-700 mb-1">{correct}/{items.length} correct</div>
           <div className="text-sm text-gray-500">
-            {correct >= 13
-              ? 'Amazing job sorting food! You reduced waste and fed more people.'
-              : 'You need 13+ correct. Remember: Fresh→Serve, Surplus→Donate, Spoiled→Discard.'}
+            {correct >= WIN_THRESHOLD
+              ? 'Amazing! You reduced food waste and fed more people.'
+              : `Need ${WIN_THRESHOLD}+. DONATE items → CATCH, COMPOST items → let PASS!`}
           </div>
         </div>
       ) : (
         <>
           {/* Conveyor belt */}
-          <div className="relative rounded-2xl overflow-hidden" style={{ background: '#1e293b' }}>
-            {/* Belt track */}
-            <div className="relative h-36 flex items-center justify-center overflow-hidden"
-              style={{ background: 'repeating-linear-gradient(90deg,#334155 0,#334155 28px,#1e293b 28px,#1e293b 32px)' }}>
-              {/* Moving belt lines */}
-              <div className="absolute inset-0 flex items-center">
-                <motion.div className="flex gap-6 items-center"
-                  key={animKey}
-                  initial={{ x: 80 }} animate={{ x: -40 }} transition={{ duration: 0.4, ease: 'easeOut' }}>
-                  {/* Food item on plate */}
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-24 h-24 rounded-full flex flex-col items-center justify-center gap-1"
-                      style={{ background: 'linear-gradient(135deg,#f8fafc,#e2e8f0)', boxShadow: '0 4px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.8)' }}>
-                      <span className="text-4xl">{current.emoji}</span>
-                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">{current.name}</span>
-                    </div>
-                  </div>
-                </motion.div>
+          <div className="relative rounded-2xl overflow-hidden border-4 border-gray-700" style={{ background: '#1e293b', height: 170 }}>
+            {/* Moving belt stripes */}
+            <div className="absolute inset-0" style={{ background: 'repeating-linear-gradient(90deg,#334155 0,#334155 28px,#1e293b 28px,#1e293b 32px)' }} />
+
+            {/* Left end: compost bin */}
+            <div className="absolute left-0 top-0 bottom-0 w-14 flex flex-col items-center justify-center gap-1"
+              style={{ background: 'linear-gradient(90deg,#0f172a,#1e293b)', borderRight: '2px solid #334155' }}>
+              <span className="text-2xl">🌿</span>
+              <span className="text-[8px] font-black text-green-400 text-center leading-tight">COM<br/>POST</span>
+            </div>
+
+            {/* Right end: kitchen source */}
+            <div className="absolute right-0 top-0 bottom-0 w-14 flex flex-col items-center justify-center gap-1"
+              style={{ background: 'linear-gradient(270deg,#0f172a,#1e293b)', borderLeft: '2px solid #334155' }}>
+              <span className="text-2xl">🍴</span>
+              <span className="text-[8px] font-black text-purple-400 text-center leading-tight">KITCH<br/>EN</span>
+            </div>
+
+            {/* Catch zone (center) */}
+            <div className="absolute top-0 bottom-0 transition-all duration-200"
+              style={{
+                left: '32%', right: '28%',
+                background: inZone ? 'rgba(251,191,36,0.20)' : 'rgba(255,255,255,0.03)',
+                border: inZone ? '2px solid #fbbf24' : '2px dashed rgba(255,255,255,0.12)',
+                borderRadius: 8,
+              }}>
+              <div className="absolute top-2 left-0 right-0 text-center">
+                <div className="text-[9px] font-black" style={{ color: inZone ? '#fbbf24' : 'rgba(255,255,255,0.25)' }}>
+                  🎯 CATCH ZONE
+                </div>
+                {inZone && <div className="text-[8px] text-yellow-300 font-bold animate-pulse">← ITEM IS HERE →</div>}
               </div>
-              {/* Tag badge */}
-              <div className="absolute top-3 right-3 px-2 py-1 rounded-lg text-[10px] font-black text-white uppercase tracking-wider"
-                style={{ background: current.tagColor, boxShadow: `0 2px 8px ${current.tagColor}88` }}>
-                {current.tag}
+              {/* Donation basket visual */}
+              <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+                <div className="text-[9px] font-bold text-amber-400 flex items-center gap-1">
+                  📦 <span style={{ color: inZone ? '#fbbf24' : 'rgba(255,255,255,0.25)' }}>Donation Basket</span>
+                </div>
               </div>
             </div>
-            {/* Timer bar */}
-            <div className="h-3 bg-gray-700 relative">
-              <motion.div className="h-full rounded-r-full"
-                key={`timer-${animKey}-${timeLeft}`}
-                style={{ background: timeLeft > 3 ? '#22c55e' : timeLeft > 1 ? '#f59e0b' : '#ef4444' }}
-                initial={{ width: '100%' }} animate={{ width: `${(timeLeft / TIMER_SECONDS) * 100}%` }}
-                transition={{ duration: 1, ease: 'linear' }} />
-              <span className="absolute right-2 top-0 bottom-0 flex items-center text-[10px] font-bold text-white/70">{timeLeft}s</span>
-            </div>
+
+            {/* Food item on belt */}
+            {!feedback && (
+              <div className="absolute top-1/2 flex flex-col items-center gap-1 transition-none"
+                style={{ right: `${pos}%`, transform: 'translate(50%, -60%)' }}>
+                <div className="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl"
+                  style={{ background: 'linear-gradient(135deg,#f8fafc,#e2e8f0)', boxShadow: '0 4px 16px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.9)' }}>
+                  <span className="text-2xl">{current.emoji}</span>
+                </div>
+                <div className="text-[8px] font-black text-white text-center px-1.5 py-0.5 rounded-full"
+                  style={{ background: current.tagColor }}>
+                  {current.tag}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Feedback */}
           <AnimatePresence>
             {feedback && (
               <motion.div key="fb" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                className={cn('rounded-xl px-4 py-2.5 text-sm font-semibold text-center', feedback.ok ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300')}>
+                className={cn('rounded-xl px-4 py-3 text-sm font-semibold text-center border-2',
+                  feedback.ok ? 'bg-green-50 text-green-800 border-green-300' : 'bg-red-50 text-red-800 border-red-300')}>
                 {feedback.msg}
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Action buttons */}
-          <div className="grid grid-cols-3 gap-3">
-            {(['serve', 'donate', 'discard'] as const).map(action => {
-              const btn = ACTION_BTN[action];
-              return (
-                <button key={action} onClick={() => advance(action)}
-                  disabled={!!feedback}
-                  className="py-4 rounded-2xl text-white font-display text-lg font-bold transition-all active:scale-95 disabled:opacity-60"
-                  style={{ background: btn.bg, boxShadow: `0 4px 0 ${btn.shadow}, 0 6px 16px ${btn.bg}55` }}>
-                  {btn.label}
-                </button>
-              );
-            })}
-          </div>
+          {/* CATCH button */}
+          <motion.button
+            whileTap={{ scale: 0.93 }}
+            onClick={() => resolveAction(true)}
+            disabled={!inZone || acted || !!feedback}
+            className="w-full py-5 rounded-2xl text-white font-display text-xl font-black transition-all disabled:opacity-40"
+            style={{
+              background: inZone && !acted && !feedback ? '#f59e0b' : '#78716c',
+              boxShadow: inZone && !acted && !feedback ? '0 6px 0 #b45309, 0 8px 24px rgba(245,158,11,0.5)' : '0 4px 0 #57534e',
+            }}>
+            🤲 CATCH &amp; DONATE!
+            <div className="text-xs font-normal opacity-80">
+              {inZone && !acted ? 'Item is in the zone — catch it!' : 'Wait for item to reach the catch zone…'}
+            </div>
+          </motion.button>
 
           {/* Legend */}
           <div className="flex gap-2 text-[10px] text-gray-500 justify-center flex-wrap">
-            <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full font-bold">FRESH → Serve</span>
-            <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-bold">SURPLUS → Donate</span>
-            <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full font-bold">SPOILED → Discard</span>
+            <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-bold">🟡 DONATE → CATCH 🤲</span>
+            <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full font-bold">🟢 COMPOST → Let PASS 🌿</span>
           </div>
         </>
       )}
@@ -2346,8 +2513,8 @@ function HungerHub({ onWin }: { onWin: () => void }) {
         <button onClick={() => setMode('restaurant')}
           className="rounded-2xl p-5 border-4 border-purple-300 bg-purple-50 hover:bg-purple-100 text-left transition-all active:scale-95 flex flex-col gap-2">
           <span className="text-4xl">🍴</span>
-          <div className="font-display text-xl text-purple-800">Restaurant Sort</div>
-          <div className="text-sm text-purple-700">Run a restaurant conveyor belt — decide to serve, donate, or discard each food item!</div>
+          <div className="font-display text-xl text-purple-800">Conveyor Rescue</div>
+          <div className="text-sm text-purple-700">Items slide down the belt — CATCH food to donate, or let spoiled food PASS to compost!</div>
         </button>
       </div>
     </div>
@@ -2376,6 +2543,7 @@ export default function PuzzleScreen() {
   const zoneId = zoneIdMatch?.[1] as ZoneId;
   const { completeZone } = useGame();
   const [won, setWon] = useState(false);
+  const [puzzleKey, setPuzzleKey] = useState(0);
 
   if (!zoneId || !ZONES[zoneId]) {
     setLocation('/world');
@@ -2402,7 +2570,17 @@ export default function PuzzleScreen() {
           <div className="font-display text-xl">{zone.name} Challenge</div>
           <div className="text-sm opacity-90">SDG {zone.sdg}: {zone.sdgTitle}</div>
         </div>
-        <div className="ml-auto text-3xl">{zone.emoji}</div>
+        {!won && (
+          <button
+            onClick={() => { setPuzzleKey(k => k + 1); }}
+            className="ml-auto bg-white/20 hover:bg-white/30 rounded-lg px-3 py-1.5 text-sm font-bold transition-colors flex items-center gap-1"
+            title="Restart this puzzle">
+            ↩ Restart
+          </button>
+        )}
+        <div className={won ? 'ml-auto' : ''}>
+          <span className="text-3xl">{zone.emoji}</span>
+        </div>
       </div>
 
       {/* Puzzle content */}
@@ -2416,7 +2594,7 @@ export default function PuzzleScreen() {
                 </h2>
                 <p className="text-sm text-center text-gray-500 mb-5">{zone.puzzleIntro}</p>
                 {PuzzleComponent
-                  ? <PuzzleComponent onWin={handleWin} />
+                  ? <PuzzleComponent key={puzzleKey} onWin={handleWin} />
                   : <div className="text-center text-gray-400 py-8">🚧 Mini-game coming soon!</div>
                 }
               </motion.div>
