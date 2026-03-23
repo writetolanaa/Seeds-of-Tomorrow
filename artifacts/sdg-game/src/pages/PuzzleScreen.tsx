@@ -100,16 +100,16 @@ const communityStability = (vs: Villager[]) => {
 };
 
 const EMERGENCY_ACTIONS = [
-  { id: 'food', emoji: '🍚', label: 'Food Pack', desc: 'Food +35', cost: 1, apply: (v: Villager) => ({ ...v, food: Math.min(100, v.food + 35) }) },
-  { id: 'medicine', emoji: '💊', label: 'Medicine', desc: 'Health +30', cost: 2, apply: (v: Villager) => ({ ...v, health: Math.min(100, v.health + 30) }) },
-  { id: 'shelter', emoji: '⛺', label: 'Temp Shelter', desc: 'Housing +20', cost: 1, apply: (v: Villager) => ({ ...v, housing: Math.min(100, v.housing + 20) }) },
+  { id: 'food', emoji: '🍚', label: 'Food Pack', desc: 'Food +45', cost: 1, apply: (v: Villager) => ({ ...v, food: Math.min(100, v.food + 45) }) },
+  { id: 'medicine', emoji: '💊', label: 'Medicine', desc: 'Health +40', cost: 1, apply: (v: Villager) => ({ ...v, health: Math.min(100, v.health + 40) }) },
+  { id: 'shelter', emoji: '⛺', label: 'Temp Shelter', desc: 'Housing +30', cost: 1, apply: (v: Villager) => ({ ...v, housing: Math.min(100, v.housing + 30) }) },
 ];
 
 const DEVELOPMENT_ACTIONS = [
-  { id: 'job', emoji: '💼', label: 'Job Training', desc: 'Income +40, Education +15', cost: 3, requiresBasics: true, apply: (v: Villager) => ({ ...v, income: Math.min(100, v.income + 40), education: Math.min(100, v.education + 15) }) },
-  { id: 'school', emoji: '📚', label: 'School Enroll', desc: 'Education +45, Income +10', cost: 2, requiresBasics: true, apply: (v: Villager) => ({ ...v, education: Math.min(100, v.education + 45), income: Math.min(100, v.income + 10) }) },
-  { id: 'housing', emoji: '🏠', label: 'Fix Housing', desc: 'Housing +40', cost: 2, requiresBasics: false, apply: (v: Villager) => ({ ...v, housing: Math.min(100, v.housing + 40) }) },
-  { id: 'micro', emoji: '🌱', label: 'Microfinance', desc: 'Income +50', cost: 3, requiresBasics: true, apply: (v: Villager) => ({ ...v, income: Math.min(100, v.income + 50) }) },
+  { id: 'job', emoji: '💼', label: 'Job Training', desc: 'Income +50, Edu +20', cost: 2, requiresBasics: false, apply: (v: Villager) => ({ ...v, income: Math.min(100, v.income + 50), education: Math.min(100, v.education + 20) }) },
+  { id: 'school', emoji: '📚', label: 'School Enroll', desc: 'Education +55, Income +15', cost: 1, requiresBasics: false, apply: (v: Villager) => ({ ...v, education: Math.min(100, v.education + 55), income: Math.min(100, v.income + 15) }) },
+  { id: 'housing', emoji: '🏠', label: 'Fix Housing', desc: 'Housing +50', cost: 1, requiresBasics: false, apply: (v: Villager) => ({ ...v, housing: Math.min(100, v.housing + 50) }) },
+  { id: 'micro', emoji: '🌱', label: 'Microfinance', desc: 'Income +60', cost: 2, requiresBasics: false, apply: (v: Villager) => ({ ...v, income: Math.min(100, v.income + 60) }) },
 ];
 
 const COMMUNITY_EVENTS = [
@@ -125,13 +125,13 @@ const STATE_LABEL: Record<VillagerState, { emoji: string; label: string; color: 
 };
 
 const PovertyPuzzle = ({ onWin }: { onWin: () => void }) => {
-  const TOTAL_BUDGET = 12;
+  const TOTAL_BUDGET = 18;
   const [villagers, setVillagers] = useState<Villager[]>(INITIAL_VILLAGERS.map(v => ({ ...v })));
   const [budget, setBudget] = useState(TOTAL_BUDGET);
   const [phase, setPhase] = useState<'emergency' | 'develop' | 'event' | 'final'>('emergency');
   const [round, setRound] = useState(1);
   const [selected, setSelected] = useState<number | null>(null);
-  const [msg, setMsg] = useState<{ text: string; type: 'info' | 'warn' | 'ok' | 'locked' }>({ text: 'PHASE 1: Emergency Aid — food and medicine first! Select a villager, then choose an action.', type: 'info' });
+  const [msg, setMsg] = useState<{ text: string; type: 'info' | 'warn' | 'ok' | 'locked' }>({ text: 'PHASE 1: Emergency Aid — give food & medicine to everyone! You have 18 🪙. Select a villager, then pick an action.', type: 'info' });
   const [eventText, setEventText] = useState('');
 
   const vs = villagers.map(v => ({ ...v, state: getState(v) }));
@@ -177,7 +177,7 @@ const PovertyPuzzle = ({ onWin }: { onWin: () => void }) => {
       setBudget(TOTAL_BUDGET);
       setPhase('develop');
       setSelected(null);
-      setMsg({ text: 'PHASE 2: Long-term Development — jobs, school, and housing! Note: struggling villagers cannot train until fed and healthy.', type: 'info' });
+      setMsg({ text: 'PHASE 2: Long-term Development — give everyone jobs, school, and fix housing! 18 🪙 fresh budget. Each person needs all three to thrive!', type: 'info' });
     } else if (phase === 'develop') {
       const ev = COMMUNITY_EVENTS[Math.floor(Math.random() * COMMUNITY_EVENTS.length)];
       setEventText(ev.text);
@@ -190,7 +190,7 @@ const PovertyPuzzle = ({ onWin }: { onWin: () => void }) => {
     const updatedVs = villagers.map(v => ({ ...v, state: getState(v) }));
     const stab = communityStability(updatedVs);
     setPhase('final');
-    if (stab >= 65) setTimeout(onWin, 800);
+    if (stab >= 50) setTimeout(onWin, 800);
   };
 
   const MSG_COLORS = { info: '#3B82F6', warn: '#F59E0B', ok: '#10B981', locked: '#EF4444' };
@@ -225,7 +225,7 @@ const PovertyPuzzle = ({ onWin }: { onWin: () => void }) => {
 
   /* ── FINAL SCREEN ── */
   if (phase === 'final') {
-    const won = stability >= 65;
+    const won = stability >= 50;
     const updatedVs = villagers.map(v => ({ ...v, state: getState(v) }));
     const thrivingCount = updatedVs.filter(v => v.state === 'thriving').length;
     const onlyShortTerm = updatedVs.every(v => v.income < 40 && v.education < 40);
@@ -242,8 +242,8 @@ const PovertyPuzzle = ({ onWin }: { onWin: () => void }) => {
             <div className="text-5xl">😔</div>
             <h3 className="font-display text-xl text-red-700">Still Struggling... ({stability}% stability)</h3>
             {onlyShortTerm
-              ? <p className="text-sm text-amber-700 bg-amber-50 rounded-xl p-3 border border-amber-200">💡 You kept people alive, but long-term development is what ends poverty. Jobs, education and housing create lasting change!</p>
-              : <p className="text-sm text-gray-600">Try helping villagers' basic needs first (food, medicine), then invest in long-term development.</p>
+              ? <p className="text-sm text-amber-700 bg-amber-50 rounded-xl p-3 border border-amber-200">💡 You kept people alive, but long-term development is what ends poverty. In Phase 2, give everyone Job Training + School + Fix Housing!</p>
+              : <p className="text-sm text-gray-600">💡 Tip: In Phase 2, give <b>every</b> villager Job Training (💼), School (📚), and Fix Housing (🏠) — each costs just 1-2 🪙!</p>
             }
             <button onClick={resetGame} className="px-6 py-2.5 bg-orange-500 text-white font-bold rounded-xl mt-1 hover:bg-orange-600">↩ Try Again</button>
           </>
@@ -305,13 +305,11 @@ const PovertyPuzzle = ({ onWin }: { onWin: () => void }) => {
       {/* Actions */}
       <div className="flex gap-2 flex-wrap justify-center">
         {(activeActions as Array<{ id: string; emoji: string; label: string; desc: string; cost: number; requiresBasics?: boolean }>).map(a => {
-          const isLocked = !isEmergency && a.requiresBasics && selectedVillager && getState(selectedVillager) === 'struggling';
           return (
             <motion.button key={a.id} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
               onClick={() => isEmergency ? applyEmergency(a.id) : applyDevelopment(a.id)}
               disabled={budget < a.cost}
               className={cn('flex flex-col items-center px-3 py-2 rounded-xl border-2 text-xs font-bold transition-all min-w-[80px]',
-                isLocked ? 'bg-red-50 border-red-200 text-red-400 cursor-not-allowed' :
                 budget >= a.cost ? 'bg-white border-amber-400 hover:bg-amber-50 cursor-pointer' : 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed'
               )}
             >
@@ -319,7 +317,6 @@ const PovertyPuzzle = ({ onWin }: { onWin: () => void }) => {
               <span className="leading-tight">{a.label}</span>
               <span className="text-gray-400 font-normal text-[10px]">{a.desc}</span>
               <span className="text-amber-600 mt-0.5">{a.cost} 🪙</span>
-              {isLocked && <span className="text-[9px] text-red-400">🔒 needs basics first</span>}
             </motion.button>
           );
         })}
