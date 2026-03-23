@@ -123,7 +123,7 @@ function Dialogue({
 
 /* ── World Background SVG ── */
 function WorldBackground({ completedZones }: { completedZones: string[] }) {
-  const GATE_Y = 2200;
+  const GATE_Y = 3100;
   const PLANET_CENTER_X = 1600;
   const PLANET_CENTER_Y = 3100;
 
@@ -226,10 +226,10 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
 
       {/* ════ PLANET SECTION BIOME BACKGROUNDS ════ */}
       {/* Overall planet base (dark teal) */}
-      <rect x="0" y={GATE_Y + 300} width={WORLD_W} height={WORLD_H - GATE_Y - 300} fill="#1C3A2E" />
+      <rect x="0" y={2500} width={WORLD_W} height={WORLD_H - 2500} fill="#1C3A2E" />
 
       {/* Water/Mountain biome (top-left planet) */}
-      <rect x="0" y={GATE_Y + 300} width="1150" height="1300" fill="#1A3A5C" opacity="0.85" />
+      <rect x="0" y={2500} width="1150" height="1300" fill="#1A3A5C" opacity="0.85" />
       {/* Mountain peaks */}
       <polygon points="50,2800 200,2500 350,2800" fill="#455A64" opacity="0.7" />
       <polygon points="180,2780 350,2450 520,2780" fill="#546E7A" opacity="0.7" />
@@ -248,7 +248,7 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
       ))}
 
       {/* Ocean biome (top-right planet) */}
-      <rect x="2050" y={GATE_Y + 300} width="1150" height="1300" fill="url(#ocean-bg)" opacity="0.9" />
+      <rect x="2050" y={2500} width="1150" height="1300" fill="url(#ocean-bg)" opacity="0.9" />
       {/* Ocean waves */}
       {[2600, 2700, 2800, 2900, 3000, 3100, 3200].map((y, i) => (
         <path key={i} d={`M 2100 ${y} Q 2350 ${y - 25} 2600 ${y} Q 2850 ${y + 25} 3100 ${y}`}

@@ -854,12 +854,33 @@ const GK_QUESTIONS = [
 ];
 
 function GeneralKnowledgeQuiz({ onWin }: { onWin: () => void }) {
+  const [started, setStarted] = useState(false);
   const [questions] = useState(() => [...GK_QUESTIONS].sort(() => Math.random() - 0.5));
   const [idx, setIdx] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState(0);
   const [done, setDone] = useState(false);
+
+  if (!started) {
+    return (
+      <div className="flex flex-col items-center gap-5 text-center py-4">
+        <motion.div animate={{ y: [0, -8, 0] }} transition={{ repeat: Infinity, duration: 2 }}
+          className="text-5xl">🎓</motion.div>
+        <h3 className="font-display text-xl text-purple-800">Let's reform the exam system!</h3>
+        <div className="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4 text-left text-sm text-gray-700 leading-relaxed max-w-sm">
+          <p className="mb-2">📚 The old way of learning — memorising answers and forgetting them — isn't working for millions of students.</p>
+          <p className="mb-2">💡 <strong>What if exams tested real curiosity instead?</strong> Try these questions and see if <em>understanding the world</em> feels different from rote memorisation.</p>
+          <p>✅ Answer <strong>70%</strong> correctly to prove that genuine learning makes a difference!</p>
+        </div>
+        <button onClick={() => setStarted(true)}
+          className="w-full py-3 rounded-2xl font-bold text-white text-base"
+          style={{ background: '#7C3AED' }}>
+          Start the Quiz →
+        </button>
+      </div>
+    );
+  }
 
   const q = questions[idx];
   const WIN_COUNT = Math.ceil(questions.length * 0.7);

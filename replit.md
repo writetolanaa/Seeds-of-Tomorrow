@@ -54,10 +54,12 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 
 A top-down RPG browser game about the UN SDGs (Sustainable Development Goals). Players pick a warden character, walk a 3200×4600px world, talk to NPCs, and complete mini-games to heal 10 zones across 2 levels.
 
-- **Style**: Hand-drawn sketch aesthetic, warm parchment tones, whimsical RPG chibi sprites
+- **Style**: Sevenbooom/boombim clay-toy aesthetic — rounded-square heads, large rosy cheeks, tiny dark oval eyes, compact stub arms, separate pantsColor prop, muted realistic clothing colors
+- **Character system**: `ChibiCharacter` in Sprites.tsx; `pantsColor` prop separates top from bottom; blush filter always on; happy expression has no brows (boombim style)
 - **Level 1 – People** (SDGs 1–5): Baloo/Poverty, Pebblepuff/Hunger, Leaflet/Health, Thinklet/Education, Sparkleflame/Equality
 - **Level 2 – Planet** (SDGs 6,12,13,14,15): Aqua/Water, Coralina/Ocean, Ferra/Forest, Gaia/Climate, Reevo/Consumption
-- **Gate**: Teal portal arch at y≈2200 separates the two levels; Planet NPCs are locked until People is complete
+- **Gate**: Teal portal arch at GATE_Y=3100 (planet hub center); planet section biome backgrounds start at y=2500 (hardcoded separate from GATE_Y); Planet NPCs are locked until People is complete
+- **Education quiz**: GeneralKnowledgeQuiz shows an intro screen first ("Let's reform the exam system!") before starting
 - **Mini-games**: 10 unique puzzle types (PovertyPuzzle, HungerPuzzle, HealthPuzzle, EducationPuzzle, EqualityPuzzle, WaterPuzzle, OceanPuzzle, ForestPuzzle, ClimatePuzzle, ConsumptionPuzzle)
 - **Tech**: React + Vite + Framer Motion + canvas-confetti, no backend needed
 - **State**: localStorage-persisted game progress (`sdg_game_save_v3`)

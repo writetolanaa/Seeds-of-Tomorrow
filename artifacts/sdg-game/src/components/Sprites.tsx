@@ -2,53 +2,51 @@ import React, { useId } from 'react';
 import { cn } from '@/lib/utils';
 
 /* ────────────────────────────────────────────────────────
-   BASE CHIBI CHARACTER
-   All characters share the same structure:
-   - Big round head, rosy cheeks, dot eyes, tiny nose
-   - Short pudgy body, stumpy arms, little booted legs
-   Props let us customise each one uniquely
+   BASE CHIBI CHARACTER  —  Sevenbooom / boombim aesthetic
+   - Rounded-square head (not oval)
+   - Large bowl-cut hair blob
+   - Tiny dark oval eyes, NO eye white
+   - Huge rosy blush circles (signature feature)
+   - Compact body, short stub arms
+   - Separate pantsColor for realistic top/bottom split
 ──────────────────────────────────────────────────────── */
 
 interface ChibiProps {
-  /* head */
   skinColor?: string;
   hairColor?: string;
   hairStyle?: 'bun' | 'bunDouble' | 'spiky' | 'pigtails' | 'short' | 'cap' | 'sidePart' | 'bucketHat' | 'snapback' | 'none';
   hairAccessory?: React.ReactNode;
   glasses?: boolean;
-  /* face */
   eyeStyle?: 'dots' | 'crescent' | 'hearts' | 'starry';
   cheekColor?: string;
   blush?: boolean;
   expression?: 'happy' | 'sad' | 'surprised' | 'determined';
-  /* body */
   outfitColor?: string;
   outfitStyle?: 'overalls' | 'dress' | 'jacket' | 'uniform' | 'coat' | 'hoodie';
+  pantsColor?: string;
   collarColor?: string;
-  /* boots */
   bootColor?: string;
-  /* item */
   item?: React.ReactNode;
-  /* extra */
   className?: string;
   isWalking?: boolean;
   style?: React.CSSProperties;
 }
 
 export const ChibiCharacter = ({
-  skinColor = '#FAC5A0',
-  hairColor = '#2C1A0E',
-  hairStyle = 'bun',
+  skinColor   = '#F5D8B8',
+  hairColor   = '#1A1A1A',
+  hairStyle   = 'short',
   hairAccessory,
-  glasses = false,
-  eyeStyle = 'dots',
-  cheekColor = '#F48FB1',
-  blush = true,
-  expression = 'happy',
-  outfitColor = '#EF9A9A',
+  glasses     = false,
+  eyeStyle    = 'dots',
+  cheekColor  = '#F4907A',
+  blush       = true,
+  expression  = 'happy',
+  outfitColor = '#B0C4DE',
   outfitStyle = 'overalls',
-  collarColor = '#FFFFFF',
-  bootColor = '#FFC107',
+  pantsColor  = '#4A6A8E',
+  collarColor = '#F0EDE8',
+  bootColor   = '#E8E4DC',
   item,
   className,
   isWalking,
@@ -56,269 +54,212 @@ export const ChibiCharacter = ({
 }: ChibiProps) => {
   const uid = useId().replace(/:/g, '');
 
-  /* Gradient IDs */
-  const HL  = `url(#${uid}hl)`;   /* white radial light overlay — top-left */
-  const SH  = `url(#${uid}sh)`;   /* dark  radial shadow overlay — bottom-right */
-  const BHL = `url(#${uid}bhl)`;  /* body highlight */
-  const BSH = `url(#${uid}bsh)`;  /* body shadow */
+  const HL  = `url(#${uid}hl)`;
+  const SH  = `url(#${uid}sh)`;
+  const BHL = `url(#${uid}bhl)`;
+  const BSH = `url(#${uid}bsh)`;
 
   const mouthPath = {
-    happy:      `M 42 48 Q 50 57 58 48`,
-    sad:        `M 43 53 Q 50 47 57 53`,
-    surprised:  `M 47 51 Q 50 58 53 51`,
-    determined: `M 43 50 L 57 50`,
+    happy:      `M 44 72 Q 50 79 56 72`,
+    sad:        `M 44 76 Q 50 70 56 76`,
+    surprised:  `M 47 73 Q 50 80 53 73`,
+    determined: `M 44 75 L 56 75`,
   }[expression];
 
-  /* ── clean amiibo-style eye: simple solid oval, no sclera detail ── */
   const eyeEl = (cx: number, cy: number) => {
     if (eyeStyle === 'crescent') return (
-      /* happy closed eye — just a smooth curved stroke */
-      <path d={`M ${cx-6} ${cy+2} Q ${cx} ${cy-6} ${cx+6} ${cy+2}`}
-        fill="none" stroke={hairColor} strokeWidth="3.5" strokeLinecap="round" />
+      <path d={`M ${cx-5} ${cy+2} Q ${cx} ${cy-5} ${cx+5} ${cy+2}`}
+        fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />
     );
     if (eyeStyle === 'hearts') return (
-      <path d={`M ${cx} ${cy+1} C ${cx} ${cy-2} ${cx-5} ${cy-3} ${cx-5} ${cy} C ${cx-5} ${cy+3} ${cx} ${cy+6} ${cx} ${cy+6} C ${cx} ${cy+6} ${cx+5} ${cy+3} ${cx+5} ${cy} C ${cx+5} ${cy-3} ${cx} ${cy-2} ${cx} ${cy+1} Z`}
+      <path d={`M ${cx} ${cy+1} C ${cx} ${cy-2} ${cx-4} ${cy-3} ${cx-4} ${cy} C ${cx-4} ${cy+3} ${cx} ${cy+5} ${cx} ${cy+5} C ${cx} ${cy+5} ${cx+4} ${cy+3} ${cx+4} ${cy} C ${cx+4} ${cy-3} ${cx} ${cy-2} ${cx} ${cy+1} Z`}
         fill="#E91E63" />
     );
     if (eyeStyle === 'starry') return (
       <g>
-        <ellipse cx={cx} cy={cy} rx="5.5" ry="6.5" fill={hairColor} />
-        <circle cx={cx-2} cy={cy-2.5} r="1.5" fill="white" opacity="0.85" />
-        <circle cx={cx+2} cy={cy+2} r="0.8" fill="white" opacity="0.6" />
+        <ellipse cx={cx} cy={cy} rx="4" ry="5" fill={hairColor} />
+        <circle cx={cx-1.5} cy={cy-2} r="1.2" fill="white" opacity="0.85" />
       </g>
     );
-    /* dots / default — plain solid oval, clean amiibo look */
-    return <ellipse cx={cx} cy={cy} rx="5.5" ry="6.5" fill={hairColor} />;
+    return <ellipse cx={cx} cy={cy} rx="4" ry="5" fill={hairColor} />;
   };
 
-  /* ── thin expressive eyebrows ── */
   const browEl = (cx: number) => {
-    const y = 28;
+    const y = 44;
     if (expression === 'sad')
-      return <path d={`M ${cx-6} ${y-1} Q ${cx} ${y+3} ${cx+6} ${y-1}`} fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />;
+      return <path d={`M ${cx-5} ${y-1} Q ${cx} ${y+3} ${cx+5} ${y-1}`}
+        fill="none" stroke={hairColor} strokeWidth="2" strokeLinecap="round" opacity="0.65" />;
     if (expression === 'surprised')
-      return <path d={`M ${cx-6} ${y+1} Q ${cx} ${y-4} ${cx+6} ${y+1}`} fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />;
+      return <path d={`M ${cx-5} ${y+1} Q ${cx} ${y-3} ${cx+5} ${y+1}`}
+        fill="none" stroke={hairColor} strokeWidth="2" strokeLinecap="round" opacity="0.65" />;
     if (expression === 'determined')
-      return <line x1={cx-6} y1={y} x2={cx+6} y2={y} stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />;
-    return <path d={`M ${cx-6} ${y} Q ${cx} ${y-3} ${cx+6} ${y}`} fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />;
+      return <line x1={cx-5} y1={y} x2={cx+5} y2={y}
+        stroke={hairColor} strokeWidth="2" strokeLinecap="round" opacity="0.65" />;
+    return null;
   };
 
   return (
     <svg
+      xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 100 134"
       className={cn("w-full h-full", isWalking && "animate-walk", className)}
-      style={{ filter: 'drop-shadow(1px 4px 8px rgba(0,0,0,0.30))', ...style }}
+      style={{ filter: 'drop-shadow(1px 4px 8px rgba(0,0,0,0.28))', ...style }}
     >
       <defs>
-        {/* ── Clay shading overlays (work on any base color) ── */}
-        <radialGradient id={`${uid}hl`} cx="33%" cy="26%" r="65%" gradientUnits="objectBoundingBox">
-          <stop offset="0%"   stopColor="white" stopOpacity="0.55" />
-          <stop offset="50%"  stopColor="white" stopOpacity="0.15" />
+        <radialGradient id={`${uid}hl`} cx="32%" cy="24%" r="66%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="white" stopOpacity="0.52" />
+          <stop offset="55%"  stopColor="white" stopOpacity="0.14" />
           <stop offset="100%" stopColor="white" stopOpacity="0" />
         </radialGradient>
-        <radialGradient id={`${uid}sh`} cx="72%" cy="80%" r="55%" gradientUnits="objectBoundingBox">
-          <stop offset="0%"   stopColor="black" stopOpacity="0.22" />
+        <radialGradient id={`${uid}sh`} cx="74%" cy="82%" r="52%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="black" stopOpacity="0.20" />
           <stop offset="100%" stopColor="black" stopOpacity="0" />
         </radialGradient>
         <radialGradient id={`${uid}bhl`} cx="30%" cy="15%" r="72%" gradientUnits="objectBoundingBox">
-          <stop offset="0%"   stopColor="white" stopOpacity="0.48" />
-          <stop offset="50%"  stopColor="white" stopOpacity="0.12" />
+          <stop offset="0%"   stopColor="white" stopOpacity="0.45" />
+          <stop offset="55%"  stopColor="white" stopOpacity="0.10" />
           <stop offset="100%" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <radialGradient id={`${uid}bsh`} cx="76%" cy="90%" r="50%" gradientUnits="objectBoundingBox">
           <stop offset="0%"   stopColor="black" stopOpacity="0.18" />
           <stop offset="100%" stopColor="black" stopOpacity="0" />
         </radialGradient>
-        {/* Soft blur for rosy cheeks */}
-        <filter id={`${uid}blush`} x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="2.8" />
+        <filter id={`${uid}blush`} x="-70%" y="-70%" width="240%" height="240%">
+          <feGaussianBlur stdDeviation="3.5" />
         </filter>
       </defs>
 
-      {/* ════ HAIR BACK ════ */}
+      {/* ════ HAIR BACK — large rounded blob (the dominant silhouette) ════ */}
+      {hairStyle !== 'none' && hairStyle !== 'snapback' && hairStyle !== 'bucketHat' && hairStyle !== 'cap' && (
+        <ellipse cx="50" cy="38" rx="40" ry="36" fill={hairColor} />
+      )}
+      {/* Bun on top */}
       {hairStyle === 'bun' && (
         <>
-          <circle cx="50" cy="14" r="11" fill={hairColor} />
-          <circle cx="50" cy="14" r="11" fill={HL} />
-          <path d="M 21 35 Q 20 13 50 10 Q 80 13 79 35" fill={hairColor} />
-          <path d="M 21 35 Q 20 13 50 10 Q 80 13 79 35" fill={HL} />
+          <circle cx="50" cy="4" r="13" fill={hairColor} />
+          <circle cx="50" cy="4" r="13" fill={HL} opacity="0.3" />
         </>
       )}
+      {/* Double buns */}
       {hairStyle === 'bunDouble' && (
         <>
-          <circle cx="31" cy="13" r="10" fill={hairColor} />
-          <circle cx="31" cy="13" r="10" fill={HL} />
-          <circle cx="69" cy="13" r="10" fill={hairColor} />
-          <circle cx="69" cy="13" r="10" fill={HL} />
-          <path d="M 21 35 Q 22 13 50 10 Q 78 13 79 35" fill={hairColor} />
-          <path d="M 21 35 Q 22 13 50 10 Q 78 13 79 35" fill={HL} />
+          <circle cx="27" cy="6" r="12" fill={hairColor} />
+          <circle cx="27" cy="6" r="12" fill={HL} opacity="0.3" />
+          <circle cx="73" cy="6" r="12" fill={hairColor} />
+          <circle cx="73" cy="6" r="12" fill={HL} opacity="0.3" />
         </>
       )}
+      {/* Pigtail extensions */}
       {hairStyle === 'pigtails' && (
         <>
-          <ellipse cx="17" cy="35" rx="10" ry="13" fill={hairColor} transform="rotate(-15 17 35)" />
-          <ellipse cx="17" cy="35" rx="10" ry="13" fill={HL}       transform="rotate(-15 17 35)" />
-          <ellipse cx="83" cy="35" rx="10" ry="13" fill={hairColor} transform="rotate(15 83 35)" />
-          <ellipse cx="83" cy="35" rx="10" ry="13" fill={HL}       transform="rotate(15 83 35)" />
-          <path d="M 21 35 Q 22 13 50 10 Q 78 13 79 35" fill={hairColor} />
-          <path d="M 21 35 Q 22 13 50 10 Q 78 13 79 35" fill={HL} />
+          <ellipse cx="11" cy="50" rx="12" ry="20" fill={hairColor} transform="rotate(-10 11 50)" />
+          <ellipse cx="89" cy="50" rx="12" ry="20" fill={hairColor} transform="rotate(10 89 50)" />
         </>
       )}
-      {hairStyle === 'spiky' && (
-        <>
-          <path d="M 21 35 Q 28 8 38 13 Q 44 3 50 10 Q 56 3 62 13 Q 72 8 79 35 Z" fill={hairColor} />
-          <path d="M 21 35 Q 28 8 38 13 Q 44 3 50 10 Q 56 3 62 13 Q 72 8 79 35 Z" fill={HL} />
-        </>
-      )}
-      {hairStyle === 'short' && (
-        <>
-          <path d="M 21 38 Q 21 10 50 8 Q 79 10 79 38 Q 79 24 50 22 Q 21 24 21 38 Z" fill={hairColor} />
-          <path d="M 21 38 Q 21 10 50 8 Q 79 10 79 38 Q 79 24 50 22 Q 21 24 21 38 Z" fill={HL} />
-        </>
-      )}
-      {hairStyle === 'cap' && (
-        <>
-          <path d="M 21 35 Q 21 13 50 10 Q 79 13 79 35" fill={hairColor} />
-          <rect x="16" y="21" width="68" height="12" rx="6" fill="#4A148C" />
-          <rect x="16" y="21" width="68" height="12" rx="6" fill={HL} />
-          <rect x="13" y="28" width="74" height="9" rx="4.5" fill="#4A148C" />
-          <rect x="13" y="28" width="74" height="9" rx="4.5" fill={HL} />
-        </>
-      )}
-      {hairStyle === 'sidePart' && (
-        <>
-          {/* Back bowl */}
-          <path d="M 22 37 Q 21 7 50 5 Q 79 7 78 37" fill={hairColor} />
-          <path d="M 22 37 Q 21 7 50 5 Q 79 7 78 37" fill={HL} />
-          {/* Slight volume on sides */}
-          <ellipse cx="22" cy="27" rx="5" ry="8" fill={hairColor} />
-          <ellipse cx="78" cy="27" rx="5" ry="8" fill={hairColor} />
-        </>
-      )}
-      {hairStyle === 'bucketHat' && (
-        <>
-          {/* Hair peeking under hat */}
-          <path d="M 20 33 Q 20 18 50 16 Q 80 18 80 33" fill={hairColor} />
-          {/* Hat crown */}
-          <path d="M 19 17 Q 19 -2 50 -4 Q 81 -2 81 17 Z" fill={outfitColor} />
-          <path d="M 19 17 Q 19 -2 50 -4 Q 81 -2 81 17 Z" fill={HL} opacity="0.4" />
-          {/* Hat brim */}
-          <ellipse cx="50" cy="16" rx="37" ry="9" fill={outfitColor} />
-          <ellipse cx="50" cy="16" rx="37" ry="9" fill={HL} opacity="0.5" />
-          <ellipse cx="50" cy="16" rx="37" ry="9" fill={SH} opacity="0.3" />
-          {/* Hat band */}
-          <path d="M 20 17 Q 50 13 80 17" fill="none" stroke="white" strokeWidth="2.5" opacity="0.35" />
-          {/* Crown highlight */}
-          <path d="M 26 10 Q 32 4 42 3" fill="none" stroke="white" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
-        </>
-      )}
+
+      {/* Snapback hat */}
       {hairStyle === 'snapback' && (
         <>
-          {/* Hair under cap — dark short fringe visible at forehead */}
-          <path d="M 21 33 Q 21 12 50 10 Q 79 12 79 33" fill={hairColor} />
-          {/* Side hair behind ear */}
-          <ellipse cx="21" cy="30" rx="5" ry="9" fill={hairColor} />
-          {/* Cap dome/crown */}
-          <path d="M 18 26 Q 18 -1 50 -3 Q 82 -1 82 26 Z" fill={outfitColor} />
-          <path d="M 18 26 Q 18 -1 50 -3 Q 82 -1 82 26 Z" fill={HL} opacity="0.45" />
-          <path d="M 18 26 Q 18 -1 50 -3 Q 82 -1 82 26 Z" fill={SH} opacity="0.2" />
-          {/* Cap band / sweatband */}
-          <rect x="16" y="22" width="68" height="9" rx="4" fill={hairColor} opacity="0.6" />
-          <rect x="16" y="22" width="68" height="9" rx="4" fill={HL} opacity="0.3" />
-          {/* Flat snapback brim — protruding forward */}
-          <path d="M 12 29 Q 50 24 88 29 L 87 37 Q 50 32 13 37 Z" fill={outfitColor} />
-          <path d="M 12 29 Q 50 24 88 29 L 87 37 Q 50 32 13 37 Z" fill={SH} opacity="0.4" />
-          <path d="M 12 37 Q 50 32 87 37" fill="none" stroke={hairColor} strokeWidth="1.5" opacity="0.5" />
-          {/* Button on top */}
-          <circle cx="50" cy="-1" r="4" fill={outfitColor} />
-          <circle cx="50" cy="-1" r="4" fill={SH} opacity="0.4" />
-          {/* Text on cap front */}
-          <text x="50" y="16" textAnchor="middle" fontSize="7" fill="white" fontFamily="Nunito" fontWeight="bold" opacity="0.9">YOUTH</text>
-          {/* Crown highlight */}
-          <path d="M 26 10 Q 34 2 44 0" fill="none" stroke="white" strokeWidth="2.5" opacity="0.45" strokeLinecap="round" />
+          <ellipse cx="50" cy="38" rx="40" ry="36" fill={hairColor} />
+          <path d="M 14 32 Q 14 2 50 2 Q 86 2 86 32 Z" fill={outfitColor} />
+          <path d="M 14 32 Q 14 2 50 2 Q 86 2 86 32 Z" fill={HL} opacity="0.40" />
+          <path d="M 14 32 Q 14 2 50 2 Q 86 2 86 32 Z" fill={SH} opacity="0.18" />
+          <rect x="12" y="28" width="76" height="9" rx="4.5" fill={hairColor} opacity="0.55" />
+          <path d="M 8 33 Q 50 27 92 33 L 91 43 Q 50 37 9 43 Z" fill={outfitColor} />
+          <path d="M 8 33 Q 50 27 92 33 L 91 43 Q 50 37 9 43 Z" fill={SH} opacity="0.35" />
+          <circle cx="50" cy="3" r="4" fill={outfitColor} />
+          <text x="50" y="21" textAnchor="middle" fontSize="8" fill="white"
+            fontFamily="Nunito" fontWeight="bold" opacity="0.9">YOUTH</text>
         </>
       )}
 
-      {/* ════ EAR — visible on left side (viewer's left = character's right) ════ */}
-      <ellipse cx="24" cy="38" rx="5.5" ry="6.5" fill={skinColor} />
-      <ellipse cx="24" cy="38" rx="5.5" ry="6.5" fill={HL} opacity="0.5" />
-      {/* Inner ear */}
-      <ellipse cx="24.5" cy="38" rx="2.8" ry="3.8" fill={cheekColor} opacity="0.45" />
-
-      {/* ════ HEAD — realistic 3D clay toy ════ */}
-      <ellipse cx="50" cy="37" rx="26" ry="25" fill={skinColor} />
-      <ellipse cx="50" cy="37" rx="26" ry="25" fill={HL} />
-      <ellipse cx="50" cy="37" rx="26" ry="25" fill={SH} />
-      {/* Specular shine — the defining 3D vinyl highlight */}
-      <ellipse cx="37" cy="24" rx="9" ry="6" fill="white" opacity="0.50" />
-      {/* Subtle secondary highlight */}
-      <ellipse cx="58" cy="46" rx="5" ry="3" fill="white" opacity="0.14" />
-
-      {/* ════ HAIR FRONT FRINGE ════ */}
-      {(hairStyle === 'bun' || hairStyle === 'short') && (
+      {/* Bucket hat */}
+      {hairStyle === 'bucketHat' && (
         <>
-          <path d="M 22 32 Q 30 17 50 19 Q 70 17 78 32" fill={hairColor} />
-          <path d="M 22 32 Q 30 17 50 19 Q 70 17 78 32" fill={HL} />
+          <ellipse cx="50" cy="38" rx="40" ry="36" fill={hairColor} />
+          <rect x="16" y="4" width="68" height="36" rx="20" fill={outfitColor} />
+          <rect x="16" y="4" width="68" height="36" rx="20" fill={HL} opacity="0.35" />
+          <rect x="16" y="4" width="68" height="36" rx="20" fill={SH} opacity="0.18" />
+          <ellipse cx="50" cy="34" rx="42" ry="9" fill={outfitColor} />
+          <ellipse cx="50" cy="34" rx="42" ry="9" fill={SH} opacity="0.28" />
+          <path d="M 16 26 Q 50 22 84 26" fill="none" stroke="white" strokeWidth="2" opacity="0.28" />
         </>
       )}
-      {hairStyle === 'bunDouble' && (
+
+      {/* Cap */}
+      {hairStyle === 'cap' && (
         <>
-          <path d="M 22 32 Q 30 17 50 19 Q 70 17 78 32" fill={hairColor} />
-          <path d="M 22 32 Q 30 17 50 19 Q 70 17 78 32" fill={HL} />
+          <ellipse cx="50" cy="38" rx="40" ry="36" fill={hairColor} />
+          <rect x="13" y="12" width="74" height="26" rx="16" fill="#4A148C" />
+          <rect x="13" y="12" width="74" height="26" rx="16" fill={HL} opacity="0.3" />
+          <rect x="10" y="28" width="80" height="10" rx="5" fill="#4A148C" />
         </>
       )}
-      {hairStyle === 'pigtails' && (
-        <>
-          <path d="M 22 33 Q 32 17 50 19 Q 68 17 78 33" fill={hairColor} />
-          <path d="M 22 33 Q 32 17 50 19 Q 68 17 78 33" fill={HL} />
-        </>
+
+      {/* ════ EAR ════ */}
+      <ellipse cx="17" cy="54" rx="6.5" ry="8" fill={skinColor} />
+      <ellipse cx="17" cy="54" rx="6.5" ry="8" fill={HL} opacity="0.5" />
+      <ellipse cx="17.5" cy="54" rx="3.5" ry="4.5" fill={cheekColor} opacity="0.28" />
+
+      {/* ════ FACE — sevenbooom rounded-square block ════ */}
+      <rect x="16" y="28" width="68" height="54" rx="24" fill={skinColor} />
+      <rect x="16" y="28" width="68" height="54" rx="24" fill={HL} />
+      <rect x="16" y="28" width="68" height="54" rx="24" fill={SH} />
+      {/* Specular vinyl gloss */}
+      <ellipse cx="29" cy="38" rx="14" ry="9" fill="white" opacity="0.36" />
+
+      {/* ════ HAIR FRONT FRINGE — straight bang across forehead ════ */}
+      {(hairStyle === 'short' || hairStyle === 'spiky') && (
+        <path d="M 16 43 Q 16 26 50 24 Q 84 26 84 43 Q 82 32 50 30 Q 18 32 16 43 Z"
+          fill={hairColor} />
+      )}
+      {hairStyle === 'bun' && (
+        <path d="M 17 42 Q 19 26 50 24 Q 81 26 83 42 Q 79 30 50 28 Q 21 30 17 42 Z"
+          fill={hairColor} />
+      )}
+      {(hairStyle === 'bunDouble' || hairStyle === 'pigtails') && (
+        <path d="M 17 42 Q 19 26 50 24 Q 81 26 83 42 Q 79 30 50 28 Q 21 30 17 42 Z"
+          fill={hairColor} />
       )}
       {hairStyle === 'sidePart' && (
-        <>
-          {/* Swept fringe — heavier on left, tapered right */}
-          <path d="M 22 33 Q 24 14 44 13 Q 58 12 70 18 Q 62 16 50 20 Q 37 22 28 30 Z" fill={hairColor} />
-          <path d="M 22 33 Q 24 14 44 13 Q 58 12 70 18 Q 62 16 50 20 Q 37 22 28 30 Z" fill={HL} />
-          {/* Small strand detail */}
-          <path d="M 44 13 Q 41 9 46 11" fill="none" stroke={hairColor} strokeWidth="2" opacity="0.7" strokeLinecap="round" />
-        </>
+        <path d="M 17 42 Q 17 24 40 22 Q 60 21 76 26 Q 60 24 46 30 Q 26 34 20 42 Z"
+          fill={hairColor} />
       )}
 
-      {/* ════ EYES ════ */}
-      {eyeEl(38, 37)}
-      {eyeEl(62, 37)}
+      {/* ════ EYES — tiny sevenbooom-style dark ovals ════ */}
+      {eyeEl(36, 52)}
+      {eyeEl(64, 52)}
 
-      {/* ════ EYEBROWS ════ */}
-      {browEl(38)}
-      {browEl(62)}
+      {/* ════ EYEBROWS (only for non-happy expressions) ════ */}
+      {browEl(36)}
+      {browEl(64)}
 
-      {/* ════ BLUSH (soft blurred circles for clay look) ════ */}
+      {/* ════ ROSY CHEEKS — the sevenbooom signature ════ */}
       {blush && (
         <>
-          <ellipse cx="25" cy="44" rx="9.5" ry="6.5" fill={cheekColor} opacity="0.82"
+          <circle cx="22" cy="63" r="14" fill={cheekColor} opacity="0.78"
             filter={`url(#${uid}blush)`} />
-          <ellipse cx="75" cy="44" rx="9.5" ry="6.5" fill={cheekColor} opacity="0.82"
+          <circle cx="78" cy="63" r="14" fill={cheekColor} opacity="0.78"
             filter={`url(#${uid}blush)`} />
         </>
       )}
 
-      {/* ════ NOSE ════ */}
-      <circle cx="50" cy="43" r="2.5" fill={cheekColor} opacity="0.75" />
+      {/* ════ NOSE — tiny soft dot ════ */}
+      <circle cx="50" cy="66" r="2.2" fill={cheekColor} opacity="0.55" />
 
       {/* ════ MOUTH ════ */}
-      <path d={mouthPath} fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />
+      <path d={mouthPath} fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
 
       {/* ════ GLASSES ════ */}
       {glasses && (
         <g>
-          <circle cx="38" cy="37" r="9.5" fill="none" stroke={hairColor} strokeWidth="2.5" opacity="0.9" />
-          <circle cx="38" cy="37" r="9.5" fill="#E3F2FD" opacity="0.22" />
-          <circle cx="62" cy="37" r="9.5" fill="none" stroke={hairColor} strokeWidth="2.5" opacity="0.9" />
-          <circle cx="62" cy="37" r="9.5" fill="#E3F2FD" opacity="0.22" />
-          <line x1="47.5" y1="37" x2="52.5" y2="37" stroke={hairColor} strokeWidth="2.2" />
-          <line x1="28.5" y1="36" x2="24" y2="35" stroke={hairColor} strokeWidth="2" />
-          <line x1="71.5" y1="36" x2="76" y2="35" stroke={hairColor} strokeWidth="2" />
-          <circle cx="34" cy="32.5" r="2.5" fill="white" opacity="0.55" />
-          <circle cx="58" cy="32.5" r="2.5" fill="white" opacity="0.55" />
+          <circle cx="36" cy="52" r="9" fill="none" stroke={hairColor} strokeWidth="2" opacity="0.88" />
+          <circle cx="36" cy="52" r="9" fill="#E3F2FD" opacity="0.16" />
+          <circle cx="64" cy="52" r="9" fill="none" stroke={hairColor} strokeWidth="2" opacity="0.88" />
+          <circle cx="64" cy="52" r="9" fill="#E3F2FD" opacity="0.16" />
+          <line x1="45" y1="52" x2="55" y2="52" stroke={hairColor} strokeWidth="2" />
+          <line x1="27" y1="51" x2="22" y2="50" stroke={hairColor} strokeWidth="1.8" />
+          <line x1="73" y1="51" x2="78" y2="50" stroke={hairColor} strokeWidth="1.8" />
         </g>
       )}
 
@@ -326,184 +267,155 @@ export const ChibiCharacter = ({
       {hairAccessory}
 
       {/* ════ NECK ════ */}
-      <rect x="44" y="60" width="12" height="13" rx="6" fill={skinColor} />
-      <rect x="44" y="60" width="12" height="13" rx="6" fill={HL} opacity="0.5" />
+      <rect x="44" y="80" width="12" height="8" rx="6" fill={skinColor} />
+      <rect x="44" y="80" width="12" height="8" rx="6" fill={HL} opacity="0.5" />
 
-      {/* ════ BODY — human-proportioned torso ════ */}
-
-      {/* --- Base torso shape (common to all outfits) --- */}
-      {/* Shoulders */}
-      <rect x="22" y="69" width="56" height="6" rx="5" fill={outfitColor} />
-      <rect x="22" y="69" width="56" height="6" rx="5" fill={BHL} />
+      {/* ════ BODY — compact sevenbooom torso ════ */}
+      <rect x="22" y="84" width="56" height="8" rx="6" fill={outfitColor} />
+      <rect x="22" y="84" width="56" height="8" rx="6" fill={BHL} />
 
       {outfitStyle === 'overalls' && (
         <>
-          {/* Shirt underbase */}
-          <rect x="30" y="66" width="40" height="32" rx="8" fill={collarColor} />
-          <rect x="30" y="66" width="40" height="32" rx="8" fill={BHL} opacity="0.5" />
-          {/* Overall bib */}
-          <rect x="38" y="65" width="24" height="19" rx="6" fill={outfitColor} />
-          <rect x="38" y="65" width="24" height="19" rx="6" fill={BHL} />
-          {/* Overall body */}
-          <rect x="28" y="74" width="44" height="24" rx="7" fill={outfitColor} />
-          <rect x="28" y="74" width="44" height="24" rx="7" fill={BHL} />
-          <rect x="28" y="74" width="44" height="24" rx="7" fill={BSH} />
-          {/* Straps */}
-          <path d="M 38 67 Q 34 64 30 68" fill="none" stroke={outfitColor} strokeWidth="4" strokeLinecap="round" />
-          <path d="M 62 67 Q 66 64 70 68" fill="none" stroke={outfitColor} strokeWidth="4" strokeLinecap="round" />
-          <circle cx="50" cy="72" r="2.5" fill={hairColor} opacity="0.7" />
-          <ellipse cx="39" cy="69" rx="7" ry="3.5" fill="white" opacity="0.22" />
+          <rect x="26" y="86" width="48" height="20" rx="9" fill={collarColor} />
+          <rect x="26" y="86" width="48" height="20" rx="9" fill={BHL} opacity="0.45" />
+          <rect x="36" y="85" width="28" height="16" rx="8" fill={outfitColor} />
+          <rect x="36" y="85" width="28" height="16" rx="8" fill={BHL} />
+          <rect x="24" y="92" width="52" height="17" rx="9" fill={outfitColor} />
+          <rect x="24" y="92" width="52" height="17" rx="9" fill={BHL} />
+          <rect x="24" y="92" width="52" height="17" rx="9" fill={BSH} />
+          <path d="M 36 87 Q 32 83 28 87" fill="none" stroke={outfitColor} strokeWidth="4.5" strokeLinecap="round" />
+          <path d="M 64 87 Q 68 83 72 87" fill="none" stroke={outfitColor} strokeWidth="4.5" strokeLinecap="round" />
+          <circle cx="50" cy="90" r="2.5" fill={hairColor} opacity="0.45" />
         </>
       )}
       {outfitStyle === 'dress' && (
         <>
-          {/* Bodice */}
-          <rect x="30" y="65" width="40" height="20" rx="9" fill={outfitColor} />
-          <rect x="30" y="65" width="40" height="20" rx="9" fill={BHL} />
-          {/* Skirt flare */}
-          <path d="M 30 78 Q 18 88 16 100 L 84 100 Q 82 88 70 78 Z" fill={outfitColor} />
-          <path d="M 30 78 Q 18 88 16 100 L 84 100 Q 82 88 70 78 Z" fill={BHL} />
-          <path d="M 30 78 Q 18 88 16 100 L 84 100 Q 82 88 70 78 Z" fill={BSH} />
-          <path d="M 40 66 Q 50 76 60 66" fill={collarColor} opacity="0.95" />
-          <ellipse cx="38" cy="70" rx="8" ry="4" fill="white" opacity="0.22" />
+          <rect x="26" y="83" width="48" height="18" rx="10" fill={outfitColor} />
+          <rect x="26" y="83" width="48" height="18" rx="10" fill={BHL} />
+          <path d="M 26 96 Q 13 108 12 114 L 88 114 Q 87 108 74 96 Z" fill={outfitColor} />
+          <path d="M 26 96 Q 13 108 12 114 L 88 114 Q 87 108 74 96 Z" fill={BHL} opacity="0.5" />
+          <path d="M 26 96 Q 13 108 12 114 L 88 114 Q 87 108 74 96 Z" fill={BSH} />
+          <path d="M 39 84 Q 50 93 61 84" fill={collarColor} opacity="0.9" />
         </>
       )}
       {outfitStyle === 'jacket' && (
         <>
-          <rect x="28" y="65" width="44" height="32" rx="9" fill={outfitColor} />
-          <rect x="28" y="65" width="44" height="32" rx="9" fill={BHL} />
-          <rect x="28" y="65" width="44" height="32" rx="9" fill={BSH} />
-          {/* Lapels */}
-          <path d="M 44 66 Q 50 76 56 66" fill={collarColor} />
-          <path d="M 44 66 L 40 83 L 50 81 L 60 83 L 56 66" fill={collarColor} opacity="0.88" />
-          <circle cx="50" cy="74" r="2.2" fill={hairColor} opacity="0.65" />
-          <circle cx="50" cy="82" r="2.2" fill={hairColor} opacity="0.65" />
-          <ellipse cx="38" cy="70" rx="8" ry="4" fill="white" opacity="0.22" />
+          <rect x="24" y="83" width="52" height="25" rx="11" fill={outfitColor} />
+          <rect x="24" y="83" width="52" height="25" rx="11" fill={BHL} />
+          <rect x="24" y="83" width="52" height="25" rx="11" fill={BSH} />
+          <path d="M 42 84 Q 50 94 58 84" fill={collarColor} />
+          <path d="M 42 84 L 39 100 L 50 98 L 61 100 L 58 84" fill={collarColor} opacity="0.82" />
+          <circle cx="50" cy="92" r="2" fill={hairColor} opacity="0.45" />
+          <circle cx="50" cy="99" r="2" fill={hairColor} opacity="0.45" />
         </>
       )}
       {outfitStyle === 'uniform' && (
         <>
-          <rect x="30" y="65" width="40" height="31" rx="9" fill={outfitColor} />
-          <rect x="30" y="65" width="40" height="31" rx="9" fill={BHL} />
-          <rect x="30" y="65" width="40" height="31" rx="9" fill={BSH} />
-          <rect x="41" y="64" width="18" height="12" rx="6" fill={collarColor} />
-          <rect x="32" y="73" width="14" height="11" rx="3" fill={collarColor} opacity="0.9" />
-          <text x="39" y="81" textAnchor="middle" fontSize="5" fill={hairColor}>✦</text>
-          <ellipse cx="40" cy="70" rx="8" ry="4" fill="white" opacity="0.22" />
+          <rect x="26" y="83" width="48" height="25" rx="11" fill={outfitColor} />
+          <rect x="26" y="83" width="48" height="25" rx="11" fill={BHL} />
+          <rect x="26" y="83" width="48" height="25" rx="11" fill={BSH} />
+          <rect x="39" y="82" width="22" height="12" rx="7" fill={collarColor} />
+          <rect x="28" y="90" width="14" height="9" rx="3" fill={collarColor} opacity="0.85" />
+          <text x="35" y="97" textAnchor="middle" fontSize="5" fill={hairColor}>✦</text>
         </>
       )}
       {outfitStyle === 'coat' && (
         <>
-          <rect x="26" y="65" width="48" height="33" rx="10" fill={outfitColor} />
-          <rect x="26" y="65" width="48" height="33" rx="10" fill={BHL} />
-          <rect x="26" y="65" width="48" height="33" rx="10" fill={BSH} />
-          <rect x="42" y="64" width="16" height="22" rx="7" fill={collarColor} opacity="0.9" />
-          <circle cx="50" cy="76" r="2.5" fill={hairColor} opacity="0.7" />
-          <circle cx="50" cy="84" r="2.5" fill={hairColor} opacity="0.7" />
-          <circle cx="50" cy="92" r="2.5" fill={hairColor} opacity="0.7" />
-          <ellipse cx="38" cy="70" rx="9" ry="4.5" fill="white" opacity="0.22" />
+          <rect x="22" y="83" width="56" height="26" rx="12" fill={outfitColor} />
+          <rect x="22" y="83" width="56" height="26" rx="12" fill={BHL} />
+          <rect x="22" y="83" width="56" height="26" rx="12" fill={BSH} />
+          <rect x="40" y="82" width="20" height="20" rx="9" fill={collarColor} opacity="0.9" />
+          <circle cx="50" cy="93" r="2.2" fill={hairColor} opacity="0.55" />
+          <circle cx="50" cy="100" r="2.2" fill={hairColor} opacity="0.55" />
         </>
       )}
       {outfitStyle === 'hoodie' && (
         <>
-          <rect x="26" y="65" width="48" height="33" rx="10" fill={outfitColor} />
-          <rect x="26" y="65" width="48" height="33" rx="10" fill={BHL} />
-          <rect x="26" y="65" width="48" height="33" rx="10" fill={BSH} />
-          {/* Hood cowl */}
-          <path d="M 30 66 Q 32 59 50 59 Q 68 59 70 66 L 70 71 Q 62 66 50 66 Q 38 66 30 71 Z" fill={outfitColor} />
-          <path d="M 30 66 Q 32 59 50 59 Q 68 59 70 66 L 70 71 Q 62 66 50 66 Q 38 66 30 71 Z" fill={BHL} />
-          <line x1="47" y1="65" x2="45" y2="82" stroke={collarColor} strokeWidth="1.8" opacity="0.7" />
-          <line x1="53" y1="65" x2="55" y2="82" stroke={collarColor} strokeWidth="1.8" opacity="0.7" />
-          <ellipse cx="45" cy="83" rx="2.5" ry="2.5" fill={collarColor} opacity="0.8" />
-          <ellipse cx="55" cy="83" rx="2.5" ry="2.5" fill={collarColor} opacity="0.8" />
-          <rect x="38" y="84" width="24" height="13" rx="5" fill={collarColor} opacity="0.3" />
-          <ellipse cx="38" cy="70" rx="9" ry="4.5" fill="white" opacity="0.20" />
+          <rect x="22" y="83" width="56" height="26" rx="12" fill={outfitColor} />
+          <rect x="22" y="83" width="56" height="26" rx="12" fill={BHL} />
+          <rect x="22" y="83" width="56" height="26" rx="12" fill={BSH} />
+          <path d="M 26 84 Q 28 77 50 77 Q 72 77 74 84 L 74 89 Q 64 84 50 84 Q 36 84 26 89 Z"
+            fill={outfitColor} />
+          <path d="M 26 84 Q 28 77 50 77 Q 72 77 74 84 L 74 89 Q 64 84 50 84 Q 36 84 26 89 Z"
+            fill={BHL} />
+          <line x1="47" y1="84" x2="45" y2="98" stroke={collarColor} strokeWidth="1.8" opacity="0.65" />
+          <line x1="53" y1="84" x2="55" y2="98" stroke={collarColor} strokeWidth="1.8" opacity="0.65" />
+          <ellipse cx="45" cy="99" rx="2.5" ry="2.5" fill={collarColor} opacity="0.75" />
+          <ellipse cx="55" cy="99" rx="2.5" ry="2.5" fill={collarColor} opacity="0.75" />
         </>
       )}
 
-      {/* ════ ARMS — long human arms with hands ════ */}
+      {/* ════ ARMS — short rounded stubs (sevenbooom proportions) ════ */}
       {/* Left arm */}
-      <g className="chibi-arm-l">
-        {/* Upper sleeve */}
-        <rect x="13" y="68" width="15" height="30" rx="7.5" fill={outfitColor} />
-        <rect x="13" y="68" width="15" height="30" rx="7.5" fill={BHL} />
-        <rect x="13" y="68" width="15" height="30" rx="7.5" fill={BSH} />
-        {/* Cuff */}
-        <rect x="13" y="94" width="15" height="5" rx="2.5" fill={collarColor} opacity="0.65" />
-        {/* Hand — open oval paddle */}
-        <ellipse cx="20.5" cy="105" rx="7" ry="5.5" fill={skinColor} />
-        <ellipse cx="20.5" cy="105" rx="7" ry="5.5" fill={HL} opacity="0.5" />
-        {/* Thumb nub */}
-        <ellipse cx="13" cy="102" rx="3.5" ry="2.5" fill={skinColor} />
-        <ellipse cx="13" cy="102" rx="3.5" ry="2.5" fill={HL} opacity="0.4" />
-      </g>
+      <ellipse cx="13" cy="94" rx="11" ry="14" fill={outfitColor} />
+      <ellipse cx="13" cy="94" rx="11" ry="14" fill={BHL} />
+      <ellipse cx="13" cy="106" rx="8" ry="5.5" fill={skinColor} />
+      <ellipse cx="13" cy="106" rx="8" ry="5.5" fill={HL} opacity="0.5" />
       {/* Right arm */}
-      <g className="chibi-arm-r">
-        <rect x="72" y="68" width="15" height="30" rx="7.5" fill={outfitColor} />
-        <rect x="72" y="68" width="15" height="30" rx="7.5" fill={BHL} />
-        <rect x="72" y="68" width="15" height="30" rx="7.5" fill={BSH} />
-        <rect x="72" y="94" width="15" height="5" rx="2.5" fill={collarColor} opacity="0.65" />
-        <ellipse cx="79.5" cy="105" rx="7" ry="5.5" fill={skinColor} />
-        <ellipse cx="79.5" cy="105" rx="7" ry="5.5" fill={HL} opacity="0.5" />
-        <ellipse cx="87" cy="102" rx="3.5" ry="2.5" fill={skinColor} />
-        <ellipse cx="87" cy="102" rx="3.5" ry="2.5" fill={HL} opacity="0.4" />
-      </g>
+      <ellipse cx="87" cy="94" rx="11" ry="14" fill={outfitColor} />
+      <ellipse cx="87" cy="94" rx="11" ry="14" fill={BHL} />
+      <ellipse cx="87" cy="106" rx="8" ry="5.5" fill={skinColor} />
+      <ellipse cx="87" cy="106" rx="8" ry="5.5" fill={HL} opacity="0.5" />
 
-      {/* Item / prop */}
-      {item && <g transform="translate(66, 72)">{item}</g>}
+      {/* Item / prop held in right hand area */}
+      {item && <g transform="translate(72, 82)">{item}</g>}
 
-      {/* ════ LEGS — separated with socks + chunky amiibo shoes ════ */}
-      <g className="chibi-leg-l">
-        {/* Pant leg */}
-        <rect x="33" y="96" width="15" height="19" rx="7.5" fill={outfitColor} />
-        <rect x="33" y="96" width="15" height="19" rx="7.5" fill={BHL} />
-        <rect x="33" y="96" width="15" height="19" rx="7.5" fill={BSH} />
-        {/* Sock */}
-        <rect x="32" y="111" width="16" height="7" rx="4" fill="white" opacity="0.92" />
-        {/* Shoe — big amiibo-style, pointing slightly left */}
-        <path d="M 28 116 L 27 126 Q 27 130 33 130 L 50 130 Q 56 130 56 125 L 54 118 Q 52 115 47 115 L 33 115 Z" fill={bootColor} />
-        <path d="M 28 116 L 27 126 Q 27 130 33 130 L 50 130 Q 56 130 56 125 L 54 118 Q 52 115 47 115 L 33 115 Z" fill={HL} opacity="0.4" />
-        {/* Toe highlight */}
-        <ellipse cx="40" cy="119" rx="9" ry="4" fill="white" opacity="0.2" />
-      </g>
-      <g className="chibi-leg-r">
-        <rect x="52" y="96" width="15" height="19" rx="7.5" fill={outfitColor} />
-        <rect x="52" y="96" width="15" height="19" rx="7.5" fill={BHL} />
-        <rect x="52" y="96" width="15" height="19" rx="7.5" fill={BSH} />
-        <rect x="52" y="111" width="16" height="7" rx="4" fill="white" opacity="0.92" />
-        {/* Shoe — pointing slightly right */}
-        <path d="M 46 116 L 46 125 Q 46 130 52 130 L 69 130 Q 75 130 75 125 L 75 118 Q 73 115 68 115 L 52 115 Z" fill={bootColor} />
-        <path d="M 46 116 L 46 125 Q 46 130 52 130 L 69 130 Q 75 130 75 125 L 75 118 Q 73 115 68 115 L 52 115 Z" fill={HL} opacity="0.4" />
-        <ellipse cx="60" cy="119" rx="9" ry="4" fill="white" opacity="0.2" />
-      </g>
+      {/* ════ PANTS ════ */}
+      <rect x="24" y="106" width="52" height="10" rx="8" fill={pantsColor} />
+      <rect x="24" y="106" width="52" height="10" rx="8" fill={BSH} opacity="0.25" />
+
+      {/* ════ LEGS ════ */}
+      {/* Left leg */}
+      <rect x="29" y="112" width="17" height="13" rx="7" fill={pantsColor} />
+      <rect x="29" y="112" width="17" height="13" rx="7" fill={BSH} opacity="0.25" />
+      {/* Left sock */}
+      <rect x="29" y="121" width="17" height="5" rx="3" fill="white" opacity="0.88" />
+      {/* Left shoe — white chunky sneaker */}
+      <path d="M 25 124 L 25 129 Q 25 132 31 132 L 48 132 Q 54 132 54 127 L 52 124 Q 50 122 46 122 L 30 122 Z"
+        fill={bootColor} />
+      <path d="M 25 124 L 25 129 Q 25 132 31 132 L 48 132 Q 54 132 54 127 L 52 124 Q 50 122 46 122 L 30 122 Z"
+        fill={HL} opacity="0.4" />
+      <ellipse cx="38" cy="126" rx="9" ry="3.5" fill="white" opacity="0.22" />
+
+      {/* Right leg */}
+      <rect x="54" y="112" width="17" height="13" rx="7" fill={pantsColor} />
+      <rect x="54" y="112" width="17" height="13" rx="7" fill={BSH} opacity="0.25" />
+      {/* Right sock */}
+      <rect x="54" y="121" width="17" height="5" rx="3" fill="white" opacity="0.88" />
+      {/* Right shoe */}
+      <path d="M 46 124 L 46 129 Q 46 132 52 132 L 69 132 Q 75 132 75 127 L 75 124 Q 73 122 69 122 L 50 122 Z"
+        fill={bootColor} />
+      <path d="M 46 124 L 46 129 Q 46 132 52 132 L 69 132 Q 75 132 75 127 L 75 124 Q 73 122 69 122 L 50 122 Z"
+        fill={HL} opacity="0.4" />
+      <ellipse cx="62" cy="126" rx="9" ry="3.5" fill="white" opacity="0.22" />
     </svg>
   );
 };
 
 /* ────────────────────────────────────────────────────────
-   PLAYER WARDENS  (choose your character on title screen)
+   PLAYER WARDENS
 ──────────────────────────────────────────────────────── */
 
 export const Warden1 = ({ className, isWalking }: { className?: string; isWalking?: boolean }) => (
   <ChibiCharacter
-    skinColor="#FAD4A8"
+    skinColor="#F5D8B8"
     hairColor="#1A1A1A"
     hairStyle="snapback"
     eyeStyle="dots"
-    cheekColor="#FFB8A0"
+    cheekColor="#E8907A"
     blush={true}
     expression="happy"
-    outfitColor="#E53935"
+    outfitColor="#8B3A3A"
     outfitStyle="hoodie"
-    collarColor="#FFFFFF"
-    bootColor="#212121"
+    pantsColor="#2E3A4A"
+    collarColor="#F0EDE8"
+    bootColor="#E8E4DC"
     item={<>
-      {/* Camera like reference */}
-      <rect x="-6" y="0" width="20" height="14" rx="4" fill="#212121" />
-      <circle cx="4" cy="7" r="5" fill="#37474F" />
+      <rect x="-6" y="0" width="20" height="14" rx="4" fill="#2A2A2A" />
+      <circle cx="4" cy="7" r="5" fill="#3A4A50" />
       <circle cx="4" cy="7" r="3" fill="#1A1A2A" />
       <circle cx="2.5" cy="5.5" r="1.2" fill="white" opacity="0.8" />
-      <rect x="8" y="1" width="5" height="4" rx="1.5" fill="#37474F" />
+      <rect x="8" y="1" width="5" height="4" rx="1.5" fill="#3A4A50" />
     </>}
     className={className}
     isWalking={isWalking}
@@ -512,22 +424,22 @@ export const Warden1 = ({ className, isWalking }: { className?: string; isWalkin
 
 export const Warden2 = ({ className, isWalking }: { className?: string; isWalking?: boolean }) => (
   <ChibiCharacter
-    skinColor="#DEB887"
+    skinColor="#F0D4AA"
     hairColor="#1A1A1A"
     hairStyle="bucketHat"
     eyeStyle="dots"
-    cheekColor="#FFAB91"
+    cheekColor="#E8A090"
     blush={true}
     expression="happy"
-    outfitColor="#607D8B"
+    outfitColor="#7A8F7A"
     outfitStyle="jacket"
-    collarColor="#ECEFF1"
-    bootColor="#FFFFFF"
+    pantsColor="#3A3A2E"
+    collarColor="#F0EDE8"
+    bootColor="#E8E4DC"
     item={<>
-      {/* Boba drink */}
-      <rect x="-5" y="-2" width="14" height="18" rx="4" fill="#90CAF9" opacity="0.8" stroke="#64B5F6" strokeWidth="1" />
-      <ellipse cx="2" cy="-2" rx="7" ry="3" fill="#B3E5FC" opacity="0.9" />
-      <line x1="2" y1="-5" x2="2" y2="-14" stroke="#546E7A" strokeWidth="2" />
+      <rect x="-5" y="-2" width="14" height="18" rx="4" fill="#A8C8D8" opacity="0.85" stroke="#7AAAB8" strokeWidth="1" />
+      <ellipse cx="2" cy="-2" rx="7" ry="3" fill="#C8E4EE" opacity="0.9" />
+      <line x1="2" y1="-5" x2="2" y2="-14" stroke="#4A6A74" strokeWidth="2" />
       {[0,3,6].map(i => <circle key={i} cx={2 + (i-1)*2} cy={10+i} r="2.5" fill="#4E342E" opacity="0.8" />)}
     </>}
     className={className}
@@ -537,23 +449,25 @@ export const Warden2 = ({ className, isWalking }: { className?: string; isWalkin
 
 export const Warden3 = ({ className, isWalking }: { className?: string; isWalking?: boolean }) => (
   <ChibiCharacter
-    skinColor="#FDDBB0"
-    hairColor="#4A148C"
+    skinColor="#F5D8B8"
+    hairColor="#1A0A2A"
     hairStyle="pigtails"
     eyeStyle="hearts"
-    cheekColor="#CE93D8"
-    outfitColor="#CE93D8"
+    cheekColor="#CC8EA0"
+    blush={true}
+    outfitColor="#8A6FA8"
     outfitStyle="dress"
-    collarColor="#F3E5F5"
-    bootColor="#AB47BC"
+    pantsColor="#5A4A7A"
+    collarColor="#F0EBF5"
+    bootColor="#E8E4DC"
     item={<>
-      <line x1="4" y1="16" x2="4" y2="0" stroke="#4A148C" strokeWidth="2" />
-      <polygon points="4,-2 0,4 8,4" fill="#FFD700" stroke="#4A148C" strokeWidth="1" />
-      <circle cx="4" cy="-2" r="4" fill="#FFD700" stroke="#4A148C" strokeWidth="1" />
+      <line x1="4" y1="16" x2="4" y2="0" stroke="#4A2A7A" strokeWidth="2" />
+      <polygon points="4,-2 0,4 8,4" fill="#D4A830" stroke="#4A2A7A" strokeWidth="1" />
+      <circle cx="4" cy="-2" r="4" fill="#D4A830" stroke="#4A2A7A" strokeWidth="1" />
     </>}
     hairAccessory={<>
-      <circle cx="32" cy="17" r="4" fill="#FFD700" stroke="#4A148C" strokeWidth="1.5" />
-      <circle cx="68" cy="17" r="4" fill="#FFD700" stroke="#4A148C" strokeWidth="1.5" />
+      <circle cx="29" cy="18" r="5" fill="#D4A830" stroke="#4A2A7A" strokeWidth="1.5" />
+      <circle cx="71" cy="18" r="5" fill="#D4A830" stroke="#4A2A7A" strokeWidth="1.5" />
     </>}
     className={className}
     isWalking={isWalking}
@@ -561,26 +475,26 @@ export const Warden3 = ({ className, isWalking }: { className?: string; isWalkin
 );
 
 /* ────────────────────────────────────────────────────────
-   ELEMENTAL LORDS  (zone guardians, larger + more ornate)
+   ELEMENTAL LORDS
 ──────────────────────────────────────────────────────── */
 
 export const BalooSprite = ({ className }: { className?: string }) => (
-  /* SDG 1 – Poverty – carries a little house */
   <ChibiCharacter
-    skinColor="#FDDBB0"
-    hairColor="#4E342E"
+    skinColor="#F0C8A0"
+    hairColor="#2C1810"
     hairStyle="short"
     eyeStyle="starry"
-    cheekColor="#EF9A9A"
+    cheekColor="#E8907A"
     blush={true}
     expression="happy"
-    outfitColor="#E53935"
+    outfitColor="#C4602E"
     outfitStyle="overalls"
-    collarColor="#FFFFFF"
-    bootColor="#BF360C"
+    pantsColor="#6B3A20"
+    collarColor="#F5EDE0"
+    bootColor="#E8DDD0"
     item={<>
-      <rect x="-2" y="4" width="16" height="12" rx="2" fill="#FFCCBC" stroke="#4E342E" strokeWidth="1.5" />
-      <polygon points="-4,4 8,-4 20,4" fill="#E53935" stroke="#4E342E" strokeWidth="1.5" />
+      <rect x="-2" y="4" width="16" height="12" rx="2" fill="#F5E0C8" stroke="#6B3A20" strokeWidth="1.5" />
+      <polygon points="-4,4 8,-4 20,4" fill="#C4602E" stroke="#6B3A20" strokeWidth="1.5" />
     </>}
     className={cn("animate-float drop-shadow-lg", className)}
     style={{ animationDuration: '3.5s' }}
@@ -588,24 +502,24 @@ export const BalooSprite = ({ className }: { className?: string }) => (
 );
 
 export const PebblepuffSprite = ({ className }: { className?: string }) => (
-  /* SDG 2 – Hunger – carries wheat stalks */
   <ChibiCharacter
-    skinColor="#FFE0B2"
-    hairColor="#5D4037"
+    skinColor="#F0D4AA"
+    hairColor="#3A2818"
     hairStyle="bunDouble"
     eyeStyle="crescent"
-    cheekColor="#FFAB91"
+    cheekColor="#E8A870"
     blush={true}
     expression="happy"
-    outfitColor="#FF8F00"
+    outfitColor="#C89340"
     outfitStyle="overalls"
-    collarColor="#FFF8E1"
-    bootColor="#E65100"
+    pantsColor="#6B4A18"
+    collarColor="#FDF5E0"
+    bootColor="#E8D8B0"
     item={<>
-      <line x1="4" y1="18" x2="4" y2="0" stroke="#5D4037" strokeWidth="2" />
-      <ellipse cx="4" cy="-2" rx="4" ry="6" fill="#FDD835" stroke="#5D4037" strokeWidth="1.5" />
-      <line x1="8" y1="14" x2="10" y2="2" stroke="#5D4037" strokeWidth="1.5" />
-      <ellipse cx="11" cy="0" rx="3" ry="5" fill="#FDD835" stroke="#5D4037" strokeWidth="1.5" />
+      <line x1="4" y1="18" x2="4" y2="0" stroke="#3A2818" strokeWidth="2" />
+      <ellipse cx="4" cy="-2" rx="4" ry="6" fill="#E8C840" stroke="#3A2818" strokeWidth="1.5" />
+      <line x1="8" y1="14" x2="10" y2="2" stroke="#3A2818" strokeWidth="1.5" />
+      <ellipse cx="11" cy="0" rx="3" ry="5" fill="#E8C840" stroke="#3A2818" strokeWidth="1.5" />
     </>}
     className={cn("animate-float drop-shadow-lg", className)}
     style={{ animationDuration: '4s' }}
@@ -613,27 +527,27 @@ export const PebblepuffSprite = ({ className }: { className?: string }) => (
 );
 
 export const LeafletSprite = ({ className }: { className?: string }) => (
-  /* SDG 3 – Health – carries a big leaf + cross */
   <ChibiCharacter
-    skinColor="#C8E6C9"
-    hairColor="#1B5E20"
+    skinColor="#D8EED8"
+    hairColor="#1A4A1A"
     hairStyle="bun"
     eyeStyle="crescent"
-    cheekColor="#A5D6A7"
+    cheekColor="#8EC88E"
     blush={true}
     expression="happy"
     outfitColor="#FFFFFF"
     outfitStyle="coat"
-    collarColor="#E8F5E9"
-    bootColor="#2E7D32"
+    pantsColor="#2E5A2E"
+    collarColor="#E8F5E8"
+    bootColor="#E8E8E8"
     item={<>
-      <path d="M 4 16 Q -4 8 2 0 Q 10 -4 14 4 Q 20 12 10 16 Z" fill="#4CAF50" stroke="#1B5E20" strokeWidth="1.5" />
+      <path d="M 4 16 Q -4 8 2 0 Q 10 -4 14 4 Q 20 12 10 16 Z" fill="#5A9A5A" stroke="#1A4A1A" strokeWidth="1.5" />
       <rect x="1" y="3" width="3" height="10" rx="1" fill="white" />
       <rect x="-1" y="6" width="7" height="3" rx="1" fill="white" />
     </>}
     hairAccessory={<>
-      <circle cx="50" cy="9" r="5" fill="#4CAF50" stroke="#1B5E20" strokeWidth="1.5" />
-      <text x="50" y="13" textAnchor="middle" fontSize="6" fill="white">+</text>
+      <circle cx="50" cy="8" r="5" fill="#5A9A5A" stroke="#1A4A1A" strokeWidth="1.5" />
+      <text x="50" y="12" textAnchor="middle" fontSize="6" fill="white">+</text>
     </>}
     className={cn("animate-float drop-shadow-lg", className)}
     style={{ animationDuration: '2.5s' }}
@@ -641,24 +555,24 @@ export const LeafletSprite = ({ className }: { className?: string }) => (
 );
 
 export const ThinkletSprite = ({ className }: { className?: string }) => (
-  /* SDG 4 – Education – carries a book, wears snapback */
   <ChibiCharacter
     skinColor="#E8EAF6"
-    hairColor="#4A148C"
+    hairColor="#1A1A4A"
     hairStyle="snapback"
     eyeStyle="dots"
-    cheekColor="#CE93D8"
+    cheekColor="#9090CC"
     blush={true}
     expression="determined"
-    outfitColor="#7B1FA2"
+    outfitColor="#2A3A7A"
     outfitStyle="uniform"
-    collarColor="#F3E5F5"
-    bootColor="#4A148C"
+    pantsColor="#1A2A5A"
+    collarColor="#E8EAF6"
+    bootColor="#D8DAE8"
     item={<>
-      <rect x="-2" y="2" width="18" height="14" rx="2" fill="#FFEE58" stroke="#4A148C" strokeWidth="1.5" />
-      <rect x="-2" y="2" width="18" height="4" rx="2" fill="#FFC107" stroke="#4A148C" strokeWidth="1" />
-      <line x1="1" y1="9" x2="13" y2="9" stroke="#4A148C" strokeWidth="1" />
-      <line x1="1" y1="12" x2="10" y2="12" stroke="#4A148C" strokeWidth="1" />
+      <rect x="-2" y="2" width="18" height="14" rx="2" fill="#E8D840" stroke="#1A1A4A" strokeWidth="1.5" />
+      <rect x="-2" y="2" width="18" height="4" rx="2" fill="#C8B830" stroke="#1A1A4A" strokeWidth="1" />
+      <line x1="1" y1="9" x2="13" y2="9" stroke="#1A1A4A" strokeWidth="1" />
+      <line x1="1" y1="12" x2="10" y2="12" stroke="#1A1A4A" strokeWidth="1" />
     </>}
     className={cn("animate-float drop-shadow-lg", className)}
     style={{ animationDuration: '2.8s' }}
@@ -666,27 +580,28 @@ export const ThinkletSprite = ({ className }: { className?: string }) => (
 );
 
 export const SparkleflameSprite = ({ className }: { className?: string }) => (
-  /* SDG 5 – Gender Equality – carries a balance scale */
   <ChibiCharacter
-    skinColor="#FFF3E0"
-    hairColor="#BF360C"
+    skinColor="#FFF0E0"
+    hairColor="#4A1A0A"
     hairStyle="pigtails"
     eyeStyle="starry"
-    cheekColor="#FFCC02"
+    cheekColor="#E8A060"
+    blush={true}
     expression="happy"
-    outfitColor="#FF6F00"
+    outfitColor="#B54A1A"
     outfitStyle="jacket"
-    collarColor="#FFF9C4"
-    bootColor="#E65100"
+    pantsColor="#4A1A0A"
+    collarColor="#FDF5E0"
+    bootColor="#E0D8C8"
     item={<>
-      <line x1="8" y1="8" x2="8" y2="2" stroke="#BF360C" strokeWidth="2" />
-      <line x1="0" y1="5" x2="16" y2="5" stroke="#BF360C" strokeWidth="2" />
-      <ellipse cx="1" cy="8" rx="4" ry="3" fill="#FFCC02" stroke="#BF360C" strokeWidth="1" />
-      <ellipse cx="15" cy="8" rx="4" ry="3" fill="#FFCC02" stroke="#BF360C" strokeWidth="1" />
+      <line x1="8" y1="8" x2="8" y2="2" stroke="#4A1A0A" strokeWidth="2" />
+      <line x1="0" y1="5" x2="16" y2="5" stroke="#4A1A0A" strokeWidth="2" />
+      <ellipse cx="1" cy="8" rx="4" ry="3" fill="#D4A030" stroke="#4A1A0A" strokeWidth="1" />
+      <ellipse cx="15" cy="8" rx="4" ry="3" fill="#D4A030" stroke="#4A1A0A" strokeWidth="1" />
     </>}
     hairAccessory={<>
-      <circle cx="32" cy="18" r="4" fill="#FFCC02" stroke="#BF360C" strokeWidth="1.5" />
-      <circle cx="68" cy="18" r="4" fill="#FFCC02" stroke="#BF360C" strokeWidth="1.5" />
+      <circle cx="29" cy="20" r="4" fill="#D4A030" stroke="#4A1A0A" strokeWidth="1.5" />
+      <circle cx="71" cy="20" r="4" fill="#D4A030" stroke="#4A1A0A" strokeWidth="1.5" />
     </>}
     className={cn("animate-float drop-shadow-lg", className)}
     style={{ animationDuration: '2s' }}
@@ -694,272 +609,257 @@ export const SparkleflameSprite = ({ className }: { className?: string }) => (
 );
 
 /* ────────────────────────────────────────────────────────
-   NPC CHARACTERS  (appear inside puzzles)
+   NPC CHARACTERS
 ──────────────────────────────────────────────────────── */
 
-/* --- SDG 1: Poverty NPCs --- */
-
 export const NPC_LeeFather = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FDDBB0" hairColor="#3E2723" hairStyle="short" eyeStyle="dots"
-    cheekColor="#EF9A9A" expression="sad" outfitColor="#546E7A" outfitStyle="jacket"
-    collarColor="#ECEFF1" bootColor="#37474F"
+  <ChibiCharacter skinColor="#F0D0A0" hairColor="#2A1A10" hairStyle="short" eyeStyle="dots"
+    cheekColor="#E8A880" expression="sad" outfitColor="#5A6A74" outfitStyle="jacket"
+    pantsColor="#2A3040" collarColor="#E8EDF0" bootColor="#D8D4CC"
     item={<text x="0" y="10" fontSize="14">💼</text>}
     className={className} />
 );
 
 export const NPC_LeeMom = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FDDBB0" hairColor="#3E2723" hairStyle="bun" eyeStyle="dots"
-    cheekColor="#F48FB1" expression="sad" outfitColor="#78909C" outfitStyle="dress"
-    collarColor="#ECEFF1" bootColor="#546E7A"
+  <ChibiCharacter skinColor="#F0D0A0" hairColor="#2A1A10" hairStyle="bun" eyeStyle="dots"
+    cheekColor="#E8A098" expression="sad" outfitColor="#7A8A94" outfitStyle="dress"
+    pantsColor="#4A5A60" collarColor="#E8EDF0" bootColor="#C8C4BC"
     className={className} />
 );
 
 export const NPC_GrandmaRosa = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFCCBC" hairColor="#9E9E9E" hairStyle="bun" eyeStyle="crescent"
-    cheekColor="#EF9A9A" expression="sad" outfitColor="#BDBDBD" outfitStyle="coat"
-    collarColor="#EEEEEE" bootColor="#757575"
+  <ChibiCharacter skinColor="#F5CCA8" hairColor="#9A9A9A" hairStyle="bun" eyeStyle="crescent"
+    cheekColor="#E8A098" expression="sad" outfitColor="#AAAAAA" outfitStyle="coat"
+    pantsColor="#707070" collarColor="#F0F0F0" bootColor="#C8C8C8"
     item={<text x="-4" y="10" fontSize="14">🏚️</text>}
     className={className} />
 );
 
 export const NPC_YoungMaya = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FDDBB0" hairColor="#1A237E" hairStyle="pigtails" eyeStyle="starry"
-    cheekColor="#90CAF9" expression="determined" outfitColor="#3F51B5" outfitStyle="uniform"
-    collarColor="#E8EAF6" bootColor="#283593"
+  <ChibiCharacter skinColor="#F0D0A0" hairColor="#1A1A4A" hairStyle="pigtails" eyeStyle="starry"
+    cheekColor="#8898C8" expression="determined" outfitColor="#3A4A8A" outfitStyle="uniform"
+    pantsColor="#1A2A5A" collarColor="#E0E4F5" bootColor="#D0D4E8"
     item={<text x="-4" y="10" fontSize="14">📋</text>}
     className={className} />
 );
 
 export const NPC_BakerHelper = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFECB3" hairColor="#4E342E" hairStyle="short" eyeStyle="dots"
-    cheekColor="#FFAB91" expression="happy" outfitColor="#FFFFFF" outfitStyle="coat"
-    collarColor="#FFF8E1" bootColor="#795548"
+  <ChibiCharacter skinColor="#F5E0B8" hairColor="#3A2010" hairStyle="short" eyeStyle="dots"
+    cheekColor="#E8A878" expression="happy" outfitColor="#FFFFFF" outfitStyle="coat"
+    pantsColor="#4A3A28" collarColor="#FDF8E8" bootColor="#D8CCAA"
     item={<text x="-4" y="10" fontSize="14">🍞</text>}
-    hairAccessory={<rect x="40" y="18" width="20" height="8" rx="4" fill="white" stroke="#4E342E" strokeWidth="1.5" />}
+    hairAccessory={<rect x="38" y="20" width="24" height="8" rx="4" fill="white" stroke="#3A2010" strokeWidth="1.5" />}
     className={className} />
 );
 
 export const NPC_HouseKeeper = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FDDBB0" hairColor="#2E7D32" hairStyle="bun" eyeStyle="crescent"
-    cheekColor="#A5D6A7" expression="happy" outfitColor="#4CAF50" outfitStyle="overalls"
-    collarColor="#E8F5E9" bootColor="#1B5E20"
+  <ChibiCharacter skinColor="#F0D0A0" hairColor="#1A3A1A" hairStyle="bun" eyeStyle="crescent"
+    cheekColor="#7AAA7A" expression="happy" outfitColor="#5A8A5A" outfitStyle="overalls"
+    pantsColor="#2A4A2A" collarColor="#E8F5E8" bootColor="#C8D8C0"
     item={<text x="-4" y="10" fontSize="14">🏠</text>}
     className={className} />
 );
 
 export const NPC_Trainer = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFECB3" hairColor="#4A148C" hairStyle="snapback" eyeStyle="dots"
-    cheekColor="#CE93D8" blush={true} expression="happy" outfitColor="#7B1FA2" outfitStyle="jacket"
-    collarColor="#F3E5F5" bootColor="#4A148C"
+  <ChibiCharacter skinColor="#F5E0B8" hairColor="#1A1A4A" hairStyle="snapback" eyeStyle="dots"
+    cheekColor="#9090CC" blush={true} expression="happy" outfitColor="#4A2A7A" outfitStyle="jacket"
+    pantsColor="#1A0A3A" collarColor="#F0EBF5" bootColor="#D8D4E8"
     item={<text x="-4" y="10" fontSize="14">📋</text>}
     className={className} />
 );
 
-/* --- SDG 2: Hunger NPCs --- */
-
 export const NPC_FarmerAli = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFCCBC" hairColor="#3E2723" hairStyle="short" eyeStyle="dots"
-    cheekColor="#FFAB91" expression="sad" outfitColor="#8D6E63" outfitStyle="overalls"
-    collarColor="#EFEBE9" bootColor="#4E342E"
+  <ChibiCharacter skinColor="#F0C890" hairColor="#2A1A10" hairStyle="short" eyeStyle="dots"
+    cheekColor="#E8A878" expression="sad" outfitColor="#8A6A4A" outfitStyle="overalls"
+    pantsColor="#4A3020" collarColor="#EDE8D8" bootColor="#C8B898"
     item={<text x="-4" y="10" fontSize="14">🧑‍🌾</text>}
     className={className} />
 );
 
 export const NPC_CitizenMia = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FDDBB0" hairColor="#1B5E20" hairStyle="pigtails" eyeStyle="crescent"
-    cheekColor="#F48FB1" expression="happy" outfitColor="#81C784" outfitStyle="dress"
-    collarColor="#E8F5E9" bootColor="#388E3C"
+  <ChibiCharacter skinColor="#F0D0A0" hairColor="#1A3A1A" hairStyle="pigtails" eyeStyle="crescent"
+    cheekColor="#E8A098" expression="happy" outfitColor="#7AAA74" outfitStyle="dress"
+    pantsColor="#3A5A34" collarColor="#E8F5E4" bootColor="#C8D8C0"
     item={<text x="-4" y="10" fontSize="14">🥕</text>}
     className={className} />
 );
 
 export const NPC_CitizenTom = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFE0B2" hairColor="#5D4037" hairStyle="spiky" eyeStyle="dots"
-    cheekColor="#FFAB91" expression="sad" outfitColor="#FF8F00" outfitStyle="jacket"
-    collarColor="#FFF8E1" bootColor="#E65100"
+  <ChibiCharacter skinColor="#F5DCB0" hairColor="#3A2010" hairStyle="spiky" eyeStyle="dots"
+    cheekColor="#E8A878" expression="sad" outfitColor="#B87A30" outfitStyle="jacket"
+    pantsColor="#4A3010" collarColor="#FDF5E0" bootColor="#D4C498"
     item={<text x="-4" y="10" fontSize="14">🌽</text>}
     className={className} />
 );
 
-/* --- SDG 3: Health NPCs --- */
-
 export const NPC_MrBun = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFCCBC" hairColor="#4E342E" hairStyle="short" eyeStyle="dots"
-    cheekColor="#FFAB91" expression="sad" outfitColor="#607D8B" outfitStyle="jacket"
-    collarColor="#ECEFF1" bootColor="#37474F"
+  <ChibiCharacter skinColor="#F0C890" hairColor="#3A2010" hairStyle="short" eyeStyle="dots"
+    cheekColor="#E8A878" expression="sad" outfitColor="#5A6A74" outfitStyle="jacket"
+    pantsColor="#2A3040" collarColor="#E8EDF0" bootColor="#C8C4BC"
     item={<text x="-4" y="10" fontSize="14">🍔</text>}
     className={className} />
 );
 
 export const NPC_LittleZoe = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FDDBB0" hairColor="#6A1B9A" hairStyle="bunDouble" eyeStyle="crescent"
-    cheekColor="#CE93D8" expression="sad" outfitColor="#AB47BC" outfitStyle="uniform"
-    collarColor="#F3E5F5" bootColor="#6A1B9A"
+  <ChibiCharacter skinColor="#F0D0A0" hairColor="#3A1A5A" hairStyle="bunDouble" eyeStyle="crescent"
+    cheekColor="#CC8AAA" expression="sad" outfitColor="#8A5AA8" outfitStyle="uniform"
+    pantsColor="#3A1A5A" collarColor="#F0EBF5" bootColor="#D0C8E0"
     item={<text x="-4" y="10" fontSize="14">😣</text>}
     className={className} />
 );
 
 export const NPC_GrandpaJoe = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFCCBC" hairColor="#B0BEC5" hairStyle="short" eyeStyle="crescent"
-    cheekColor="#EF9A9A" expression="sad" outfitColor="#90A4AE" outfitStyle="coat"
-    collarColor="#ECEFF1" bootColor="#607D8B"
+  <ChibiCharacter skinColor="#F5CCA8" hairColor="#9AA0A8" hairStyle="short" eyeStyle="crescent"
+    cheekColor="#E8A098" expression="sad" outfitColor="#8A9AA4" outfitStyle="coat"
+    pantsColor="#4A5A60" collarColor="#E8EDF0" bootColor="#C8C4BC"
     item={<text x="-4" y="10" fontSize="14">😷</text>}
     className={className} />
 );
 
 export const NPC_DoctorLeaf = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#C8E6C9" hairColor="#1B5E20" hairStyle="bun" eyeStyle="crescent"
-    cheekColor="#A5D6A7" expression="happy" outfitColor="#FFFFFF" outfitStyle="coat"
-    collarColor="#E8F5E9" bootColor="#2E7D32"
+  <ChibiCharacter skinColor="#D8EED8" hairColor="#1A4A1A" hairStyle="bun" eyeStyle="crescent"
+    cheekColor="#8EC88E" expression="happy" outfitColor="#FFFFFF" outfitStyle="coat"
+    pantsColor="#2E5A2E" collarColor="#E8F5E8" bootColor="#E8E8E8"
     item={<text x="-4" y="10" fontSize="14">🩺</text>}
     hairAccessory={<>
-      <circle cx="50" cy="9" r="5" fill="#4CAF50" stroke="#1B5E20" strokeWidth="1.5" />
-      <text x="50" y="13" textAnchor="middle" fontSize="6" fill="white">+</text>
+      <circle cx="50" cy="8" r="5" fill="#5A9A5A" stroke="#1A4A1A" strokeWidth="1.5" />
+      <text x="50" y="12" textAnchor="middle" fontSize="6" fill="white">+</text>
     </>}
     className={className} />
 );
 
-/* --- SDG 4: Education NPCs --- */
-
 export const NPC_StudentSam = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FDDBB0" hairColor="#5D4037" hairStyle="short" eyeStyle="dots"
-    cheekColor="#FFAB91" expression="sad" outfitColor="#1565C0" outfitStyle="uniform"
-    collarColor="#E3F2FD" bootColor="#0D47A1"
+  <ChibiCharacter skinColor="#F0D0A0" hairColor="#3A2010" hairStyle="short" eyeStyle="dots"
+    cheekColor="#E8A878" expression="sad" outfitColor="#2A4A8A" outfitStyle="uniform"
+    pantsColor="#1A2A5A" collarColor="#E0E8F5" bootColor="#D0D4E8"
     item={<text x="-4" y="10" fontSize="14">🧮</text>}
     className={className} />
 );
 
 export const NPC_StudentAria = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFCCBC" hairColor="#880E4F" hairStyle="pigtails" eyeStyle="hearts"
-    cheekColor="#F48FB1" expression="happy" outfitColor="#E91E63" outfitStyle="uniform"
-    collarColor="#FCE4EC" bootColor="#880E4F"
+  <ChibiCharacter skinColor="#F0C890" hairColor="#3A0A2A" hairStyle="pigtails" eyeStyle="hearts"
+    cheekColor="#E898A8" expression="happy" outfitColor="#9A3A68" outfitStyle="uniform"
+    pantsColor="#4A1A38" collarColor="#FCE4EC" bootColor="#E0C8D4"
     item={<text x="-4" y="10" fontSize="14">🎨</text>}
     className={className} />
 );
 
 export const NPC_StudentLeo = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFE0B2" hairColor="#1A237E" hairStyle="spiky" eyeStyle="dots"
-    cheekColor="#90CAF9" expression="sad" outfitColor="#3F51B5" outfitStyle="jacket"
-    collarColor="#E8EAF6" bootColor="#1A237E"
+  <ChibiCharacter skinColor="#F5DCB0" hairColor="#1A1A4A" hairStyle="spiky" eyeStyle="dots"
+    cheekColor="#8898C8" expression="sad" outfitColor="#3A4A8A" outfitStyle="jacket"
+    pantsColor="#1A2A5A" collarColor="#E0E4F5" bootColor="#D0D4E8"
     item={<text x="-4" y="10" fontSize="14">🔬</text>}
     className={className} />
 );
 
 export const NPC_TeacherThinklet = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#E8EAF6" hairColor="#4A148C" hairStyle="cap" eyeStyle="dots"
-    cheekColor="#CE93D8" expression="happy" outfitColor="#512DA8" outfitStyle="coat"
-    collarColor="#F3E5F5" bootColor="#311B92"
+  <ChibiCharacter skinColor="#E8EAF6" hairColor="#1A1A4A" hairStyle="cap" eyeStyle="dots"
+    cheekColor="#9090CC" expression="happy" outfitColor="#3A2A7A" outfitStyle="coat"
+    pantsColor="#1A0A4A" collarColor="#F0EBF5" bootColor="#D0CCE0"
     item={<text x="-4" y="10" fontSize="14">📚</text>}
     className={className} />
 );
 
-/* --- SDG 5: Equality NPCs --- */
-
 export const NPC_Girl = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FDDBB0" hairColor="#3E2723" hairStyle="bun" eyeStyle="starry"
-    cheekColor="#F48FB1" expression="determined" outfitColor="#EF5350" outfitStyle="uniform"
-    collarColor="#FFEBEE" bootColor="#C62828"
+  <ChibiCharacter skinColor="#F0D0A0" hairColor="#2A1A10" hairStyle="bun" eyeStyle="starry"
+    cheekColor="#E8A098" expression="determined" outfitColor="#A83A3A" outfitStyle="uniform"
+    pantsColor="#4A1A1A" collarColor="#FFE8E8" bootColor="#D8C8C8"
     item={<text x="-4" y="10" fontSize="14">⚽</text>}
     className={className} />
 );
 
 export const NPC_Worker = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFECB3" hairColor="#4E342E" hairStyle="short" eyeStyle="dots"
-    cheekColor="#FFAB91" expression="sad" outfitColor="#455A64" outfitStyle="jacket"
-    collarColor="#ECEFF1" bootColor="#263238"
+  <ChibiCharacter skinColor="#F5E0B8" hairColor="#3A2010" hairStyle="short" eyeStyle="dots"
+    cheekColor="#E8A878" expression="sad" outfitColor="#485A64" outfitStyle="jacket"
+    pantsColor="#202E34" collarColor="#E8EDF0" bootColor="#C8C4BC"
     item={<text x="-4" y="10" fontSize="14">💼</text>}
     className={className} />
 );
 
 export const NPC_Sibling = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FDDBB0" hairColor="#5D4037" hairStyle="spiky" eyeStyle="dots"
-    cheekColor="#FFAB91" expression="sad" outfitColor="#FF7043" outfitStyle="overalls"
-    collarColor="#FBE9E7" bootColor="#BF360C"
+  <ChibiCharacter skinColor="#F0D0A0" hairColor="#3A2010" hairStyle="spiky" eyeStyle="dots"
+    cheekColor="#E8A878" expression="sad" outfitColor="#B86040" outfitStyle="overalls"
+    pantsColor="#5A2A18" collarColor="#FBE9E7" bootColor="#D4B898"
     item={<text x="-4" y="10" fontSize="14">🧹</text>}
     className={className} />
 );
 
 export const NPC_Advocate = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFE0B2" hairColor="#BF360C" hairStyle="pigtails" eyeStyle="starry"
-    cheekColor="#FFCC02" expression="determined" outfitColor="#FF6F00" outfitStyle="jacket"
-    collarColor="#FFF9C4" bootColor="#E65100"
+  <ChibiCharacter skinColor="#F5DCB0" hairColor="#4A1A0A" hairStyle="pigtails" eyeStyle="starry"
+    cheekColor="#E8A060" expression="determined" outfitColor="#B55A1A" outfitStyle="jacket"
+    pantsColor="#4A2010" collarColor="#FDF5E0" bootColor="#D4C498"
     item={<text x="-4" y="10" fontSize="14">📢</text>}
     className={className} />
 );
 
 /* ── PLANET LEVEL LORDS ── */
 
-/* Aqua – SDG 6 Clean Water (blue water spirit, flowing hair, droplet wand) */
 export const AquaSprite = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#B3E5FC" hairColor="#0277BD" hairStyle="pigtails" eyeStyle="crescent"
-    cheekColor="#81D4FA" expression="determined" outfitColor="#29B6F6" outfitStyle="dress"
-    collarColor="#E1F5FE" bootColor="#0288D1"
+  <ChibiCharacter skinColor="#C8E8F8" hairColor="#1A4A6A" hairStyle="pigtails" eyeStyle="crescent"
+    cheekColor="#6AB0D8" expression="determined" outfitColor="#3A8AC0" outfitStyle="dress"
+    pantsColor="#1A5A8A" collarColor="#E0F0FA" bootColor="#D0E8F4"
     item={<text x="-4" y="10" fontSize="14">💧</text>}
     hairAccessory={<>
-      <ellipse cx="32" cy="12" rx="5" ry="7" fill="#81D4FA" opacity="0.8" />
-      <ellipse cx="68" cy="12" rx="5" ry="7" fill="#81D4FA" opacity="0.8" />
+      <ellipse cx="29" cy="16" rx="5" ry="8" fill="#6AB0D8" opacity="0.75" />
+      <ellipse cx="71" cy="16" rx="5" ry="8" fill="#6AB0D8" opacity="0.75" />
     </>}
     className={cn("drop-shadow-md", className)} />
 );
 
-/* Coralina – SDG 14 Ocean (teal coral guardian, star eyes, sea-green outfit) */
 export const CoralinaSprite = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#E0F7FA" hairColor="#004D40" hairStyle="bunDouble" eyeStyle="starry"
-    cheekColor="#80DEEA" expression="happy" outfitColor="#00838F" outfitStyle="dress"
-    collarColor="#E0F7FA" bootColor="#006064"
+  <ChibiCharacter skinColor="#D8F4F4" hairColor="#0A3A3A" hairStyle="bunDouble" eyeStyle="starry"
+    cheekColor="#6AC8C8" expression="happy" outfitColor="#2A7A80" outfitStyle="dress"
+    pantsColor="#0A4A50" collarColor="#D8F0F0" bootColor="#C8E8E8"
     item={<text x="-4" y="10" fontSize="14">🐠</text>}
     hairAccessory={<>
-      <ellipse cx="32" cy="10" rx="6" ry="6" fill="#4DD0E1" />
-      <ellipse cx="68" cy="10" rx="6" ry="6" fill="#4DD0E1" />
+      <ellipse cx="27" cy="12" rx="7" ry="7" fill="#4AC8C8" />
+      <ellipse cx="73" cy="12" rx="7" ry="7" fill="#4AC8C8" />
     </>}
     className={cn("drop-shadow-md", className)} />
 );
 
-/* Ferra – SDG 15 Forest (deep green jungle spirit, leaf crown, mossy outfit) */
 export const FerraSprite = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#C8E6C9" hairColor="#1B5E20" hairStyle="bun" eyeStyle="crescent"
-    cheekColor="#A5D6A7" expression="happy" outfitColor="#2E7D32" outfitStyle="overalls"
-    collarColor="#E8F5E9" bootColor="#1B5E20"
+  <ChibiCharacter skinColor="#D0E8D0" hairColor="#1A3A1A" hairStyle="bun" eyeStyle="crescent"
+    cheekColor="#7AAA7A" expression="happy" outfitColor="#3A6A3A" outfitStyle="overalls"
+    pantsColor="#1A3A1A" collarColor="#E8F5E8" bootColor="#C8D8C0"
     item={<text x="-4" y="10" fontSize="14">🌿</text>}
     hairAccessory={<>
-      <ellipse cx="50" cy="10" rx="10" ry="5" fill="#388E3C" opacity="0.9" />
-      <ellipse cx="37" cy="13" rx="7" ry="4" fill="#43A047" opacity="0.8" />
-      <ellipse cx="63" cy="13" rx="7" ry="4" fill="#43A047" opacity="0.8" />
+      <ellipse cx="50" cy="10" rx="12" ry="6" fill="#4A8A4A" opacity="0.9" />
+      <ellipse cx="36" cy="14" rx="8" ry="4" fill="#5A9A5A" opacity="0.8" />
+      <ellipse cx="64" cy="14" rx="8" ry="4" fill="#5A9A5A" opacity="0.8" />
     </>}
     className={cn("drop-shadow-md", className)} />
 );
 
-/* Gaia – SDG 13 Climate (warm ember tone, fiery hair, glowing eyes, earth outfit) */
 export const GaiaSprite = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#FFE0B2" hairColor="#BF360C" hairStyle="spiky" eyeStyle="starry"
-    cheekColor="#FFAB91" expression="determined" outfitColor="#E64A19" outfitStyle="jacket"
-    collarColor="#FBE9E7" bootColor="#BF360C"
+  <ChibiCharacter skinColor="#F5E0C0" hairColor="#5A1A0A" hairStyle="spiky" eyeStyle="starry"
+    cheekColor="#E8A060" expression="determined" outfitColor="#B84A18" outfitStyle="jacket"
+    pantsColor="#5A1A0A" collarColor="#FBE9E7" bootColor="#D4A888"
     item={<text x="-4" y="10" fontSize="14">🌡️</text>}
     hairAccessory={<>
       {[35, 42, 50, 58, 65].map((x, i) => (
-        <ellipse key={i} cx={x} cy={9 - i % 2 * 3} rx="3" ry="6" fill={i % 2 === 0 ? '#FF6F00' : '#FFAB40'} opacity="0.9" />
+        <ellipse key={i} cx={x} cy={9 - i % 2 * 3} rx="3" ry="6"
+          fill={i % 2 === 0 ? '#C85A18' : '#E8A840'} opacity="0.9" />
       ))}
     </>}
     className={cn("drop-shadow-md", className)} />
 );
 
-/* Reevo – SDG 12 Consumption (silver-green recycler bot, antenna, eco outfit) */
 export const ReevoSprite = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#DCEDC8" hairColor="#33691E" hairStyle="cap" eyeStyle="dots"
-    cheekColor="#AED581" expression="happy" outfitColor="#558B2F" outfitStyle="uniform"
-    collarColor="#F1F8E9" bootColor="#33691E"
+  <ChibiCharacter skinColor="#D8EAC8" hairColor="#2A4A1A" hairStyle="cap" eyeStyle="dots"
+    cheekColor="#8AAA6A" expression="happy" outfitColor="#4A7A2A" outfitStyle="uniform"
+    pantsColor="#2A4A1A" collarColor="#F0F8E8" bootColor="#C8D8B8"
     item={<text x="-4" y="10" fontSize="14">♻️</text>}
     hairAccessory={<>
-      <rect x="45" y="4" width="10" height="12" rx="3" fill="#8BC34A" stroke="#33691E" strokeWidth="1.5" />
-      <circle cx="50" cy="3" r="3" fill="#CCFF90" />
+      <rect x="44" y="6" width="12" height="12" rx="4" fill="#7AB83A" stroke="#2A4A1A" strokeWidth="1.5" />
+      <circle cx="50" cy="4" r="3.5" fill="#C8FF80" />
     </>}
     className={cn("drop-shadow-md", className)} />
 );
 
-/* ── Keep SplashySprite as fallback (unused but exported) ── */
 export const SplashySprite = ({ className }: { className?: string }) => (
-  <ChibiCharacter skinColor="#B3E5FC" hairColor="#01579B" hairStyle="spiky" eyeStyle="crescent"
-    cheekColor="#81D4FA" expression="happy" outfitColor="#29B6F6" outfitStyle="overalls"
-    collarColor="#E1F5FE" bootColor="#0277BD"
+  <ChibiCharacter skinColor="#C8E8F8" hairColor="#1A4A6A" hairStyle="spiky" eyeStyle="crescent"
+    cheekColor="#6AB0D8" expression="happy" outfitColor="#3A8AC0" outfitStyle="overalls"
+    pantsColor="#1A5A8A" collarColor="#E0F0FA" bootColor="#D0E8F4"
     className={cn("animate-float drop-shadow-lg", className)} />
 );
