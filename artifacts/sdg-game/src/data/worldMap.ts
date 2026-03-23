@@ -28,6 +28,7 @@ export interface WorldNPC {
   spriteKey: string;
   bubble?: string;
   facing?: 'left' | 'right';
+  isHidden?: boolean;
 }
 
 export interface CollisionRect {
@@ -78,6 +79,14 @@ export const PEOPLE_NPCS: WorldNPC[] = [
     dialogues: ["Oh Warden! Our village is crumbling...", "Families have lost jobs and homes are falling apart.", "Help us solve the poverty crisis and bring life back to our village!"] },
   { id: 'sparkleflame', name: 'Sparkleflame', x: 390, y: 360, zoneId: 'equality', isLord: true, spriteKey: 'sparkleflame', bubble: '😤',
     dialogues: ["The city is full of unfair rules! People are being treated differently.", "No one should be held back because of who they are!", "Stand up for fairness and let's make the city shine with equality!"] },
+
+  // Hidden building lords — live inside their buildings, not rendered in exterior
+  { id: 'pebblepuff', name: 'Pebblepuff', x: 0, y: 0, zoneId: 'hunger', isLord: true, spriteKey: 'pebblepuff', isHidden: true, bubble: '🌾',
+    dialogues: ["Welcome to my greenhouse! Hunger is a solvable problem.", "820 million people still go to bed hungry every night...", "Let's work together to grow food for everyone! Accept my harvest quest?"] },
+  { id: 'leaflet', name: 'Leaflet', x: 0, y: 0, zoneId: 'health', isLord: true, spriteKey: 'leaflet', isHidden: true, bubble: '💊',
+    dialogues: ["This clinic is open for everyone — no one should be turned away.", "Good health comes from clean water, food, and care.", "Help me heal this community! Will you take on the healing challenge?"] },
+  { id: 'thinklet', name: 'Thinklet', x: 0, y: 0, zoneId: 'education', isLord: true, spriteKey: 'thinklet', isHidden: true, bubble: '📚',
+    dialogues: ["Welcome to the academy! Education changes everything.", "300 million children worldwide can't read. We can change that!", "Ready to tackle the knowledge quiz and bring learning to all?"] },
 
   // Citizens
   { id: 'grandma_rosa', name: 'Grandma Rosa', x: 260, y: 1560, zoneId: 'poverty', isLord: false, spriteKey: 'grandma',

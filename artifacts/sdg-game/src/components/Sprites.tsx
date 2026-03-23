@@ -101,7 +101,7 @@ export const ChibiCharacter = ({
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 100 190"
+      viewBox="0 0 100 175"
       className={cn("w-full h-full", className)}
       style={{ filter: 'drop-shadow(1px 4px 8px rgba(0,0,0,0.28))', ...style }}
     >
@@ -376,40 +376,40 @@ export const ChibiCharacter = ({
       <rect x="24" y="106" width="52" height="10" rx="7" fill={pantsColor} />
       <rect x="24" y="106" width="52" height="10" rx="7" fill={BSH} opacity="0.25" />
 
-      {/* ════ LEGS — full-length animated (chibi-leg-l/r) ════ */}
+      {/* ════ LEGS — slightly shorter, animated (chibi-leg-l/r) ════ */}
       <g className="chibi-leg-l">
         {/* Thigh */}
-        <rect x="28" y="114" width="19" height="28" rx="9" fill={pantsColor} />
-        <rect x="28" y="114" width="19" height="28" rx="9" fill={BSH} opacity="0.22" />
+        <rect x="28" y="114" width="19" height="22" rx="9" fill={pantsColor} />
+        <rect x="28" y="114" width="19" height="22" rx="9" fill={BSH} opacity="0.22" />
         {/* Knee cap */}
-        <ellipse cx="37" cy="142" rx="9" ry="5" fill={pantsColor} />
-        <ellipse cx="37" cy="142" rx="9" ry="5" fill={BSH} opacity="0.35" />
+        <ellipse cx="37" cy="136" rx="9" ry="5" fill={pantsColor} />
+        <ellipse cx="37" cy="136" rx="9" ry="5" fill={BSH} opacity="0.35" />
         {/* Shin */}
-        <rect x="29" y="140" width="17" height="26" rx="8" fill={pantsColor} />
-        <rect x="29" y="140" width="17" height="26" rx="8" fill={BSH} opacity="0.18" />
+        <rect x="29" y="134" width="17" height="20" rx="8" fill={pantsColor} />
+        <rect x="29" y="134" width="17" height="20" rx="8" fill={BSH} opacity="0.18" />
         {/* Sock */}
-        <rect x="29" y="162" width="17" height="8" rx="4" fill="white" opacity="0.88" />
+        <rect x="29" y="150" width="17" height="7" rx="4" fill="white" opacity="0.88" />
         {/* Shoe */}
-        <path d="M 24 167 L 24 175 Q 24 180 31 180 L 50 180 Q 57 180 57 174 L 55 167 Q 52 164 46 164 L 28 164 Z" fill={bootColor} />
-        <path d="M 24 167 L 24 175 Q 24 180 31 180 L 50 180 Q 57 180 57 174 L 55 167 Q 52 164 46 164 L 28 164 Z" fill={HL} opacity="0.35" />
-        <ellipse cx="38" cy="171" rx="10" ry="3.5" fill="white" opacity="0.20" />
+        <path d="M 24 155 L 24 163 Q 24 168 31 168 L 50 168 Q 57 168 57 162 L 55 155 Q 52 152 46 152 L 28 152 Z" fill={bootColor} />
+        <path d="M 24 155 L 24 163 Q 24 168 31 168 L 50 168 Q 57 168 57 162 L 55 155 Q 52 152 46 152 L 28 152 Z" fill={HL} opacity="0.35" />
+        <ellipse cx="38" cy="159" rx="10" ry="3.5" fill="white" opacity="0.20" />
       </g>
       <g className="chibi-leg-r">
         {/* Thigh */}
-        <rect x="53" y="114" width="19" height="28" rx="9" fill={pantsColor} />
-        <rect x="53" y="114" width="19" height="28" rx="9" fill={BSH} opacity="0.22" />
+        <rect x="53" y="114" width="19" height="22" rx="9" fill={pantsColor} />
+        <rect x="53" y="114" width="19" height="22" rx="9" fill={BSH} opacity="0.22" />
         {/* Knee cap */}
-        <ellipse cx="62" cy="142" rx="9" ry="5" fill={pantsColor} />
-        <ellipse cx="62" cy="142" rx="9" ry="5" fill={BSH} opacity="0.35" />
+        <ellipse cx="62" cy="136" rx="9" ry="5" fill={pantsColor} />
+        <ellipse cx="62" cy="136" rx="9" ry="5" fill={BSH} opacity="0.35" />
         {/* Shin */}
-        <rect x="54" y="140" width="17" height="26" rx="8" fill={pantsColor} />
-        <rect x="54" y="140" width="17" height="26" rx="8" fill={BSH} opacity="0.18" />
+        <rect x="54" y="134" width="17" height="20" rx="8" fill={pantsColor} />
+        <rect x="54" y="134" width="17" height="20" rx="8" fill={BSH} opacity="0.18" />
         {/* Sock */}
-        <rect x="54" y="162" width="17" height="8" rx="4" fill="white" opacity="0.88" />
+        <rect x="54" y="150" width="17" height="7" rx="4" fill="white" opacity="0.88" />
         {/* Shoe */}
-        <path d="M 43 167 L 43 175 Q 43 180 50 180 L 69 180 Q 76 180 76 174 L 76 167 Q 73 164 69 164 L 47 164 Z" fill={bootColor} />
-        <path d="M 43 167 L 43 175 Q 43 180 50 180 L 69 180 Q 76 180 76 174 L 76 167 Q 73 164 69 164 L 47 164 Z" fill={HL} opacity="0.35" />
-        <ellipse cx="62" cy="171" rx="10" ry="3.5" fill="white" opacity="0.20" />
+        <path d="M 43 155 L 43 163 Q 43 168 50 168 L 69 168 Q 76 168 76 162 L 76 155 Q 73 152 69 152 L 47 152 Z" fill={bootColor} />
+        <path d="M 43 155 L 43 163 Q 43 168 50 168 L 69 168 Q 76 168 76 162 L 76 155 Q 73 152 69 152 L 47 152 Z" fill={HL} opacity="0.35" />
+        <ellipse cx="62" cy="159" rx="10" ry="3.5" fill="white" opacity="0.20" />
       </g>
     </svg>
   );

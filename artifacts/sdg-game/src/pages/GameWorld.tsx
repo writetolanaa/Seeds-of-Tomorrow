@@ -1306,6 +1306,64 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
           <ellipse cx="6" cy="-12" rx="6" ry="5" fill="#66BB6A" opacity="0.7" />
         </g>
       ))}
+
+      {/* ════ CHERRY BLOSSOM TREES — Smart City zone ════ */}
+      {[[2210,6090],[2960,6100],[2380,6440],[2840,6420],[2120,6380],[3000,6380]].map(([x,y],i) => (
+        <g key={i} transform={`translate(${x},${y})`}>
+          <ellipse cx="0" cy="38" rx="16" ry="5" fill="rgba(0,0,0,0.18)" />
+          <rect x="-5" y="8" width="10" height="34" rx="4" fill="#6D4C41" />
+          <rect x="-5" y="8" width="10" height="34" rx="4" fill="rgba(255,255,255,0.18)" />
+          {/* Trunk fork */}
+          <rect x="-2" y="4" width="5" height="16" rx="3" fill="#6D4C41" transform="rotate(-18)" />
+          <rect x="0" y="4" width="5" height="14" rx="3" fill="#6D4C41" transform="rotate(16)" />
+          {/* Back canopy */}
+          <ellipse cx="0" cy="-8" rx="34" ry="28" fill="#F48FB1" />
+          <ellipse cx="0" cy="-8" rx="34" ry="28" fill="rgba(255,255,255,0.22)" />
+          <ellipse cx="0" cy="-8" rx="34" ry="28" fill="rgba(0,0,0,0.08)" />
+          {/* Mid canopy cluster */}
+          <ellipse cx="-14" cy="-18" rx="22" ry="18" fill="#F06292" />
+          <ellipse cx="-14" cy="-18" rx="22" ry="18" fill="rgba(255,255,255,0.20)" />
+          <ellipse cx="12" cy="-20" rx="20" ry="16" fill="#E91E63" />
+          <ellipse cx="12" cy="-20" rx="20" ry="16" fill="rgba(255,255,255,0.18)" />
+          {/* Highlight */}
+          <ellipse cx="-8" cy="-26" rx="8" ry="5" fill="white" opacity="0.32" />
+          {/* Blossoms */}
+          {[[-16,-6],[6,-14],[20,-2],[-8,-22],[2,0]].map(([bx,by],bi) => (
+            <circle key={bi} cx={bx} cy={by} r="3" fill="#FCE4EC" opacity="0.85" />
+          ))}
+        </g>
+      ))}
+
+      {/* ════ NEON SIGNS on Prosperity city skyline ════ */}
+      {[[150,4995,'⚡'],[400,5005,'💡'],[820,5000,'🔬'],[1700,4995,'🌟'],[2100,5010,'🏭'],[2700,5000,'🌿'],[2960,4995,'⚡']].map(([x,y,emo],i) => (
+        <g key={i}>
+          <rect x={+x - 14} y={+y - 12} width="28" height="18" rx="5"
+            fill={['#E65100','#1565C0','#6A1B9A','#F9A825','#37474F','#2E7D32','#B71C1C'][i % 7]} opacity="0.85" />
+          <text x={x} y={+y + 2} textAnchor="middle" fontSize="11">{emo}</text>
+        </g>
+      ))}
+
+      {/* ════ PLANET: extra ocean corals + seaweed ════ */}
+      {[[2280,2900],[2400,2960],[2560,2910],[2720,2970],[2900,2930],[3060,2960]].map(([x,y],i) => (
+        <g key={i} transform={`translate(${x},${y})`}>
+          {/* Seaweed strands */}
+          <path d={`M 0 20 Q -6 10 0 0 Q 6 -10 0 -20 Q -6 -30 0 -40`}
+            stroke={['#00E676','#69F0AE','#00BCD4','#00ACC1'][i%4]} strokeWidth="3" fill="none" opacity="0.6" />
+          <path d={`M 8 20 Q 14 10 8 0 Q 2 -8 8 -18`}
+            stroke={['#00BCD4','#00E676','#69F0AE'][i%3]} strokeWidth="2" fill="none" opacity="0.5" />
+          {/* Coral blob */}
+          <circle cx="-6" cy="-42" r="5" fill={['#FF7043','#EC407A','#AB47BC','#FF8F00','#E91E63','#7B1FA2'][i]} opacity="0.7" />
+          <circle cx="2" cy="-46" r="4" fill={['#FF5722','#E91E63','#9C27B0','#F57C00','#AD1457','#512DA8'][i]} opacity="0.7" />
+          <circle cx="-2" cy="-50" r="3" fill="white" opacity="0.4" />
+        </g>
+      ))}
+
+      {/* ════ PLANET: climate zone lava cracks ════ */}
+      {[[2360,3600],[2480,3680],[2620,3620],[2780,3660],[2900,3600]].map(([x,y],i) => (
+        <path key={i}
+          d={`M ${x} ${y} Q ${x+30} ${y-14} ${x+60} ${y+10} Q ${x+90} ${y+28} ${x+120} ${y+8}`}
+          stroke={i%2===0?'#FF3D00':'#FF6D00'} strokeWidth="4" fill="none" opacity="0.5" strokeLinecap="round" />
+      ))}
     </svg>
   );
 }
@@ -1914,7 +1972,7 @@ export default function GameWorld() {
         <Buildings />
 
         {/* ── NPCs ── */}
-        {WORLD_NPCS.map(npc => {
+        {WORLD_NPCS.filter(npc => !npc.isHidden).map(npc => {
           const Sprite = SPRITE_MAP[npc.spriteKey];
           if (!Sprite) return null;
           const isNear = nearNPCIdRef.current === npc.id;

@@ -206,64 +206,75 @@
 
   /* ── CHIBI WALK ANIMATION ─────────────────────────────── */
 
-  /* Leg step keyframes */
+  /* Smooth leg step — 0% is back, 50% is forward, back to back */
   @keyframes chibi-step-l {
-    0%   { transform: rotate(-20deg); }
-    100% { transform: rotate(20deg);  }
+    0%   { transform: rotate(-18deg); }
+    50%  { transform: rotate(18deg);  }
+    100% { transform: rotate(-18deg); }
   }
   @keyframes chibi-step-r {
-    0%   { transform: rotate(20deg);  }
-    100% { transform: rotate(-20deg); }
+    0%   { transform: rotate(18deg);  }
+    50%  { transform: rotate(-18deg); }
+    100% { transform: rotate(18deg);  }
   }
 
-  /* Arm swing keyframes */
+  /* Arm swing — opposite to legs for natural gait */
   @keyframes chibi-arm-l {
-    0%   { transform: rotate(20deg);  }
-    100% { transform: rotate(-20deg); }
+    0%   { transform: rotate(16deg);  }
+    50%  { transform: rotate(-16deg); }
+    100% { transform: rotate(16deg);  }
   }
   @keyframes chibi-arm-r {
-    0%   { transform: rotate(-20deg); }
-    100% { transform: rotate(20deg);  }
+    0%   { transform: rotate(-16deg); }
+    50%  { transform: rotate(16deg);  }
+    100% { transform: rotate(-16deg); }
   }
 
-  /* Body bob keyframe */
+  /* Gentle body bob */
   @keyframes chibi-bob {
     0%, 100% { transform: translateY(0px);  }
-    50%       { transform: translateY(-4px); }
+    25%, 75%  { transform: translateY(-3px); }
+    50%       { transform: translateY(0px);  }
   }
 
-  /* Set pivot + keep animations paused when idle */
+  /* Idle: pivot points set, transform explicitly reset so idle = straight */
   .chibi-leg-l {
     transform-box: fill-box;
     transform-origin: 50% 0%;
-    animation: chibi-step-l 0.35s ease-in-out infinite alternate paused;
+    transform: rotate(0deg);
   }
   .chibi-leg-r {
     transform-box: fill-box;
     transform-origin: 50% 0%;
-    animation: chibi-step-r 0.35s ease-in-out infinite alternate paused;
+    transform: rotate(0deg);
   }
   .chibi-arm-l {
     transform-box: fill-box;
     transform-origin: 50% 10%;
-    animation: chibi-arm-l 0.35s ease-in-out infinite alternate paused;
+    transform: rotate(0deg);
   }
   .chibi-arm-r {
     transform-box: fill-box;
     transform-origin: 50% 10%;
-    animation: chibi-arm-r 0.35s ease-in-out infinite alternate paused;
+    transform: rotate(0deg);
   }
 
-  /* When player-walking class is on the wrapper, play all animations */
-  .player-walking .chibi-leg-l,
-  .player-walking .chibi-leg-r,
-  .player-walking .chibi-arm-l,
+  /* Walking: run animations smoothly */
+  .player-walking .chibi-leg-l {
+    animation: chibi-step-l 0.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+  .player-walking .chibi-leg-r {
+    animation: chibi-step-r 0.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+  .player-walking .chibi-arm-l {
+    animation: chibi-arm-l 0.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
   .player-walking .chibi-arm-r {
-    animation-play-state: running;
+    animation: chibi-arm-r 0.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   }
 
   /* Whole-body bob when walking */
   .player-walking svg {
-    animation: chibi-bob 0.35s ease-in-out infinite;
+    animation: chibi-bob 0.5s ease-in-out infinite;
   }
 }
