@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { useGame } from '@/context/GameContext';
 import { ZONES } from '@/data/gameData';
+import BuildingInterior, { ENTERABLE_BUILDINGS, type BuildingDef } from '@/pages/BuildingInterior';
 import {
   WORLD_W, WORLD_H, PLAYER_SPEED, INTERACT_RADIUS, PLAYER_SPAWN,
   WORLD_NPCS, ZONE_REGIONS, WORLD_BUILDINGS, COLLISION_RECTS,
@@ -387,44 +388,44 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         <rect x="-5" y="-10" width="10" height="240" rx="4" fill="#6D4C41" />
         <rect x="-2" y="-10" width="3" height="240" rx="2" fill="rgba(255,255,255,0.18)" />
 
-        {/* ↑ HEALTH — top board (straight up) */}
+        {/* ↑ HEALTH — top board */}
         {(() => { const done = completedZones.includes('health'); return (
           <g>
-            <rect x="-70" y="-28" width="140" height="28" rx="7" fill={done ? '#2E7D32' : '#757575'} filter="url(#shadow)" />
-            <text x="0" y="-9" textAnchor="middle" fontSize="11" fill="white" fontFamily="Nunito" fontWeight="bold">🏥 Health ↑</text>
-            {done && <text x="0" y="-26" textAnchor="middle" fontSize="8" fill="#A5D6A7">✓ Healed</text>}
+            <rect x="-90" y="-36" width="180" height="36" rx="10" fill={done ? '#2E7D32' : '#546E7A'} filter="url(#shadow)" />
+            <text x="0" y="-13" textAnchor="middle" fontSize="15" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">🏥 SDG 3 · Health ↑</text>
+            {done && <text x="0" y="-34" textAnchor="middle" fontSize="10" fill="#A5D6A7">✓ Healed!</text>}
           </g>
         ); })()}
 
-        {/* ← EQUALITY (left) and HUNGER → (right) — middle row */}
+        {/* ← EQUALITY and HUNGER → — middle row */}
         {(() => { const done = completedZones.includes('equality'); return (
           <g>
-            <rect x="-150" y="12" width="135" height="28" rx="7" fill={done ? '#FF8F00' : '#757575'} filter="url(#shadow)" />
-            <polygon points="-150,12 -150,40 -165,26" fill={done ? '#FF8F00' : '#757575'} />
-            <text x="-83" y="31" textAnchor="middle" fontSize="10" fill="white" fontFamily="Nunito" fontWeight="bold">⚡ Equality</text>
+            <rect x="-185" y="14" width="170" height="36" rx="10" fill={done ? '#E65100' : '#546E7A'} filter="url(#shadow)" />
+            <polygon points="-185,14 -185,50 -202,32" fill={done ? '#E65100' : '#546E7A'} />
+            <text x="-100" y="37" textAnchor="middle" fontSize="14" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">⚡ SDG 5 · Equality</text>
           </g>
         ); })()}
         {(() => { const done = completedZones.includes('hunger'); return (
           <g>
-            <rect x="15" y="12" width="135" height="28" rx="7" fill={done ? '#F57F17' : '#757575'} filter="url(#shadow)" />
-            <polygon points="150,12 150,40 165,26" fill={done ? '#F57F17' : '#757575'} />
-            <text x="83" y="31" textAnchor="middle" fontSize="10" fill="white" fontFamily="Nunito" fontWeight="bold">🌾 Hunger</text>
+            <rect x="15" y="14" width="170" height="36" rx="10" fill={done ? '#F57F17' : '#546E7A'} filter="url(#shadow)" />
+            <polygon points="185,14 185,50 202,32" fill={done ? '#F57F17' : '#546E7A'} />
+            <text x="100" y="37" textAnchor="middle" fontSize="14" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">🌾 SDG 2 · Hunger</text>
           </g>
         ); })()}
 
-        {/* ← POVERTY (left) and EDUCATION → (right) — bottom row */}
+        {/* ← POVERTY and EDUCATION → — bottom row */}
         {(() => { const done = completedZones.includes('poverty'); return (
           <g>
-            <rect x="-150" y="54" width="135" height="28" rx="7" fill={done ? '#C62828' : '#757575'} filter="url(#shadow)" />
-            <polygon points="-150,54 -150,82 -165,68" fill={done ? '#C62828' : '#757575'} />
-            <text x="-83" y="73" textAnchor="middle" fontSize="10" fill="white" fontFamily="Nunito" fontWeight="bold">🏘️ Poverty</text>
+            <rect x="-185" y="62" width="170" height="36" rx="10" fill={done ? '#B71C1C' : '#546E7A'} filter="url(#shadow)" />
+            <polygon points="-185,62 -185,98 -202,80" fill={done ? '#B71C1C' : '#546E7A'} />
+            <text x="-100" y="85" textAnchor="middle" fontSize="14" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">🏘️ SDG 1 · Poverty</text>
           </g>
         ); })()}
         {(() => { const done = completedZones.includes('education'); return (
           <g>
-            <rect x="15" y="54" width="135" height="28" rx="7" fill={done ? '#4A148C' : '#757575'} filter="url(#shadow)" />
-            <polygon points="150,54 150,82 165,68" fill={done ? '#4A148C' : '#757575'} />
-            <text x="83" y="73" textAnchor="middle" fontSize="10" fill="white" fontFamily="Nunito" fontWeight="bold">🎓 Education</text>
+            <rect x="15" y="62" width="170" height="36" rx="10" fill={done ? '#4A148C' : '#546E7A'} filter="url(#shadow)" />
+            <polygon points="185,62 185,98 202,80" fill={done ? '#4A148C' : '#546E7A'} />
+            <text x="100" y="85" textAnchor="middle" fontSize="14" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">🎓 SDG 4 · Education</text>
           </g>
         ); })()}
 
@@ -518,40 +519,40 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         {/* ← WATER */}
         {(() => { const done = completedZones.includes('water'); return (
           <g>
-            <rect x="-140" y="0" width="125" height="26" rx="7" fill={done ? '#0277BD' : '#455A64'} filter="url(#shadow)" />
-            <polygon points="-140,0 -140,26 -155,13" fill={done ? '#0277BD' : '#455A64'} />
-            <text x="-77" y="17" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">💧 Water ←</text>
+            <rect x="-175" y="0" width="160" height="34" rx="10" fill={done ? '#0277BD' : '#455A64'} filter="url(#shadow)" />
+            <polygon points="-175,0 -175,34 -196,17" fill={done ? '#0277BD' : '#455A64'} />
+            <text x="-95" y="22" textAnchor="middle" fontSize="13" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">💧 SDG 6 · Water</text>
           </g>
         ); })()}
         {/* OCEAN → */}
         {(() => { const done = completedZones.includes('ocean'); return (
           <g>
-            <rect x="15" y="0" width="125" height="26" rx="7" fill={done ? '#006064' : '#455A64'} filter="url(#shadow)" />
-            <polygon points="140,0 140,26 155,13" fill={done ? '#006064' : '#455A64'} />
-            <text x="77" y="17" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">🐠 Ocean →</text>
+            <rect x="15" y="0" width="160" height="34" rx="10" fill={done ? '#006064' : '#455A64'} filter="url(#shadow)" />
+            <polygon points="175,0 175,34 196,17" fill={done ? '#006064' : '#455A64'} />
+            <text x="95" y="22" textAnchor="middle" fontSize="13" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">SDG 14 · Ocean 🐠</text>
           </g>
         ); })()}
         {/* ← FOREST */}
         {(() => { const done = completedZones.includes('forest'); return (
           <g>
-            <rect x="-140" y="40" width="125" height="26" rx="7" fill={done ? '#1B5E20' : '#455A64'} filter="url(#shadow)" />
-            <polygon points="-140,40 -140,66 -155,53" fill={done ? '#1B5E20' : '#455A64'} />
-            <text x="-77" y="57" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">🌿 Forest ←</text>
+            <rect x="-175" y="46" width="160" height="34" rx="10" fill={done ? '#1B5E20' : '#455A64'} filter="url(#shadow)" />
+            <polygon points="-175,46 -175,80 -196,63" fill={done ? '#1B5E20' : '#455A64'} />
+            <text x="-95" y="68" textAnchor="middle" fontSize="13" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">🌿 SDG 15 · Forest</text>
           </g>
         ); })()}
         {/* CLIMATE → */}
         {(() => { const done = completedZones.includes('climate'); return (
           <g>
-            <rect x="15" y="40" width="125" height="26" rx="7" fill={done ? '#BF360C' : '#455A64'} filter="url(#shadow)" />
-            <polygon points="140,40 140,66 155,53" fill={done ? '#BF360C' : '#455A64'} />
-            <text x="77" y="57" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">🌡️ Climate →</text>
+            <rect x="15" y="46" width="160" height="34" rx="10" fill={done ? '#BF360C' : '#455A64'} filter="url(#shadow)" />
+            <polygon points="175,46 175,80 196,63" fill={done ? '#BF360C' : '#455A64'} />
+            <text x="95" y="68" textAnchor="middle" fontSize="13" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">SDG 13 · Climate 🌡️</text>
           </g>
         ); })()}
         {/* ↓ CONSUMPTION */}
         {(() => { const done = completedZones.includes('consumption'); return (
           <g>
-            <rect x="-65" y="80" width="130" height="26" rx="7" fill={done ? '#558B2F' : '#455A64'} filter="url(#shadow)" />
-            <text x="0" y="97" textAnchor="middle" fontSize="9" fill="white" fontFamily="Nunito" fontWeight="bold">♻️ Consumption ↓</text>
+            <rect x="-80" y="92" width="160" height="34" rx="10" fill={done ? '#558B2F' : '#455A64'} filter="url(#shadow)" />
+            <text x="0" y="114" textAnchor="middle" fontSize="13" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">♻️ SDG 12 · Consumption ↓</text>
           </g>
         ); })()}
       </g>
@@ -1348,6 +1349,113 @@ function Buildings() {
           </g>
         );
       })}
+
+      {/* ══════ ENTERABLE BUILDINGS ══════ */}
+
+      {/* GREENHOUSE (SDG 2 - Hunger, x=2220, y=60) */}
+      <g transform="translate(2220, 60)">
+        {/* Shadow */}
+        <ellipse cx="90" cy="142" rx="80" ry="16" fill="rgba(0,0,0,0.18)" />
+        {/* Main glass house structure */}
+        <rect x="10" y="40" width="160" height="100" rx="6" fill="#C8E6C9" stroke="#388E3C" strokeWidth="3" />
+        <rect x="10" y="40" width="160" height="100" rx="6" fill="url(#bldHL)" opacity="0.4" />
+        {/* Glass panes */}
+        {[30,70,110,150].map(x => (
+          <line key={x} x1={x} y1="40" x2={x} y2="140" stroke="#388E3C" strokeWidth="1.5" opacity="0.5" />
+        ))}
+        <line x1="10" y1="90" x2="170" y2="90" stroke="#388E3C" strokeWidth="1.5" opacity="0.5" />
+        {/* Triangular roof */}
+        <polygon points="0,42 90,0 180,42" fill="#2E7D32" />
+        <polygon points="0,42 90,0 180,42" fill="url(#bldHL)" opacity="0.3" />
+        <line x1="0" y1="42" x2="90" y2="0" stroke="#1B5E20" strokeWidth="2" />
+        <line x1="90" y1="0" x2="180" y2="42" stroke="#1B5E20" strokeWidth="2" />
+        {/* Door */}
+        <rect x="72" y="95" width="36" height="45" rx="18" fill="#1B5E20" />
+        <rect x="76" y="99" width="28" height="37" rx="14" fill="#388E3C" opacity="0.6" />
+        <circle cx="100" cy="118" r="3" fill="#A5D6A7" />
+        {/* Plants visible through glass */}
+        {[25,60,100,140].map((x,i) => (
+          <g key={i} transform={`translate(${x}, 100)`}>
+            <rect x="-4" y="0" width="8" height="15" rx="3" fill="#6D4C41" />
+            <ellipse cx="0" cy="-4" rx="8" ry="10" fill={['#66BB6A','#4CAF50','#81C784','#43A047'][i]} />
+          </g>
+        ))}
+        {/* Sign */}
+        <rect x="25" y="-24" width="130" height="26" rx="8" fill="#1B5E20" />
+        <text x="90" y="-7" textAnchor="middle" fontSize="13" fontFamily="Patrick Hand, cursive" fill="white" fontWeight="bold">🌿 Community Greenhouse</text>
+        {/* Enter prompt hint */}
+        <rect x="50" y="142" width="80" height="20" rx="10" fill="#2E7D32" opacity="0.85" />
+        <text x="90" y="156" textAnchor="middle" fontSize="10" fontFamily="Nunito" fill="white">[E] Enter</text>
+      </g>
+
+      {/* HOSPITAL / HEALTH CLINIC (SDG 3 - Health, x=1140, y=55) */}
+      <g transform="translate(1140, 55)">
+        <ellipse cx="90" cy="140" rx="80" ry="15" fill="rgba(0,0,0,0.18)" />
+        {/* Main building */}
+        <rect x="5" y="30" width="170" height="110" rx="8" fill="#E3F2FD" stroke="#1565C0" strokeWidth="3" />
+        <rect x="5" y="30" width="170" height="110" rx="8" fill="url(#bldHL)" opacity="0.35" />
+        {/* Windows */}
+        {[25, 115].map(x => (
+          <g key={x}>
+            <rect x={x} y="48" width="30" height="30" rx="4" fill="#90CAF9" stroke="#1565C0" strokeWidth="1.5" />
+            <line x1={x} y1="63" x2={x+30} y2="63" stroke="#1565C0" strokeWidth="1" />
+            <line x1={x+15} y1="48" x2={x+15} y2="78" stroke="#1565C0" strokeWidth="1" />
+          </g>
+        ))}
+        {/* Red cross */}
+        <rect x="75" y="44" width="30" height="52" rx="6" fill="#F44336" />
+        <rect x="62" y="58" width="56" height="22" rx="6" fill="#F44336" />
+        <rect x="78" y="47" width="24" height="46" rx="4" fill="white" opacity="0.3" />
+        {/* Flat roof */}
+        <rect x="0" y="24" width="180" height="14" rx="6" fill="#1565C0" />
+        <rect x="0" y="24" width="180" height="14" rx="6" fill="url(#bldHL)" opacity="0.3" />
+        {/* Door */}
+        <rect x="70" y="96" width="40" height="44" rx="6" fill="#1565C0" />
+        <rect x="74" y="100" width="32" height="36" rx="4" fill="#42A5F5" opacity="0.5" />
+        <circle cx="102" cy="118" r="3" fill="#BBDEFB" />
+        {/* Sign */}
+        <rect x="20" y="-22" width="140" height="26" rx="8" fill="#1565C0" />
+        <text x="90" y="-5" textAnchor="middle" fontSize="12" fontFamily="Patrick Hand, cursive" fill="white" fontWeight="bold">🏥 Health Clinic</text>
+        <rect x="52" y="140" width="76" height="20" rx="10" fill="#1565C0" opacity="0.85" />
+        <text x="90" y="154" textAnchor="middle" fontSize="10" fontFamily="Nunito" fill="white">[E] Enter</text>
+      </g>
+
+      {/* SCHOOL (SDG 4 - Education, x=2220, y=1360) */}
+      <g transform="translate(2220, 1360)">
+        <ellipse cx="100" cy="152" rx="90" ry="16" fill="rgba(0,0,0,0.18)" />
+        {/* Main building */}
+        <rect x="0" y="35" width="200" height="117" rx="6" fill="#EDE7F6" stroke="#6A1B9A" strokeWidth="3" />
+        <rect x="0" y="35" width="200" height="117" rx="6" fill="url(#bldHL)" opacity="0.3" />
+        {/* Roof / top band */}
+        <rect x="0" y="25" width="200" height="18" rx="5" fill="#6A1B9A" />
+        <rect x="0" y="25" width="200" height="18" rx="5" fill="url(#bldHL)" opacity="0.3" />
+        {/* Bell tower */}
+        <rect x="82" y="0" width="36" height="30" rx="4" fill="#7B1FA2" />
+        <polygon points="82,0 100,-16 118,0" fill="#4A148C" />
+        <circle cx="100" cy="14" r="6" fill="#CE93D8" />
+        <line x1="100" y1="14" x2="100" y2="20" stroke="#4A148C" strokeWidth="2" />
+        {/* Windows */}
+        {[20, 80, 140].map(x => (
+          <g key={x}>
+            <rect x={x} y="50" width="28" height="32" rx="4" fill="#CE93D8" stroke="#6A1B9A" strokeWidth="1.5" />
+            <line x1={x} y1="66" x2={x+28} y2="66" stroke="#6A1B9A" strokeWidth="1" />
+            <line x1={x+14} y1="50" x2={x+14} y2="82" stroke="#6A1B9A" strokeWidth="1" />
+          </g>
+        ))}
+        {/* Door */}
+        <rect x="78" y="96" width="44" height="56" rx="8" fill="#6A1B9A" />
+        <rect x="82" y="100" width="36" height="48" rx="6" fill="#9C27B0" opacity="0.4" />
+        <circle cx="114" cy="124" r="3" fill="#E1BEE7" />
+        {/* Steps */}
+        <rect x="70" y="148" width="60" height="6" rx="3" fill="#9E9E9E" />
+        <rect x="64" y="152" width="72" height="5" rx="2.5" fill="#BDBDBD" />
+        {/* Sign */}
+        <rect x="22" y="-22" width="156" height="26" rx="8" fill="#4A148C" />
+        <text x="100" y="-5" textAnchor="middle" fontSize="12" fontFamily="Patrick Hand, cursive" fill="white" fontWeight="bold">🏫 The Learning Academy</text>
+        <rect x="60" y="152" width="80" height="20" rx="10" fill="#6A1B9A" opacity="0.85" />
+        <text x="100" y="166" textAnchor="middle" fontSize="10" fontFamily="Nunito" fill="white">[E] Enter</text>
+      </g>
+
     </svg>
   );
 }
@@ -1364,6 +1472,7 @@ export default function GameWorld() {
   const containerRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const playerElemRef = useRef<HTMLDivElement>(null);
+  const playerNameElemRef = useRef<HTMLDivElement>(null);
   const playerPos = useRef({ ...PLAYER_SPAWN });
   const keysRef = useRef(new Set<string>());
   const animRef = useRef(0);
@@ -1378,6 +1487,10 @@ export default function GameWorld() {
   const [talkingNPC, setTalkingNPC] = useState<WorldNPC | null>(null);
   const [dialogIndex, setDialogIndex] = useState(0);
 
+  const [nearBuilding, setNearBuilding] = useState<BuildingDef | null>(null);
+  const nearBuildingRef = useRef<BuildingDef | null>(null);
+  const [activeBuilding, setActiveBuilding] = useState<BuildingDef | null>(null);
+
   const [levelBanner, setLevelBanner] = useState<string | null>(null);
   const prevLevelRef = useRef<'people' | 'planet'>('people');
 
@@ -1390,6 +1503,10 @@ export default function GameWorld() {
     if (playerElemRef.current) {
       playerElemRef.current.style.left = `${x - PLAYER_W / 2}px`;
       playerElemRef.current.style.top = `${y - PLAYER_H}px`;
+    }
+    if (playerNameElemRef.current) {
+      playerNameElemRef.current.style.left = `${x}px`;
+      playerNameElemRef.current.style.top = `${y + 4}px`;
     }
 
     if (worldRef.current) {
@@ -1415,7 +1532,7 @@ export default function GameWorld() {
     }
   }, []);
 
-  /* ── NPC proximity check ── */
+  /* ── NPC + building proximity check ── */
   const checkProximity = useCallback(() => {
     const { x, y } = playerPos.current;
     let closest: WorldNPC | null = null;
@@ -1428,6 +1545,19 @@ export default function GameWorld() {
     if (newId !== nearNPCIdRef.current) {
       nearNPCIdRef.current = newId;
       setNearNPC(closest);
+    }
+
+    // Building proximity check (entrance = bottom-center of building)
+    let nearB: BuildingDef | null = null;
+    for (const b of ENTERABLE_BUILDINGS) {
+      const entranceX = b.x + b.width / 2;
+      const entranceY = b.y + b.height;
+      const d = Math.hypot(entranceX - x, entranceY - y);
+      if (d < 100) { nearB = b; break; }
+    }
+    if (nearB?.id !== nearBuildingRef.current?.id) {
+      nearBuildingRef.current = nearB;
+      setNearBuilding(nearB);
     }
   }, []);
 
@@ -1443,9 +1573,13 @@ export default function GameWorld() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (MOVE_KEYS.has(e.key)) e.preventDefault();
       keysRef.current.add(e.key);
-      if ((e.key === 'e' || e.key === 'E' || e.key === ' ') && nearNPCIdRef.current) {
-        const npc = WORLD_NPCS.find(n => n.id === nearNPCIdRef.current);
-        if (npc) { setTalkingNPC(npc); setDialogIndex(0); }
+      if (e.key === 'e' || e.key === 'E' || e.key === ' ') {
+        if (nearBuildingRef.current) {
+          setActiveBuilding(nearBuildingRef.current);
+        } else if (nearNPCIdRef.current) {
+          const npc = WORLD_NPCS.find(n => n.id === nearNPCIdRef.current);
+          if (npc) { setTalkingNPC(npc); setDialogIndex(0); }
+        }
       }
     };
     const onKeyUp = (e: KeyboardEvent) => keysRef.current.delete(e.key);
@@ -1575,52 +1709,58 @@ export default function GameWorld() {
           const isDone = completedZones.includes(npc.zoneId);
           const zoneData = ZONES[npc.zoneId as keyof typeof ZONES];
           return (
-            <div
-              key={npc.id}
-              style={{
-                position: 'absolute',
-                left: npc.x - 24,
-                top: npc.y - 64,
-                width: 48, height: 64,
-                cursor: 'pointer',
-                transform: `scaleX(${npc.facing === 'left' ? -1 : 1})`,
-              }}
-              onClick={() => { if (!talkingNPC) { setTalkingNPC(npc); setDialogIndex(0); } }}
-            >
-              <div style={{ width: '100%', height: '100%', filter: isDone && npc.isLord ? 'drop-shadow(0 0 10px gold)' : undefined }}>
-                <Sprite />
+            <React.Fragment key={npc.id}>
+              <div
+                style={{
+                  position: 'absolute',
+                  left: npc.x - 24,
+                  top: npc.y - 64,
+                  width: 48, height: 64,
+                  cursor: 'pointer',
+                  transform: `scaleX(${npc.facing === 'left' ? -1 : 1})`,
+                }}
+                onClick={() => { if (!talkingNPC) { setTalkingNPC(npc); setDialogIndex(0); } }}
+              >
+                <div style={{ width: '100%', height: '100%', filter: isDone && npc.isLord ? 'drop-shadow(0 0 10px gold)' : undefined }}>
+                  <Sprite />
+                </div>
               </div>
+              {/* NPC labels outside scaleX wrapper so they never flip */}
               {isNear && !talkingNPC && (
                 <div style={{
-                  position: 'absolute', top: -28, left: '50%',
-                  transform: 'scaleX(-1) translateX(50%)',
+                  position: 'absolute',
+                  left: npc.x, top: npc.y - 92,
+                  transform: 'translateX(-50%)',
                   background: '#FFD700', border: '2px solid #F57F17',
                   borderRadius: '50%', width: 24, height: 24,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontWeight: 'bold', fontSize: 13,
                   animation: 'bounce 0.6s ease-in-out infinite alternate',
+                  pointerEvents: 'none', zIndex: 110,
                 }}>!</div>
               )}
               <div style={{
-                position: 'absolute', bottom: -20, left: '50%',
-                transform: 'scaleX(-1) translateX(50%)',
+                position: 'absolute',
+                left: npc.x, top: npc.y + 6,
+                transform: 'translateX(-50%)',
                 background: 'white', border: `1.5px solid ${zoneData?.themeColor || '#ccc'}`,
                 borderRadius: 8, padding: '1px 5px',
                 fontSize: 9, fontWeight: 'bold', whiteSpace: 'nowrap', color: '#333',
-                pointerEvents: 'none',
+                pointerEvents: 'none', zIndex: 105,
               }}>{npc.name}</div>
               {npc.isLord && (
                 <div style={{
-                  position: 'absolute', top: -14, left: '50%',
-                  transform: 'scaleX(-1) translateX(50%)',
-                  fontSize: 14, pointerEvents: 'none',
+                  position: 'absolute',
+                  left: npc.x, top: npc.y - 80,
+                  transform: 'translateX(-50%)',
+                  fontSize: 14, pointerEvents: 'none', zIndex: 112,
                 }}>👑</div>
               )}
-            </div>
+            </React.Fragment>
           );
         })}
 
-        {/* ── PLAYER ── */}
+        {/* ── PLAYER sprite (scaleX flipped by game loop) ── */}
         <div
           ref={playerElemRef}
           style={{
@@ -1629,14 +1769,19 @@ export default function GameWorld() {
           }}
         >
           <PlayerSprite />
-          <div style={{
-            position: 'absolute', bottom: -18, left: '50%',
+        </div>
+        {/* ── PLAYER name tag (separate, never flips) ── */}
+        <div
+          ref={playerNameElemRef}
+          style={{
+            position: 'absolute', zIndex: 101,
             transform: 'translateX(-50%)',
             background: '#4CAF50', color: 'white',
             borderRadius: 8, padding: '1px 6px',
             fontSize: 9, fontWeight: 'bold', whiteSpace: 'nowrap',
-          }}>{playerName}</div>
-        </div>
+            pointerEvents: 'none',
+          }}
+        >{playerName}</div>
       </div>
 
       {/* ── HUD ── */}
@@ -1719,7 +1864,7 @@ export default function GameWorld() {
 
       {/* ── NEAR NPC PROMPT ── */}
       <AnimatePresence>
-        {nearNPC && !talkingNPC && (
+        {nearNPC && !talkingNPC && !nearBuilding && (
           <motion.div
             key={nearNPC.id}
             initial={{ y: 20, opacity: 0 }}
@@ -1732,6 +1877,35 @@ export default function GameWorld() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ── NEAR BUILDING PROMPT ── */}
+      <AnimatePresence>
+        {nearBuilding && !activeBuilding && (
+          <motion.div
+            key={nearBuilding.id}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 20, opacity: 0 }}
+            className="absolute bottom-24 left-1/2 -translate-x-1/2 z-40 text-white px-5 py-2 rounded-2xl text-sm font-bold flex items-center gap-2 shadow-xl"
+            style={{ background: 'rgba(30,70,30,0.88)' }}
+          >
+            <span className="text-2xl">{nearBuilding.emoji}</span>
+            Press <kbd className="bg-white/20 px-2 py-0.5 rounded-lg font-mono">E</kbd> to enter <strong>{nearBuilding.name}</strong>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── BUILDING INTERIOR ── */}
+      {activeBuilding && (
+        <BuildingInterior
+          building={activeBuilding}
+          onClose={() => setActiveBuilding(null)}
+          onTalkToNPC={(zoneId) => {
+            const npc = WORLD_NPCS.find(n => n.zoneId === zoneId && n.isLord);
+            if (npc) { setTalkingNPC(npc); setDialogIndex(0); }
+          }}
+        />
+      )}
 
       {/* ── DIALOGUE ── */}
       <AnimatePresence>

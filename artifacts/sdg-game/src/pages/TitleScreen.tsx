@@ -37,11 +37,12 @@ export default function TitleScreen() {
         transition={{ duration: 0.8, type: "spring" }}
         className="z-10 flex flex-col items-center max-w-xl w-full bg-card/90 backdrop-blur-sm p-8 sketch-border sketch-shadow"
       >
-        <h1 className="text-5xl md:text-6xl font-display text-center text-foreground mb-2">
-          SDG World
+        <div className="text-5xl mb-1">🌱</div>
+        <h1 className="text-5xl md:text-6xl font-display text-center text-foreground mb-1 leading-tight">
+          Seeds of Tomorrow
         </h1>
-        <h2 className="text-2xl font-body text-muted-foreground text-center mb-8">
-          Elemental Lords
+        <h2 className="text-base font-body text-muted-foreground text-center mb-6">
+          An SDG Adventure · Elemental Lords
         </h2>
 
         {isStarted ? (
