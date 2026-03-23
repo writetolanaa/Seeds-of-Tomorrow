@@ -18,6 +18,7 @@ import {
   NPC_StudentSam, NPC_StudentAria,
   NPC_Girl, NPC_Worker,
   AquaSprite, CoralinaSprite, FerraSprite, GaiaSprite, ReevoSprite,
+  VoltraSprite, GildaSprite, NexusSprite, MiraSprite, SkylarSprite,
 } from '@/components/Sprites';
 
 /* ── sprite map ── */
@@ -31,6 +32,8 @@ const SPRITE_MAP: Record<string, React.FC<any>> = {
   girl: NPC_Girl, worker: NPC_Worker,
   aqua: AquaSprite, coralina: CoralinaSprite, ferra: FerraSprite,
   gaia: GaiaSprite, reevo: ReevoSprite,
+  voltra: VoltraSprite, gilda: GildaSprite, nexus: NexusSprite,
+  mira: MiraSprite, skylar: SkylarSprite,
 };
 
 /* ── check AABB collision ── */
@@ -52,13 +55,15 @@ function Dialogue({
   dialogIndex: number;
   completedZones: string[];
   peopleLevelComplete: boolean;
+  planetLevelComplete?: boolean;
 }) {
-  const zoneData = ZONES[npc.zoneId as keyof typeof ZONES];
+  const zoneData = (ZONES as any)[npc.zoneId] ?? ZONES[npc.zoneId as keyof typeof ZONES];
   if (!zoneData) return null;
   const isLast = dialogIndex >= npc.dialogues.length - 1;
   const isCompleted = completedZones.includes(npc.zoneId);
   const isPlanetZone = zoneData.level === 'planet';
-  const isLocked = isPlanetZone && !peopleLevelComplete;
+  const isProsperityZone = zoneData.level === 'prosperity';
+  const isLocked = (isPlanetZone && !peopleLevelComplete) || (isProsperityZone && !planetLevelComplete);
 
   return (
     <motion.div
@@ -74,10 +79,13 @@ function Dialogue({
         >
           {npc.name} {npc.isLord ? '✨' : ''}
           {isPlanetZone && <span className="ml-1 text-xs opacity-80">🌎</span>}
+          {isProsperityZone && <span className="ml-1 text-xs opacity-80">🌟</span>}
         </div>
         <p className="text-base text-gray-700 leading-relaxed mt-3 min-h-[2.5rem] font-sans">
           {isLocked && isLast
-            ? "🔒 The Planet level is still sealed... Complete all 5 People challenges first to unlock it!"
+            ? isProsperityZone
+              ? "🔒 The Prosperity level is still sealed... Complete all 5 Planet challenges first to unlock it!"
+              : "🔒 The Planet level is still sealed... Complete all 5 People challenges first to unlock it!"
             : npc.dialogues[dialogIndex]}
         </p>
         <div className="flex justify-end gap-3 mt-4">
@@ -1094,6 +1102,210 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
             transform={`rotate(${(i-1)*15} ${x+10} ${1960+(i%2)*20})`} />
         ))
       )}
+
+      {/* ════════════════════════════════════════════════
+          PROSPERITY LEVEL — SDG 7-11 — y=4700 to 7200
+          ════════════════════════════════════════════════ */}
+
+      {/* Prosperity Gate (transition from Planet at y=4600) */}
+      {(() => {
+        const PG_Y = 4640;
+        const PG_X = 1600;
+        return (
+          <g>
+            <rect x="0" y={PG_Y} width={WORLD_W} height="280" fill="#1A1040" />
+            {[0,1,2,3,4,5,6,7].map(i => (
+              <rect key={i} x={i * WORLD_W / 8} y={PG_Y} width={WORLD_W / 8} height="280"
+                fill={i % 2 === 0 ? '#0D0A2A' : '#1A1040'} opacity="0.85" />
+            ))}
+            {/* Stars/city-lights in the gate zone */}
+            {[[200,4660],[450,4680],[750,4655],[1100,4670],[1450,4660],[1900,4680],[2200,4660],[2650,4675],[2950,4660]].map(([x,y],i) => (
+              <circle key={i} cx={x} cy={y} r="2.5" fill="#FFD700" opacity="0.7" />
+            ))}
+            {/* Gate arch */}
+            <ellipse cx={PG_X} cy={PG_Y + 50} rx="230" ry="120"
+              fill="none" stroke="#FFD700" strokeWidth="12" opacity="0.9" filter="url(#glow)" />
+            <ellipse cx={PG_X} cy={PG_Y + 50} rx="210" ry="105"
+              fill="none" stroke="#FFF176" strokeWidth="5" opacity="0.6" />
+            {/* Pillars */}
+            <rect x={PG_X - 240} y={PG_Y - 30} width="28" height="180" rx="12" fill="#F9A825" opacity="0.9" />
+            <rect x={PG_X + 212} y={PG_Y - 30} width="28" height="180" rx="12" fill="#F9A825" opacity="0.9" />
+            <circle cx={PG_X - 226} cy={PG_Y - 42} r="20" fill="#FFD700" stroke="white" strokeWidth="3" />
+            <circle cx={PG_X + 226} cy={PG_Y - 42} r="20" fill="#FFD700" stroke="white" strokeWidth="3" />
+            <text x={PG_X - 226} y={PG_Y - 36} textAnchor="middle" fontSize="14">⚡</text>
+            <text x={PG_X + 226} y={PG_Y - 36} textAnchor="middle" fontSize="14">🏙️</text>
+            <rect x={PG_X - 190} y={PG_Y + 70} width="380" height="40" rx="20" fill="#F9A825" />
+            <text x={PG_X} y={PG_Y + 96} textAnchor="middle" fontSize="16" fontWeight="bold"
+              fontFamily="Nunito" fill="#1A1040">🌟 Prosperity Level Gateway 🌟</text>
+            <rect x={PG_X - 60} y={PG_Y + 110} width="120" height="210" rx="8" fill="#F57F17" opacity="0.4" />
+          </g>
+        );
+      })()}
+
+      {/* Prosperity base background — futuristic cityscape */}
+      <rect x="0" y="4920" width={WORLD_W} height={WORLD_H - 4920} fill="#0D1B2A" />
+      {/* City skyline silhouette far back */}
+      {[[100,4980,60,160],[220,5010,40,130],[310,4970,80,170],[430,5000,50,150],[560,4975,70,165],
+        [700,5005,45,135],[810,4980,65,155],[920,5010,35,125],[1050,4975,80,170],[1150,5000,50,145],
+        [1650,4975,80,170],[1750,5005,50,140],[1850,4980,60,160],[1950,5010,40,125],[2050,4975,75,165],
+        [2200,5000,55,150],[2320,4980,65,160],[2440,5005,45,135],[2560,4975,80,170],[2700,5010,40,125],
+        [2810,4980,70,165],[2950,5000,55,145],[3050,4975,60,160]].map(([x,y,w,h],i) => (
+        <rect key={i} x={x} y={y} width={w} height={h} rx="4" fill={i%3===0?'#0D2137':i%3===1?'#0A1A2E':'#0F2340'} opacity="0.9" />
+      ))}
+      {/* City windows glowing */}
+      {[[120,5000],[135,5030],[155,5000],[230,5020],[320,4990],[340,5020],[350,4990],
+        [450,5010],[570,4990],[590,5020],[720,5010],[830,4995],[1070,4990],[1090,5015],
+        [1660,4990],[1680,5020],[1770,5010],[1870,4995],[1970,5020],[2060,4990],[2085,5015],
+        [2210,5005],[2230,5030],[2330,4995],[2450,5010],[2580,4990],[2720,5015],[2830,4995],[2960,5005]].map(([x,y],i) => (
+        <rect key={i} x={x} y={y} width="8" height="5" rx="1"
+          fill={['#FFD700','#00E5FF','#76FF03','#FF6D00','#E040FB'][i%5]} opacity="0.65" />
+      ))}
+      {/* Ground level: smart city road grid */}
+      <rect x="0" y="5440" width={WORLD_W} height="80" fill="#263238" opacity="0.7" />
+      <rect x="0" y="6600" width={WORLD_W} height="80" fill="#263238" opacity="0.7" />
+
+      {/* ════ PROSPERITY ZONE GROUND AREAS ════ */}
+      {ZONE_REGIONS.filter(z => z.level === 'prosperity').map(z => {
+        const done = completedZones.includes(z.id);
+        return (
+          <g key={z.id}>
+            <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="24" ry="24"
+              fill={done ? z.color : 'rgba(255,255,255,0.08)'}
+              stroke={done ? z.borderColor : '#F9A825'}
+              strokeWidth="5" strokeDasharray={done ? 'none' : '14 7'}
+              filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 120} y={z.y - 28} width="240" height="34" rx="17"
+              fill={done ? z.borderColor : '#E65100'} opacity="0.92" />
+            <text x={z.x + z.w / 2} y={z.y - 5} textAnchor="middle" fill="white"
+              fontSize="13" fontWeight="bold" fontFamily="Nunito">
+              {z.emoji} SDG {z.sdg}: {done ? '✓ Healed!' : '🔒 Explore'}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* ════ PROSPERITY PATHS ════ */}
+      {/* Prosperity hub center */}
+      {(() => {
+        const PC_X = 1580;
+        const PC_Y = 5700;
+        return (
+          <g>
+            <circle cx={PC_X} cy={PC_Y} r="185" fill="#1A1040" stroke="#F9A825" strokeWidth="7" filter="url(#shadow)" />
+            <circle cx={PC_X} cy={PC_Y} r="185" fill="none" stroke="#FFD700" strokeWidth="5" opacity="0.7" />
+            <text x={PC_X} y={PC_Y - 45} textAnchor="middle" fontSize="22" fontWeight="bold" fontFamily="Patrick Hand, cursive" fill="#FFD700">🌟 Prosperity World</text>
+            <text x={PC_X} y={PC_Y - 18} textAnchor="middle" fontSize="13" fontFamily="Nunito" fill="#FFF176">SDGs 7–11: Build a better future!</text>
+            {/* Paths to zones */}
+            <path d={`M ${PC_X} ${PC_Y} Q 900 5300 540 5160`} stroke="#F9A825" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.45" />
+            <path d={`M ${PC_X} ${PC_Y} Q 900 5300 540 5160`} stroke="#FFD700" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.35" />
+            <path d={`M ${PC_X} ${PC_Y} Q ${PC_X} 5300 ${PC_X} 5160`} stroke="#1565C0" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.45" />
+            <path d={`M ${PC_X} ${PC_Y} Q ${PC_X} 5300 ${PC_X} 5160`} stroke="#64B5F6" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.35" />
+            <path d={`M ${PC_X} ${PC_Y} Q 2200 5300 2660 5160`} stroke="#E65100" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.45" />
+            <path d={`M ${PC_X} ${PC_Y} Q 2200 5300 2660 5160`} stroke="#FF8A65" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.35" />
+            <path d={`M ${PC_X} ${PC_Y} Q 900 6200 540 6320`} stroke="#6A1B9A" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.45" />
+            <path d={`M ${PC_X} ${PC_Y} Q 900 6200 540 6320`} stroke="#CE93D8" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.35" />
+            <path d={`M ${PC_X} ${PC_Y} Q 2200 6200 2660 6320`} stroke="#00695C" strokeWidth="48" fill="none" strokeLinecap="round" opacity="0.45" />
+            <path d={`M ${PC_X} ${PC_Y} Q 2200 6200 2660 6320`} stroke="#80CBC4" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.35" />
+            {/* Prosperity signpost */}
+            <g transform={`translate(${PC_X + 210}, ${PC_Y - 90})`}>
+              <rect x="-4" y="-10" width="8" height="200" rx="4" fill="#F9A825" />
+              {(() => { const done = completedZones.includes('energy'); return (
+                <g>
+                  <rect x="-170" y="0" width="155" height="32" rx="10" fill={done ? '#F9A825' : '#37474F'} filter="url(#shadow)" />
+                  <polygon points="-170,0 -170,32 -192,16" fill={done ? '#F9A825' : '#37474F'} />
+                  <text x="-93" y="21" textAnchor="middle" fontSize="12" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">⚡ SDG 7 · Energy</text>
+                </g>
+              ); })()}
+              {(() => { const done = completedZones.includes('innovation'); return (
+                <g>
+                  <rect x="-85" y="40" width="170" height="32" rx="10" fill={done ? '#1565C0' : '#37474F'} filter="url(#shadow)" />
+                  <text x="0" y="61" textAnchor="middle" fontSize="12" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">🔬 SDG 9 · Innovation</text>
+                </g>
+              ); })()}
+              {(() => { const done = completedZones.includes('industry'); return (
+                <g>
+                  <rect x="15" y="0" width="155" height="32" rx="10" fill={done ? '#E65100' : '#37474F'} filter="url(#shadow)" />
+                  <polygon points="170,0 170,32 192,16" fill={done ? '#E65100' : '#37474F'} />
+                  <text x="93" y="21" textAnchor="middle" fontSize="12" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">SDG 8 · Industry 🏭</text>
+                </g>
+              ); })()}
+              {(() => { const done = completedZones.includes('communities'); return (
+                <g>
+                  <rect x="-170" y="80" width="155" height="32" rx="10" fill={done ? '#6A1B9A' : '#37474F'} filter="url(#shadow)" />
+                  <polygon points="-170,80 -170,112 -192,96" fill={done ? '#6A1B9A' : '#37474F'} />
+                  <text x="-93" y="101" textAnchor="middle" fontSize="12" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">SDG 10 · Communities</text>
+                </g>
+              ); })()}
+              {(() => { const done = completedZones.includes('cities'); return (
+                <g>
+                  <rect x="15" y="80" width="155" height="32" rx="10" fill={done ? '#00695C' : '#37474F'} filter="url(#shadow)" />
+                  <polygon points="170,80 170,112 192,96" fill={done ? '#00695C' : '#37474F'} />
+                  <text x="93" y="101" textAnchor="middle" fontSize="12" fill="white" fontFamily="Patrick Hand, cursive" fontWeight="bold">SDG 11 · Cities 🏙️</text>
+                </g>
+              ); })()}
+            </g>
+          </g>
+        );
+      })()}
+
+      {/* ════ PROSPERITY DECORATIONS ════ */}
+      {/* Solar panel arrays in energy zone */}
+      {[240,300,360,420,480,540,600,660,720,780].map((x,i) => (
+        <g key={i} transform={`translate(${x},${5240 + (i%2)*35})`}>
+          <rect x="-22" y="-4" width="44" height="28" rx="3" fill="#1565C0" opacity="0.8" />
+          <rect x="-22" y="-4" width="44" height="28" rx="3" fill="#1976D2" opacity="0.4" />
+          <line x1="-22" y1="10" x2="22" y2="10" stroke="#90CAF9" strokeWidth="1.5" opacity="0.7" />
+          <line x1="0" y1="-4" x2="0" y2="24" stroke="#90CAF9" strokeWidth="1.5" opacity="0.7" />
+          <rect x="-3" y="24" width="6" height="12" rx="2" fill="#37474F" />
+        </g>
+      ))}
+      {/* Wind turbines in energy zone */}
+      {[[180,5095],[340,5070],[520,5090]].map(([x,y],i) => (
+        <g key={i} transform={`translate(${x},${y})`}>
+          <rect x="-4" y="0" width="8" height="120" rx="3" fill="#90A4AE" opacity="0.8" />
+          <g transform="rotate(30)">
+            <ellipse cx="0" cy="-50" rx="4" ry="45" fill="#B0BEC5" opacity="0.85" />
+          </g>
+          <g transform="rotate(150)">
+            <ellipse cx="0" cy="-50" rx="4" ry="45" fill="#B0BEC5" opacity="0.85" />
+          </g>
+          <g transform="rotate(270)">
+            <ellipse cx="0" cy="-50" rx="4" ry="45" fill="#B0BEC5" opacity="0.85" />
+          </g>
+          <circle cx="0" cy="0" r="6" fill="#78909C" />
+        </g>
+      ))}
+      {/* Factory smokestacks (industry zone) */}
+      {[2360,2450,2540,2640,2740,2840,2940].map((x,i) => (
+        <g key={i}>
+          <rect x={x - 10} y={5040} width="20" height="100" fill="#37474F" opacity="0.85" />
+          <ellipse cx={x} cy={5035} rx="15" ry="24" fill={i%2===0?'#B0BEC5':'#CFD8DC'} opacity="0.5" />
+          <ellipse cx={x+5} cy={5010} rx="10" ry="16" fill={i%2===0?'#CFD8DC':'#ECEFF1'} opacity="0.4" />
+        </g>
+      ))}
+      {/* Research lab equipment (innovation zone) */}
+      {[[1280,5150],[1360,5120],[1480,5140],[1600,5115],[1720,5140],[1840,5120]].map(([x,y],i) => (
+        <g key={i} transform={`translate(${x},${y})`}>
+          <rect x="-8" y="-20" width="16" height="35" rx="6" fill={['#1565C0','#0D47A1','#1976D2'][i%3]} opacity="0.75" />
+          <circle cx="0" cy="-24" r="8" fill="#64B5F6" opacity="0.6" />
+          <text x="0" y="-22" textAnchor="middle" fontSize="8" opacity="0.9">{['🔬','💡','🧪','🔭','📡','⚗️'][i]}</text>
+        </g>
+      ))}
+      {/* Community gardens (communities zone) */}
+      {[[240,6230],[300,6250],[360,6225],[420,6245],[480,6228],[540,6248],[600,6230],[660,6248],[720,6225]].map(([x,y],i) => (
+        <g key={i} transform={`translate(${x},${y})`}>
+          <rect x="-14" y="-6" width="28" height="14" rx="4" fill="#795548" opacity="0.6" />
+          <ellipse cx="0" cy="-10" rx="12" ry="8" fill={i%3===0?'#66BB6A':i%3===1?'#EF5350':'#FDD835'} opacity="0.75" />
+        </g>
+      ))}
+      {/* Smart city green rooftops (cities zone) */}
+      {[[2330,6130],[2380,6115],[2460,6120],[2510,6130],[2610,6115],[2680,6120],[2780,6130],[2850,6140],[2960,6120]].map(([x,y],i) => (
+        <g key={i} transform={`translate(${x},${y})`}>
+          <rect x="-20" y="-8" width="40" height="14" rx="3" fill="#2E7D32" opacity="0.6" />
+          <ellipse cx="-8" cy="-10" rx="5" ry="4" fill="#4CAF50" opacity="0.7" />
+          <ellipse cx="6" cy="-12" rx="6" ry="5" fill="#66BB6A" opacity="0.7" />
+        </g>
+      ))}
     </svg>
   );
 }
@@ -1467,7 +1679,7 @@ const PLAYER_H = 72;
 /* ── MAIN GAME WORLD ── */
 export default function GameWorld() {
   const [, setLocation] = useLocation();
-  const { completedZones, playerCharacter, playerName, getWorldHealPercent, peopleLevelComplete, peopleProgress, planetProgress } = useGame();
+  const { completedZones, playerCharacter, playerName, getWorldHealPercent, peopleLevelComplete, planetLevelComplete, peopleProgress, planetProgress } = useGame();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
@@ -1899,6 +2111,7 @@ export default function GameWorld() {
       {activeBuilding && (
         <BuildingInterior
           building={activeBuilding}
+          playerCharacter={playerCharacter}
           onClose={() => setActiveBuilding(null)}
           onTalkToNPC={(zoneId) => {
             const npc = WORLD_NPCS.find(n => n.zoneId === zoneId && n.isLord);
@@ -1919,6 +2132,7 @@ export default function GameWorld() {
             dialogIndex={dialogIndex}
             completedZones={completedZones}
             peopleLevelComplete={peopleLevelComplete}
+            planetLevelComplete={planetLevelComplete}
           />
         )}
       </AnimatePresence>
@@ -1932,14 +2146,19 @@ export default function GameWorld() {
             {/* Gate */}
             <rect x="0" y="2200" width={WORLD_W} height="300" fill="#263238" />
             {/* Planet section */}
-            <rect x="0" y="2500" width={WORLD_W} height={WORLD_H - 2500} fill="#1C3A2E" rx="10" />
+            <rect x="0" y="2500" width={WORLD_W} height="2140" fill="#1C3A2E" />
+            {/* Prosperity section */}
+            <rect x="0" y="4640" width={WORLD_W} height="280" fill="#1A1040" />
+            <rect x="0" y="4920" width={WORLD_W} height={WORLD_H - 4920} fill="#0D1B2A" rx="10" />
             {ZONE_REGIONS.map(z => (
               <rect key={z.id} x={z.x} y={z.y} width={z.w} height={z.h}
-                fill={completedZones.includes(z.id) ? z.color : z.level === 'planet' ? 'rgba(255,255,255,0.15)' : '#D7CCC8'}
+                fill={completedZones.includes(z.id) ? z.color : z.level === 'prosperity' ? 'rgba(249,168,37,0.15)' : z.level === 'planet' ? 'rgba(255,255,255,0.15)' : '#D7CCC8'}
                 stroke={z.borderColor} strokeWidth="15" rx="20" />
             ))}
-            {/* Gate marker */}
+            {/* Planet Gate marker */}
             <rect x={WORLD_W / 2 - 150} y="2200" width="300" height="80" fill="#00BCD4" opacity="0.6" />
+            {/* Prosperity Gate marker */}
+            <rect x={WORLD_W / 2 - 150} y="4640" width="300" height="80" fill="#F9A825" opacity="0.7" />
             {/* Player dot */}
             <circle cx={playerPos.current.x} cy={playerPos.current.y} r="45" fill="#E53935" stroke="white" strokeWidth="20" id="minimap-player" />
           </svg>

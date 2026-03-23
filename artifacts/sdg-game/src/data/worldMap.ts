@@ -1,7 +1,7 @@
 import type { ZoneId } from './gameData';
 
 export const WORLD_W = 3200;
-export const WORLD_H = 4600;
+export const WORLD_H = 7200;
 export const PLAYER_SPEED = 5;
 export const INTERACT_RADIUS = 100;
 export const PLAYER_SPAWN = { x: 1580, y: 1200 };
@@ -15,7 +15,7 @@ export interface ZoneRegion {
   name: string;
   emoji: string;
   sdg: number;
-  level: 'people' | 'planet';
+  level: 'people' | 'planet' | 'prosperity';
 }
 
 export interface WorldNPC {
@@ -60,19 +60,22 @@ export const PLANET_ZONE_REGIONS: ZoneRegion[] = [
   { id: 'consumption', x: 1050, y: 4000, w: 1100, h: 520, color: '#F1F8E9', borderColor: '#558B2F', name: "Reevo's Recycling Hub",  emoji: '♻️', sdg: 12, level: 'planet' },
 ];
 
-export const ZONE_REGIONS: ZoneRegion[] = [...PEOPLE_ZONE_REGIONS, ...PLANET_ZONE_REGIONS];
+/* ── PROSPERITY LEVEL – 5 zones (SDG 7-11) y=4800-7100 ── */
+export const PROSPERITY_ZONE_REGIONS: ZoneRegion[] = [
+  { id: 'energy',      x: 200,  y: 4880, w: 680, h: 560, color: '#FFFDE7', borderColor: '#F9A825', name: "Voltra's Energy Fields",    emoji: '⚡', sdg: 7,  level: 'prosperity' },
+  { id: 'industry',    x: 2320, y: 4880, w: 680, h: 560, color: '#FBE9E7', borderColor: '#E65100', name: "Gilda's Factory Town",       emoji: '🏭', sdg: 8,  level: 'prosperity' },
+  { id: 'innovation',  x: 1240, y: 4880, w: 680, h: 560, color: '#E3F2FD', borderColor: '#1565C0', name: 'Nexus Innovation Hub',        emoji: '🔬', sdg: 9,  level: 'prosperity' },
+  { id: 'communities', x: 200,  y: 6040, w: 680, h: 560, color: '#F3E5F5', borderColor: '#6A1B9A', name: "Mira's Community Housing",    emoji: '🏘️', sdg: 10, level: 'prosperity' },
+  { id: 'cities',      x: 2320, y: 6040, w: 680, h: 560, color: '#E0F2F1', borderColor: '#00695C', name: "Skylar's Smart City",         emoji: '🏙️', sdg: 11, level: 'prosperity' },
+];
+
+export const ZONE_REGIONS: ZoneRegion[] = [...PEOPLE_ZONE_REGIONS, ...PLANET_ZONE_REGIONS, ...PROSPERITY_ZONE_REGIONS];
 
 /* ── PEOPLE LEVEL NPCs ── */
 export const PEOPLE_NPCS: WorldNPC[] = [
   // Lords
   { id: 'baloo', name: 'Baloo', x: 390, y: 1680, zoneId: 'poverty', isLord: true, spriteKey: 'baloo', bubble: '😞',
     dialogues: ["Oh Warden! Our village is crumbling...", "Families have lost jobs and homes are falling apart.", "Help us solve the poverty crisis and bring life back to our village!"] },
-  { id: 'pebblepuff', name: 'Pebblepuff', x: 2600, y: 400, zoneId: 'hunger', isLord: true, spriteKey: 'pebblepuff', bubble: '🌾',
-    dialogues: ["The crops have wilted and the food stores are empty!", "My tummy is grumbling louder than a thunderstorm...", "Help me grow and share food with all the hungry villagers!"] },
-  { id: 'leaflet', name: 'Leaflet', x: 1580, y: 300, zoneId: 'health', isLord: true, spriteKey: 'leaflet', bubble: '🌿',
-    dialogues: ["The clinic is overwhelmed! Patients keep arriving...", "But medicine alone won't solve the real problems!", "Help me find the right treatments and teach healthy habits!"] },
-  { id: 'thinklet', name: 'Thinklet', x: 2600, y: 1670, zoneId: 'education', isLord: true, spriteKey: 'thinklet', bubble: '📚',
-    dialogues: ["My academy is in chaos! Students are unhappy...", "Every child deserves the right support to learn and grow!", "Help me match each student to what they truly need!"] },
   { id: 'sparkleflame', name: 'Sparkleflame', x: 390, y: 360, zoneId: 'equality', isLord: true, spriteKey: 'sparkleflame', bubble: '😤',
     dialogues: ["The city is full of unfair rules! People are being treated differently.", "No one should be held back because of who they are!", "Stand up for fairness and let's make the city shine with equality!"] },
 
@@ -136,7 +139,44 @@ export const PLANET_NPCS: WorldNPC[] = [
     dialogues: ["I turned old bottles into garden pots for our school!", "One person's trash really can be another's treasure."] },
 ];
 
-export const WORLD_NPCS: WorldNPC[] = [...PEOPLE_NPCS, ...PLANET_NPCS];
+/* ── PROSPERITY LEVEL NPCs (SDG 7-11) ── */
+export const PROSPERITY_NPCS: WorldNPC[] = [
+  // Lords
+  { id: 'voltra', name: 'Voltra', x: 390, y: 5100, zoneId: 'energy', isLord: true, spriteKey: 'voltra', bubble: '⚡',
+    dialogues: ["The solar arrays are offline and the wind stopped blowing!", "We need smart energy networks to store and share power!", "Help me connect clean energy to every home in the region!"] },
+  { id: 'gilda', name: 'Gilda', x: 2600, y: 5100, zoneId: 'industry', isLord: true, spriteKey: 'gilda', bubble: '🏭',
+    dialogues: ["The factories are running but workers are suffering!", "Fair wages and safe conditions make everyone more productive.", "Help me balance growth with dignity for every worker!"] },
+  { id: 'nexus', name: 'Nexus', x: 1580, y: 5060, zoneId: 'innovation', isLord: true, spriteKey: 'nexus', bubble: '🔬',
+    dialogues: ["The research hub has lost all funding and direction!", "Innovation needs investment, collaboration, and daring ideas.", "Help me connect inventors with the resources they need!"] },
+  { id: 'mira', name: 'Mira', x: 390, y: 6260, zoneId: 'communities', isLord: true, spriteKey: 'mira', bubble: '🏘️',
+    dialogues: ["The gap between rich and poor neighborhoods is growing!", "Every family deserves a safe, affordable home to call their own.", "Help me design communities where everyone belongs!"] },
+  { id: 'skylar', name: 'Skylar', x: 2600, y: 6260, zoneId: 'cities', isLord: true, spriteKey: 'skylar', bubble: '🏙️',
+    dialogues: ["Traffic, smog, and waste are choking our beautiful city!", "Smart design can make cities cleaner, greener, and more joyful.", "Help me build the sustainable city of the future!"] },
+
+  // Citizens
+  { id: 'solar_tech', name: 'Sol', x: 260, y: 5160, zoneId: 'energy', isLord: false, spriteKey: 'studentsam',
+    dialogues: ["I installed solar panels on my roof last year!", "My electricity bills went from crazy to almost zero!"] },
+  { id: 'wind_worker', name: 'Winnie', x: 560, y: 5180, zoneId: 'energy', isLord: false, spriteKey: 'girl',
+    dialogues: ["The wind turbines create twice as many jobs as old coal plants.", "Clean energy is also good for local economies!"] },
+  { id: 'factory_worker', name: 'Tom', x: 2440, y: 5160, zoneId: 'industry', isLord: false, spriteKey: 'citizentom',
+    dialogues: ["Our factory just got safety inspections — it actually helps!", "When workers feel safe, they produce better quality goods."] },
+  { id: 'entrepreneur', name: 'Zara', x: 2750, y: 5180, zoneId: 'industry', isLord: false, spriteKey: 'youngmaya',
+    dialogues: ["I started my own small workshop making recycled furniture.", "Small businesses create most of the world's employment!"] },
+  { id: 'inventor', name: 'Kai', x: 1440, y: 5060, zoneId: 'innovation', isLord: false, spriteKey: 'studentaria',
+    dialogues: ["My 3D-printed water filter can purify a liter per minute!", "Open-source designs let anyone build solutions anywhere."] },
+  { id: 'engineer', name: 'Priya', x: 1720, y: 5060, zoneId: 'innovation', isLord: false, spriteKey: 'worker',
+    dialogues: ["Better bridges and roads reduce transport costs for everyone.", "Infrastructure is the backbone of a thriving economy."] },
+  { id: 'neighbor', name: 'Rosa', x: 260, y: 6300, zoneId: 'communities', isLord: false, spriteKey: 'grandma',
+    dialogues: ["Our new community garden brought everyone together!", "Mixed neighborhoods mean rich kids and poor kids grow up as friends."] },
+  { id: 'youth_activist', name: 'Theo', x: 560, y: 6300, zoneId: 'communities', isLord: false, spriteKey: 'studentsam',
+    dialogues: ["We marched for affordable housing last weekend.", "No one should sleep outside in a city this wealthy!"] },
+  { id: 'city_planner', name: 'Maya', x: 2440, y: 6300, zoneId: 'cities', isLord: false, spriteKey: 'youngmaya', facing: 'left',
+    dialogues: ["Our new tram line cut car use by 30% in two years!", "Green rooftops reduce heat and improve air quality for everyone."] },
+  { id: 'smart_city_kid', name: 'Leo', x: 2770, y: 6300, zoneId: 'cities', isLord: false, spriteKey: 'littlezoe',
+    dialogues: ["The city app tells me where the cleanest air parks are.", "Smart cities use data to make daily life better!"] },
+];
+
+export const WORLD_NPCS: WorldNPC[] = [...PEOPLE_NPCS, ...PLANET_NPCS, ...PROSPERITY_NPCS];
 
 /* ── BUILDINGS ── */
 export const WORLD_BUILDINGS: WorldBuilding[] = [
@@ -210,6 +250,44 @@ export const WORLD_BUILDINGS: WorldBuilding[] = [
 
   // Planet hub well/portal
   { x: 1530, y: 2980, w: 100, h: 100, type: 'well', color: '#80DEEA', roofColor: '#00838F', label: 'Planet Well' },
+
+  // ── PROSPERITY SECTION BUILDINGS ──
+
+  // Energy Fields zone (SDG 7) — solar control hub + wind turbine base
+  { x: 230, y: 4960, w: 200, h: 160, type: 'factory', color: '#FFFDE7', roofColor: '#F9A825', label: 'Solar Hub' },
+  { x: 460, y: 4960, w: 130, h: 140, type: 'tower', color: '#FFF9C4', roofColor: '#F57F17' },
+  { x: 620, y: 4970, w: 150, h: 130, type: 'shop', color: '#FFFDE7', roofColor: '#FF8F00', label: 'Grid Control' },
+  { x: 790, y: 4965, w: 100, h: 120, type: 'cottage', color: '#FFF9C4', roofColor: '#F9A825' },
+
+  // Innovation Hub zone (SDG 9) — labs + research campus
+  { x: 1260, y: 4960, w: 250, h: 180, type: 'clinic', color: '#E3F2FD', roofColor: '#1565C0', label: 'Research Lab' },
+  { x: 1540, y: 4970, w: 150, h: 160, type: 'tower', color: '#BBDEFB', roofColor: '#0D47A1' },
+  { x: 1720, y: 4960, w: 160, h: 150, type: 'school', color: '#E3F2FD', roofColor: '#1976D2', label: 'Tech Academy' },
+  { x: 1910, y: 4970, w: 100, h: 130, type: 'shop', color: '#BBDEFB', roofColor: '#1565C0', label: 'Patent Office' },
+
+  // Industry/Factory Town zone (SDG 8)
+  { x: 2320, y: 4960, w: 240, h: 180, type: 'factory', color: '#FBE9E7', roofColor: '#E65100', label: 'Main Factory' },
+  { x: 2590, y: 4965, w: 150, h: 160, type: 'factory', color: '#FFCCBC', roofColor: '#BF360C', label: 'Craft Workshop' },
+  { x: 2770, y: 4960, w: 130, h: 150, type: 'shop', color: '#FBE9E7', roofColor: '#D84315', label: 'Worker Center' },
+  { x: 2930, y: 4965, w: 100, h: 130, type: 'cottage', color: '#FFCCBC', roofColor: '#E64A19' },
+
+  // Prosperity plaza hub
+  { x: 1530, y: 5700, w: 100, h: 100, type: 'well', color: '#FFF59D', roofColor: '#F9A825', label: 'Prosperity Hub' },
+
+  // Community Housing zone (SDG 10)
+  { x: 230, y: 6110, w: 150, h: 130, type: 'cottage', color: '#F3E5F5', roofColor: '#6A1B9A', label: 'Apt Block A' },
+  { x: 410, y: 6095, w: 170, h: 150, type: 'cottage', color: '#EDE7F6', roofColor: '#4A148C', label: 'Apt Block B' },
+  { x: 610, y: 6110, w: 140, h: 130, type: 'cottage', color: '#F3E5F5', roofColor: '#7B1FA2' },
+  { x: 780, y: 6100, w: 120, h: 140, type: 'shop', color: '#EDE7F6', roofColor: '#6A1B9A', label: 'Community Hall' },
+  { x: 260, y: 6500, w: 150, h: 100, type: 'shop', color: '#D1C4E9', roofColor: '#512DA8', label: 'Welfare Office' },
+  { x: 630, y: 6495, w: 130, h: 100, type: 'cottage', color: '#EDE7F6', roofColor: '#673AB7' },
+
+  // Smart City zone (SDG 11) — skyscrapers + transit hub
+  { x: 2310, y: 6090, w: 100, h: 280, type: 'tower', color: '#E0F2F1', roofColor: '#00695C', label: 'City Tower A' },
+  { x: 2440, y: 6100, w: 120, h: 250, type: 'tower', color: '#B2DFDB', roofColor: '#004D40', label: 'City Tower B' },
+  { x: 2590, y: 6095, w: 140, h: 220, type: 'factory', color: '#E0F2F1', roofColor: '#00796B', label: 'Transit Hub' },
+  { x: 2760, y: 6100, w: 150, h: 180, type: 'school', color: '#B2DFDB', roofColor: '#00897B', label: 'Eco School' },
+  { x: 2940, y: 6110, w: 110, h: 160, type: 'shop', color: '#E0F2F1', roofColor: '#26A69A', label: 'Green Market' },
 ];
 
 /* ── COLLISION RECTS ── */

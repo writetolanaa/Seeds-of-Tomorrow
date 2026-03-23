@@ -101,7 +101,7 @@ export const ChibiCharacter = ({
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 100 134"
+      viewBox="0 0 100 190"
       className={cn("w-full h-full", className)}
       style={{ filter: 'drop-shadow(1px 4px 8px rgba(0,0,0,0.28))', ...style }}
     >
@@ -345,47 +345,71 @@ export const ChibiCharacter = ({
         </>
       )}
 
-      {/* ════ ARMS — animated stubs (chibi-arm-l/r for CSS walk anim) ════ */}
+      {/* ════ ARMS — full-length animated (chibi-arm-l/r for CSS walk anim) ════ */}
       <g className="chibi-arm-l">
-        <ellipse cx="13" cy="94" rx="11" ry="14" fill={outfitColor} />
-        <ellipse cx="13" cy="94" rx="11" ry="14" fill={BHL} />
-        <ellipse cx="13" cy="106" rx="8" ry="5.5" fill={skinColor} />
-        <ellipse cx="13" cy="106" rx="8" ry="5.5" fill={HL} opacity="0.5" />
+        {/* Upper arm */}
+        <ellipse cx="13" cy="96" rx="10" ry="16" fill={outfitColor} />
+        <ellipse cx="13" cy="96" rx="10" ry="16" fill={BHL} />
+        {/* Lower arm / forearm */}
+        <ellipse cx="13" cy="114" rx="8.5" ry="12" fill={outfitColor} />
+        <ellipse cx="13" cy="114" rx="8.5" ry="12" fill={BHL} opacity="0.5" />
+        {/* Hand */}
+        <ellipse cx="13" cy="124" rx="8" ry="6" fill={skinColor} />
+        <ellipse cx="13" cy="124" rx="8" ry="6" fill={HL} opacity="0.5" />
       </g>
       <g className="chibi-arm-r">
-        <ellipse cx="87" cy="94" rx="11" ry="14" fill={outfitColor} />
-        <ellipse cx="87" cy="94" rx="11" ry="14" fill={BHL} />
-        <ellipse cx="87" cy="106" rx="8" ry="5.5" fill={skinColor} />
-        <ellipse cx="87" cy="106" rx="8" ry="5.5" fill={HL} opacity="0.5" />
+        {/* Upper arm */}
+        <ellipse cx="87" cy="96" rx="10" ry="16" fill={outfitColor} />
+        <ellipse cx="87" cy="96" rx="10" ry="16" fill={BHL} />
+        {/* Lower arm / forearm */}
+        <ellipse cx="87" cy="114" rx="8.5" ry="12" fill={outfitColor} />
+        <ellipse cx="87" cy="114" rx="8.5" ry="12" fill={BHL} opacity="0.5" />
+        {/* Hand */}
+        <ellipse cx="87" cy="124" rx="8" ry="6" fill={skinColor} />
+        <ellipse cx="87" cy="124" rx="8" ry="6" fill={HL} opacity="0.5" />
       </g>
 
       {/* Item / prop held in right hand area */}
-      {item && <g transform="translate(72, 82)">{item}</g>}
+      {item && <g transform="translate(72, 100)">{item}</g>}
 
       {/* ════ PANTS waistband ════ */}
-      <rect x="24" y="106" width="52" height="10" rx="8" fill={pantsColor} />
-      <rect x="24" y="106" width="52" height="10" rx="8" fill={BSH} opacity="0.25" />
+      <rect x="24" y="106" width="52" height="10" rx="7" fill={pantsColor} />
+      <rect x="24" y="106" width="52" height="10" rx="7" fill={BSH} opacity="0.25" />
 
-      {/* ════ LEGS — animated (chibi-leg-l/r) ════ */}
+      {/* ════ LEGS — full-length animated (chibi-leg-l/r) ════ */}
       <g className="chibi-leg-l">
-        <rect x="29" y="112" width="17" height="13" rx="7" fill={pantsColor} />
-        <rect x="29" y="112" width="17" height="13" rx="7" fill={BSH} opacity="0.25" />
-        <rect x="29" y="121" width="17" height="5" rx="3" fill="white" opacity="0.88" />
-        <path d="M 25 124 L 25 129 Q 25 132 31 132 L 48 132 Q 54 132 54 127 L 52 124 Q 50 122 46 122 L 30 122 Z"
-          fill={bootColor} />
-        <path d="M 25 124 L 25 129 Q 25 132 31 132 L 48 132 Q 54 132 54 127 L 52 124 Q 50 122 46 122 L 30 122 Z"
-          fill={HL} opacity="0.4" />
-        <ellipse cx="38" cy="126" rx="9" ry="3.5" fill="white" opacity="0.22" />
+        {/* Thigh */}
+        <rect x="28" y="114" width="19" height="28" rx="9" fill={pantsColor} />
+        <rect x="28" y="114" width="19" height="28" rx="9" fill={BSH} opacity="0.22" />
+        {/* Knee cap */}
+        <ellipse cx="37" cy="142" rx="9" ry="5" fill={pantsColor} />
+        <ellipse cx="37" cy="142" rx="9" ry="5" fill={BSH} opacity="0.35" />
+        {/* Shin */}
+        <rect x="29" y="140" width="17" height="26" rx="8" fill={pantsColor} />
+        <rect x="29" y="140" width="17" height="26" rx="8" fill={BSH} opacity="0.18" />
+        {/* Sock */}
+        <rect x="29" y="162" width="17" height="8" rx="4" fill="white" opacity="0.88" />
+        {/* Shoe */}
+        <path d="M 24 167 L 24 175 Q 24 180 31 180 L 50 180 Q 57 180 57 174 L 55 167 Q 52 164 46 164 L 28 164 Z" fill={bootColor} />
+        <path d="M 24 167 L 24 175 Q 24 180 31 180 L 50 180 Q 57 180 57 174 L 55 167 Q 52 164 46 164 L 28 164 Z" fill={HL} opacity="0.35" />
+        <ellipse cx="38" cy="171" rx="10" ry="3.5" fill="white" opacity="0.20" />
       </g>
       <g className="chibi-leg-r">
-        <rect x="54" y="112" width="17" height="13" rx="7" fill={pantsColor} />
-        <rect x="54" y="112" width="17" height="13" rx="7" fill={BSH} opacity="0.25" />
-        <rect x="54" y="121" width="17" height="5" rx="3" fill="white" opacity="0.88" />
-        <path d="M 46 124 L 46 129 Q 46 132 52 132 L 69 132 Q 75 132 75 127 L 75 124 Q 73 122 69 122 L 50 122 Z"
-          fill={bootColor} />
-        <path d="M 46 124 L 46 129 Q 46 132 52 132 L 69 132 Q 75 132 75 127 L 75 124 Q 73 122 69 122 L 50 122 Z"
-          fill={HL} opacity="0.4" />
-        <ellipse cx="62" cy="126" rx="9" ry="3.5" fill="white" opacity="0.22" />
+        {/* Thigh */}
+        <rect x="53" y="114" width="19" height="28" rx="9" fill={pantsColor} />
+        <rect x="53" y="114" width="19" height="28" rx="9" fill={BSH} opacity="0.22" />
+        {/* Knee cap */}
+        <ellipse cx="62" cy="142" rx="9" ry="5" fill={pantsColor} />
+        <ellipse cx="62" cy="142" rx="9" ry="5" fill={BSH} opacity="0.35" />
+        {/* Shin */}
+        <rect x="54" y="140" width="17" height="26" rx="8" fill={pantsColor} />
+        <rect x="54" y="140" width="17" height="26" rx="8" fill={BSH} opacity="0.18" />
+        {/* Sock */}
+        <rect x="54" y="162" width="17" height="8" rx="4" fill="white" opacity="0.88" />
+        {/* Shoe */}
+        <path d="M 43 167 L 43 175 Q 43 180 50 180 L 69 180 Q 76 180 76 174 L 76 167 Q 73 164 69 164 L 47 164 Z" fill={bootColor} />
+        <path d="M 43 167 L 43 175 Q 43 180 50 180 L 69 180 Q 76 180 76 174 L 76 167 Q 73 164 69 164 L 47 164 Z" fill={HL} opacity="0.35" />
+        <ellipse cx="62" cy="171" rx="10" ry="3.5" fill="white" opacity="0.20" />
       </g>
     </svg>
   );
@@ -877,4 +901,60 @@ export const SplashySprite = ({ className }: { className?: string }) => (
     cheekColor="#6AB0D8" expression="happy" outfitColor="#3A8AC0" outfitStyle="overalls"
     pantsColor="#1A5A8A" collarColor="#E0F0FA" bootColor="#D0E8F4"
     className={cn("animate-float drop-shadow-lg", className)} />
+);
+
+/* ── PROSPERITY LEVEL LORDS ── */
+
+export const VoltraSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#FFF9C4" hairColor="#F57F17" hairStyle="spiky" eyeStyle="starry"
+    cheekColor="#FFD54F" expression="determined" outfitColor="#F9A825" outfitStyle="jacket"
+    pantsColor="#E65100" collarColor="#FFFDE7" bootColor="#FF8F00"
+    item={<text x="-4" y="10" fontSize="14">⚡</text>}
+    hairAccessory={<>
+      {[36, 44, 50, 56, 64].map((x, i) => (
+        <ellipse key={i} cx={x} cy={8 - (i === 2 ? 4 : 0)} rx="3.5" ry="7"
+          fill={i % 2 === 0 ? '#F9A825' : '#FFF176'} opacity="0.92" />
+      ))}
+    </>}
+    className={cn("drop-shadow-md", className)} />
+);
+
+export const GildaSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#FFCDD2" hairColor="#4A1A0A" hairStyle="sidePart" eyeStyle="dots"
+    cheekColor="#EF9A9A" expression="determined" outfitColor="#E65100" outfitStyle="uniform"
+    pantsColor="#BF360C" collarColor="#FBE9E7" bootColor="#D4A888"
+    item={<text x="-4" y="10" fontSize="14">🔧</text>}
+    className={cn("drop-shadow-md", className)} />
+);
+
+export const NexusSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#E8EAF6" hairColor="#1A237E" hairStyle="short" eyeStyle="starry"
+    cheekColor="#9FA8DA" expression="happy" outfitColor="#1565C0" outfitStyle="coat"
+    pantsColor="#0D47A1" collarColor="#E3F2FD" bootColor="#1565C0"
+    item={<text x="-4" y="10" fontSize="14">🔬</text>}
+    glasses={true}
+    className={cn("drop-shadow-md", className)} />
+);
+
+export const MiraSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#E8D5C4" hairColor="#4A148C" hairStyle="bunDouble" eyeStyle="crescent"
+    cheekColor="#CE93D8" expression="happy" outfitColor="#6A1B9A" outfitStyle="dress"
+    pantsColor="#4A148C" collarColor="#F3E5F5" bootColor="#CE93D8"
+    item={<text x="-4" y="10" fontSize="14">🏘️</text>}
+    hairAccessory={<>
+      <ellipse cx="27" cy="11" rx="7" ry="7" fill="#AB47BC" />
+      <ellipse cx="73" cy="11" rx="7" ry="7" fill="#AB47BC" />
+    </>}
+    className={cn("drop-shadow-md", className)} />
+);
+
+export const SkylarSprite = ({ className }: { className?: string }) => (
+  <ChibiCharacter skinColor="#E0F2F1" hairColor="#004D40" hairStyle="short" eyeStyle="crescent"
+    cheekColor="#80CBC4" expression="happy" outfitColor="#00695C" outfitStyle="hoodie"
+    pantsColor="#004D40" collarColor="#E0F2F1" bootColor="#26A69A"
+    item={<text x="-4" y="10" fontSize="14">🏙️</text>}
+    hairAccessory={<>
+      <rect x="38" y="4" width="24" height="10" rx="5" fill="#00897B" opacity="0.8" />
+    </>}
+    className={cn("drop-shadow-md", className)} />
 );

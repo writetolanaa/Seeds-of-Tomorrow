@@ -1,0 +1,110 @@
+SDG 8 – Decent Work & Economic Growth: Company Coach – Full Game Design
+
+Genre: Decision-based Simulation / Management
+Target Audience: Teens, adults, casual strategy players
+Tone: Strategic, realistic, educational
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Review company metrics: productivity, worker satisfaction, finances.
+	2.	Assign policies: wages, schedules, training programs, safety measures.
+	3.	Implement decisions and simulate their effects on workers and company performance.
+	4.	Respond to unexpected events: labor disputes, market fluctuations, accidents.
+	5.	Track key performance indicators (KPIs) over time.
+	6.	Repeat weekly/monthly cycles, gradually expanding company operations.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start of Week
+	•	Display company dashboard: total employees, budget, worker satisfaction, productivity, safety index.
+	•	Highlight urgent issues: complaints, low morale, upcoming deadlines.
+
+Step 1: Assign Policies
+	•	Player adjusts:
+	•	Wages: increases improve satisfaction but reduce profit
+	•	Work schedules: flexible hours improve happiness; overwork reduces productivity
+	•	Training programs: improve skills and efficiency but cost resources
+	•	Safety measures: prevent accidents; costs money but reduce downtime
+
+Step 2: Allocate Staff Resources
+	•	Assign workers to projects, shifts, and roles.
+	•	Consider worker skills, fatigue, and morale when assigning tasks.
+
+Step 3: Monitor Events
+	•	Random events may occur:
+	•	Equipment failure, strikes, sudden workload spikes
+	•	Player decides interventions: temporary hiring, overtime adjustments, or policy changes.
+
+Step 4: Simulate Outcomes
+	•	Workers complete tasks based on skill level, fatigue, and morale.
+	•	Update KPIs: productivity, worker satisfaction, safety incidents, profit.
+	•	Visual feedback shows staff mood and project progress.
+
+Step 5: End of Week / Month
+	•	Summarize results: profit, productivity, employee happiness, safety incidents.
+	•	Adjust company reputation based on overall performance.
+	•	Prepare next week: new projects, incoming hires, updated events.
+
+⸻
+
+3. Key Variables & Objects
+
+Worker Attributes
+	•	Name, age
+	•	Skill level (0–100)
+	•	Happiness / satisfaction (0–100)
+	•	Fatigue / energy (0–100)
+	•	Assigned role or project
+
+Company Attributes
+	•	Budget
+	•	Productivity score (0–100)
+	•	Worker satisfaction average
+	•	Safety index (0–100)
+	•	Reputation
+
+Policies
+	•	Wage levels
+	•	Work schedules
+	•	Training programs
+	•	Safety measures
+
+Global Variables
+	•	Week / month count
+	•	Total profit
+	•	Cumulative KPIs (productivity, satisfaction, safety)
+
+⸻
+
+4. UI Elements
+	•	Top bar: week/month, budget, productivity, satisfaction, safety index
+	•	Worker panel: list of employees, skills, energy, happiness
+	•	Project panel: ongoing tasks, deadlines, worker assignments
+	•	Policy panel: adjustable wages, schedules, training, safety
+	•	Alerts: accidents, disputes, morale drops, project delays
+	•	Summary screen: weekly or monthly KPI overview
+
+⸻
+
+5. Feedback Systems
+	•	Worker animations: happy, stressed, tired
+	•	Visual indicators for project progress, safety incidents, and morale
+	•	Alerts for urgent events or low performance metrics
+	•	End-of-period report with graphs showing trends in productivity, satisfaction, safety, and profit
+
+⸻
+
+6. Progression
+	•	Unlock new departments, projects, or locations as company grows
+	•	Access advanced training programs, improved safety measures, and higher-tier wages
+	•	Introduce market challenges, competitor pressures, and economic fluctuations
+	•	Track cumulative KPIs to unlock bonuses or reputation rewards
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Company meets productivity goals, maintains high worker satisfaction, stays profitable, and avoids safety incidents over X weeks/months
+	•	Loss: Worker satisfaction drops critically, productivity falls below threshold, repeated safety incidents occur, or company runs out of funds

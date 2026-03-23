@@ -1,8 +1,9 @@
 export type ZoneId =
   | 'poverty' | 'hunger' | 'health' | 'education' | 'equality'
-  | 'water' | 'ocean' | 'forest' | 'climate' | 'consumption';
+  | 'water' | 'ocean' | 'forest' | 'climate' | 'consumption'
+  | 'energy' | 'industry' | 'innovation' | 'communities' | 'cities';
 
-export type LevelId = 'people' | 'planet';
+export type LevelId = 'people' | 'planet' | 'prosperity';
 
 export interface ZoneData {
   id: ZoneId;
@@ -151,6 +152,65 @@ export const ZONES: Record<ZoneId, ZoneData> = {
   },
 };
 
+Object.assign(ZONES as any, {
+  energy: {
+    id: 'energy', level: 'prosperity', number: 7, name: "Voltra's Energy Fields", lordName: 'Voltra',
+    sdg: 7, sdgTitle: 'Affordable and Clean Energy', themeColor: '#F9A825', bgColor: '#FFFDE7', textColor: '#F57F17',
+    emoji: '⚡',
+    description: 'Sunlit valleys and wind-swept ridges where solar arrays and turbines power the world.',
+    brokenDesc: 'The energy grid is failing — factories dark, homes cold, machines silent.',
+    healedDesc: 'Clean energy hums across the land, powering every home and workshop.',
+    puzzleIntro: 'Match the right energy source to each region to restore the grid!',
+    successFact: 'Solar and wind energy are now the cheapest power sources in history.',
+    mapX: 15, mapY: 78,
+  },
+  industry: {
+    id: 'industry', level: 'prosperity', number: 8, name: "Gilda's Factory Town", lordName: 'Gilda',
+    sdg: 8, sdgTitle: 'Decent Work and Economic Growth', themeColor: '#E65100', bgColor: '#FBE9E7', textColor: '#BF360C',
+    emoji: '🏭',
+    description: 'Bustling factory districts where workers build goods with fair wages and safe conditions.',
+    brokenDesc: 'Workers are exploited — unsafe conditions, unfair pay, no rights.',
+    healedDesc: 'Every worker has fair wages, safe conditions, and a voice in their workplace.',
+    puzzleIntro: 'Balance production and worker rights to make the factory town thrive!',
+    successFact: 'Countries with strong labor protections have higher productivity and innovation.',
+    mapX: 55, mapY: 78,
+  },
+  innovation: {
+    id: 'innovation', level: 'prosperity', number: 9, name: "Nexus Innovation Hub", lordName: 'Nexus',
+    sdg: 9, sdgTitle: 'Industry, Innovation and Infrastructure', themeColor: '#1565C0', bgColor: '#E3F2FD', textColor: '#0D47A1',
+    emoji: '🔬',
+    description: 'A gleaming research campus where inventors and engineers create tomorrow\'s solutions today.',
+    brokenDesc: 'The research labs are shuttered — no funding, broken equipment, forgotten ideas.',
+    healedDesc: 'Innovation flourishes with open labs, shared knowledge, and global partnerships.',
+    puzzleIntro: 'Connect research teams with the right resources to unlock breakthroughs!',
+    successFact: 'Every dollar invested in infrastructure returns up to 20 dollars in economic growth.',
+    mapX: 20, mapY: 85,
+  },
+  communities: {
+    id: 'communities', level: 'prosperity', number: 10, name: "Mira's Community Housing", lordName: 'Mira',
+    sdg: 10, sdgTitle: 'Reduced Inequalities', themeColor: '#6A1B9A', bgColor: '#F3E5F5', textColor: '#4A148C',
+    emoji: '🏘️',
+    description: 'Colorful neighborhoods where every family has a warm home and a place to belong.',
+    brokenDesc: 'Inequality tears communities apart — wealthy enclaves beside crumbling slums.',
+    healedDesc: 'Mixed communities thrive with shared parks, schools, and mutual support.',
+    puzzleIntro: 'Design fair housing policies so everyone gets a decent home!',
+    successFact: 'Reducing inequality improves health, education, and happiness for the entire population.',
+    mapX: 55, mapY: 85,
+  },
+  cities: {
+    id: 'cities', level: 'prosperity', number: 11, name: "Skylar's Smart City", lordName: 'Skylar',
+    sdg: 11, sdgTitle: 'Sustainable Cities and Communities', themeColor: '#00695C', bgColor: '#E0F2F1', textColor: '#004D40',
+    emoji: '🏙️',
+    description: 'A gleaming eco-city with rooftop gardens, clean transit, and smart connected systems.',
+    brokenDesc: 'The city is gridlocked — pollution, waste, and crumbling public spaces.',
+    healedDesc: 'Smart transport, green rooftops, and clean air make this city a joy to live in.',
+    puzzleIntro: 'Plan the sustainable city infrastructure to balance growth with livability!',
+    successFact: 'By 2050, 70% of humanity will live in cities — making sustainable urban design critical.',
+    mapX: 35, mapY: 92,
+  },
+});
+
 export const PEOPLE_ZONES: ZoneId[] = ['poverty', 'hunger', 'health', 'education', 'equality'];
 export const PLANET_ZONES: ZoneId[] = ['water', 'ocean', 'forest', 'climate', 'consumption'];
-export const ZONE_ORDER: ZoneId[] = [...PEOPLE_ZONES, ...PLANET_ZONES];
+export const PROSPERITY_ZONES: ZoneId[] = ['energy', 'industry', 'innovation', 'communities', 'cities'];
+export const ZONE_ORDER: ZoneId[] = [...PEOPLE_ZONES, ...PLANET_ZONES, ...PROSPERITY_ZONES];
