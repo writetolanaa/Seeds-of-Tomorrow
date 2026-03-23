@@ -3,6 +3,7 @@ import { GameProvider } from "@/context/GameContext";
 import TitleScreen from "@/pages/TitleScreen";
 import GameWorld from "@/pages/GameWorld";
 import PuzzleScreen from "@/pages/PuzzleScreen";
+import OceanDiverRPG from "@/pages/OceanDiverRPG";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -12,6 +13,7 @@ function Router() {
       <Route path="/world" component={GameWorld} />
       <Route path="/map" component={GameWorld} />
       <Route path="/puzzle/:id" component={PuzzleScreen} />
+      <Route path="/ocean-diver" component={OceanDiverRPG} />
       <Route component={NotFound} />
     </Switch>
   );

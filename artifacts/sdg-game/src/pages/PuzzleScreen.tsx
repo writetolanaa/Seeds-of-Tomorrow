@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useGame } from '@/context/GameContext';
 import { ZONES, type ZoneId } from '@/data/gameData';
@@ -1439,6 +1439,7 @@ const OCEAN_TOOLS: OceanCleanTool[] = [
 ];
 
 function OceanPuzzle({ onWin }: { onWin: () => void }) {
+  const [, goTo] = useLocation();
   const [zones, setZones] = useState<OceanZone[]>(OCEAN_ZONES.map(z => ({ ...z })));
   const [tools, setTools] = useState<OceanCleanTool[]>(OCEAN_TOOLS.map(t => ({ ...t })));
   const [selectedTool, setSelectedTool] = useState<OceanTool | null>(null);
@@ -1477,6 +1478,20 @@ function OceanPuzzle({ onWin }: { onWin: () => void }) {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Ocean Diver RPG banner */}
+      <button onClick={() => goTo('/ocean-diver')}
+        className="w-full rounded-2xl p-4 text-white text-left flex items-center gap-4 transition-all active:scale-95"
+        style={{ background: 'linear-gradient(135deg,#0369a1,#0ea5e9)', boxShadow: '0 4px 0 #0284c7,0 6px 20px #0ea5e955' }}>
+        <span className="text-5xl">🤿</span>
+        <div className="flex-1">
+          <div className="font-display text-xl leading-tight">Ocean Diver RPG</div>
+          <div className="text-sky-200 text-xs mt-0.5">Swim through the ocean, collect garbage and free trapped animals!</div>
+        </div>
+        <span className="text-2xl">▶</span>
+      </button>
+
+      <div className="text-center text-xs text-gray-400 font-semibold uppercase tracking-wider">— or clean up via strategy below —</div>
+
       <div className="grid grid-cols-2 gap-3">
         {zones.map(zone => (
           <motion.button key={zone.id}
@@ -2114,11 +2129,240 @@ function ConsumptionPuzzle({ onWin }: { onWin: () => void }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   SDG 2 – Restaurant Food Conveyor
+   Restaurant context: decide to Serve, Donate, or Discard each item
+═══════════════════════════════════════════════════════════════ */
+type ConveyorFood = {
+  emoji: string;
+  name: string;
+  tag: string;
+  tagColor: string;
+  correctAction: 'serve' | 'donate' | 'discard';
+  reason: string;
+};
+
+const FOOD_CATALOG: ConveyorFood[] = [
+  { emoji: '🍲', name: 'Hot Soup',      tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Made fresh today — serve the customer!' },
+  { emoji: '🥤', name: 'Fresh Juice',   tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Just squeezed — serve immediately!' },
+  { emoji: '🍞', name: 'Fresh Bread',   tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Warm from the oven — serve it!' },
+  { emoji: '🥗', name: 'Garden Salad',  tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Just prepared — perfect to serve!' },
+  { emoji: '🍝', name: 'Pasta Bowl',    tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Hot and ready — serve the guest!' },
+  { emoji: '☕', name: 'Fresh Coffee',  tag: 'FRESH',   tagColor: '#22c55e', correctAction: 'serve',   reason: 'Freshly brewed — serve now!' },
+  { emoji: '🍱', name: 'Surplus Bento', tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'Extra portions — donate to food bank!' },
+  { emoji: '🥛', name: 'Expiring Milk', tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'Expires today — donate while still safe!' },
+  { emoji: '🧃', name: 'Juice Box',     tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'Closing-time surplus — donate!' },
+  { emoji: '🥧', name: 'Extra Pie',     tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'End-of-day extra — donate!' },
+  { emoji: '🍚', name: 'Leftover Rice', tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate',  reason: 'Still safe — donate to shelter!' },
+  { emoji: '🥐', name: 'Day-old Croissant', tag: 'SURPLUS', tagColor: '#f59e0b', correctAction: 'donate', reason: 'Yesterday\'s stock — donate!' },
+  { emoji: '🦠', name: 'Moldy Bread',   tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Unsafe mold — discard immediately!' },
+  { emoji: '🥩', name: 'Spoiled Meat',  tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Expired — discard for food safety!' },
+  { emoji: '🥫', name: 'Expired Can',   tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Past expiry date — must discard!' },
+  { emoji: '🍳', name: 'Burnt Dish',    tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Completely burnt — discard!' },
+  { emoji: '🥜', name: 'Rancid Nuts',   tag: 'SPOILED', tagColor: '#ef4444', correctAction: 'discard', reason: 'Gone rancid — discard!' },
+];
+
+function shuffleSequence(): ConveyorFood[] {
+  const pool = [...FOOD_CATALOG, ...FOOD_CATALOG.slice(0, 5)].sort(() => Math.random() - 0.5);
+  return pool.slice(0, 20);
+}
+
+const ACTION_BTN = {
+  serve:   { label: '🍽️ Serve',   bg: '#22c55e', shadow: '#15803d' },
+  donate:  { label: '💝 Donate',  bg: '#f59e0b', shadow: '#b45309' },
+  discard: { label: '🗑️ Discard', bg: '#ef4444', shadow: '#b91c1c' },
+} as const;
+
+const TIMER_SECONDS = 6;
+
+function RestaurantConveyorPuzzle({ onWin }: { onWin: () => void }) {
+  const [sequence] = useState<ConveyorFood[]>(() => shuffleSequence());
+  const [idx, setIdx] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
+  const [correct, setCorrect] = useState(0);
+  const [wrong, setWrong] = useState(0);
+  const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [animKey, setAnimKey] = useState(0);
+  const [done, setDone] = useState(false);
+  const busyRef = useRef(false);
+
+  const total = sequence.length;
+  const current = sequence[idx];
+
+  useEffect(() => {
+    if (done || busyRef.current || feedback) return;
+    if (timeLeft <= 0) { advance(null); return; }
+    const t = setTimeout(() => setTimeLeft(t => t - 1), 1000);
+    return () => clearTimeout(t);
+  }, [timeLeft, done, feedback]);
+
+  function advance(action: 'serve' | 'donate' | 'discard' | null) {
+    if (busyRef.current) return;
+    busyRef.current = true;
+    const item = sequence[idx];
+    const isCorrect = action === item.correctAction;
+    const skipped = action === null;
+    if (isCorrect) setCorrect(c => c + 1);
+    else setWrong(w => w + 1);
+    setFeedback({
+      ok: isCorrect,
+      msg: skipped
+        ? `⏰ Skipped! Should ${item.correctAction}: ${item.reason}`
+        : isCorrect
+          ? `✅ Correct! ${item.reason}`
+          : `❌ Wrong! Should ${item.correctAction}: ${item.reason}`,
+    });
+    setTimeout(() => {
+      setFeedback(null);
+      busyRef.current = false;
+      const next = idx + 1;
+      if (next >= total) { setDone(true); }
+      else { setIdx(next); setTimeLeft(TIMER_SECONDS); setAnimKey(k => k + 1); }
+    }, 1700);
+  }
+
+  useEffect(() => {
+    if (done && correct >= 13) setTimeout(onWin, 1200);
+  }, [done]);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Restaurant header */}
+      <div className="rounded-2xl px-4 py-3 flex items-center gap-3" style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)' }}>
+        <span className="text-3xl">🍴</span>
+        <div className="flex-1 text-white">
+          <div className="font-display text-lg leading-tight">Chef's Kitchen</div>
+          <div className="text-xs opacity-80">Sort items on the conveyor belt!</div>
+        </div>
+        <div className="text-right text-white text-sm font-bold">
+          <div>Item {Math.min(idx + 1, total)}/{total}</div>
+          <div className="flex gap-2 mt-0.5">
+            <span className="bg-green-500 rounded px-1.5 py-0.5 text-xs">✅ {correct}</span>
+            <span className="bg-red-500 rounded px-1.5 py-0.5 text-xs">❌ {wrong}</span>
+          </div>
+        </div>
+      </div>
+
+      {done ? (
+        <div className={cn('rounded-2xl p-6 text-center border-4', correct >= 13 ? 'bg-green-50 border-green-400' : 'bg-red-50 border-red-300')}>
+          <div className="text-5xl mb-3">{correct >= 13 ? '🏆' : '😔'}</div>
+          <div className="font-display text-2xl mb-2" style={{ color: correct >= 13 ? '#16a34a' : '#dc2626' }}>
+            {correct >= 13 ? 'Kitchen Champion!' : 'Keep Practicing!'}
+          </div>
+          <div className="text-lg font-bold text-gray-700 mb-1">{correct}/{total} correct</div>
+          <div className="text-sm text-gray-500">
+            {correct >= 13
+              ? 'Amazing job sorting food! You reduced waste and fed more people.'
+              : 'You need 13+ correct. Remember: Fresh→Serve, Surplus→Donate, Spoiled→Discard.'}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Conveyor belt */}
+          <div className="relative rounded-2xl overflow-hidden" style={{ background: '#1e293b' }}>
+            {/* Belt track */}
+            <div className="relative h-36 flex items-center justify-center overflow-hidden"
+              style={{ background: 'repeating-linear-gradient(90deg,#334155 0,#334155 28px,#1e293b 28px,#1e293b 32px)' }}>
+              {/* Moving belt lines */}
+              <div className="absolute inset-0 flex items-center">
+                <motion.div className="flex gap-6 items-center"
+                  key={animKey}
+                  initial={{ x: 80 }} animate={{ x: -40 }} transition={{ duration: 0.4, ease: 'easeOut' }}>
+                  {/* Food item on plate */}
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-24 h-24 rounded-full flex flex-col items-center justify-center gap-1"
+                      style={{ background: 'linear-gradient(135deg,#f8fafc,#e2e8f0)', boxShadow: '0 4px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.8)' }}>
+                      <span className="text-4xl">{current.emoji}</span>
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">{current.name}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+              {/* Tag badge */}
+              <div className="absolute top-3 right-3 px-2 py-1 rounded-lg text-[10px] font-black text-white uppercase tracking-wider"
+                style={{ background: current.tagColor, boxShadow: `0 2px 8px ${current.tagColor}88` }}>
+                {current.tag}
+              </div>
+            </div>
+            {/* Timer bar */}
+            <div className="h-3 bg-gray-700 relative">
+              <motion.div className="h-full rounded-r-full"
+                key={`timer-${animKey}-${timeLeft}`}
+                style={{ background: timeLeft > 3 ? '#22c55e' : timeLeft > 1 ? '#f59e0b' : '#ef4444' }}
+                initial={{ width: '100%' }} animate={{ width: `${(timeLeft / TIMER_SECONDS) * 100}%` }}
+                transition={{ duration: 1, ease: 'linear' }} />
+              <span className="absolute right-2 top-0 bottom-0 flex items-center text-[10px] font-bold text-white/70">{timeLeft}s</span>
+            </div>
+          </div>
+
+          {/* Feedback */}
+          <AnimatePresence>
+            {feedback && (
+              <motion.div key="fb" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                className={cn('rounded-xl px-4 py-2.5 text-sm font-semibold text-center', feedback.ok ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300')}>
+                {feedback.msg}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Action buttons */}
+          <div className="grid grid-cols-3 gap-3">
+            {(['serve', 'donate', 'discard'] as const).map(action => {
+              const btn = ACTION_BTN[action];
+              return (
+                <button key={action} onClick={() => advance(action)}
+                  disabled={!!feedback}
+                  className="py-4 rounded-2xl text-white font-display text-lg font-bold transition-all active:scale-95 disabled:opacity-60"
+                  style={{ background: btn.bg, boxShadow: `0 4px 0 ${btn.shadow}, 0 6px 16px ${btn.bg}55` }}>
+                  {btn.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Legend */}
+          <div className="flex gap-2 text-[10px] text-gray-500 justify-center flex-wrap">
+            <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full font-bold">FRESH → Serve</span>
+            <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-bold">SURPLUS → Donate</span>
+            <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full font-bold">SPOILED → Discard</span>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ── Hunger Hub: choose between Farm game or Restaurant game ── */
+function HungerHub({ onWin }: { onWin: () => void }) {
+  const [mode, setMode] = useState<'select' | 'farm' | 'restaurant'>('select');
+  if (mode === 'farm') return <HungerPuzzle onWin={onWin} />;
+  if (mode === 'restaurant') return <RestaurantConveyorPuzzle onWin={onWin} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-center text-gray-500 text-sm">Choose how you want to fight hunger today!</p>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <button onClick={() => setMode('farm')}
+          className="rounded-2xl p-5 border-4 border-green-300 bg-green-50 hover:bg-green-100 text-left transition-all active:scale-95 flex flex-col gap-2">
+          <span className="text-4xl">🌾</span>
+          <div className="font-display text-xl text-green-800">Farm & Feed</div>
+          <div className="text-sm text-green-700">Plant crops, harvest them, and feed hungry citizens before their hunger peaks.</div>
+        </button>
+        <button onClick={() => setMode('restaurant')}
+          className="rounded-2xl p-5 border-4 border-purple-300 bg-purple-50 hover:bg-purple-100 text-left transition-all active:scale-95 flex flex-col gap-2">
+          <span className="text-4xl">🍴</span>
+          <div className="font-display text-xl text-purple-800">Restaurant Sort</div>
+          <div className="text-sm text-purple-700">Run a restaurant conveyor belt — decide to serve, donate, or discard each food item!</div>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
    PUZZLE MAP & SCREEN WRAPPER
 ═══════════════════════════════════════════════════════════════ */
 const PUZZLE_MAP: Partial<Record<ZoneId, React.FC<{ onWin: () => void }>>> = {
   poverty:   PovertyPuzzle,
-  hunger:    HungerPuzzle,
+  hunger:    HungerHub,
   health:    HealthPuzzle,
   education: EducationPuzzle,
   equality:  EqualityPuzzle,
