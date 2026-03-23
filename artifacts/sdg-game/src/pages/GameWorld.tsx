@@ -647,6 +647,434 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         <text key={i} x={x} y={y} fontSize="20" opacity="0.6">{['🐟','🐠','🐬','🦈','🦑'][i]}</text>
       ))}
 
+      {/* ════════════════════════════════════════════════════
+          RICH CITY DETAILS — fountain, lamps, shops, houses
+          ════════════════════════════════════════════════════ */}
+
+      {/* ── DECORATIVE POND (west, off health path) ── */}
+      <g transform="translate(960, 440)">
+        {[0,40,80,120,160,200,240,280,320].map((angle, i) => {
+          const rad = (angle * Math.PI) / 180;
+          return <ellipse key={i} cx={88*Math.cos(rad)} cy={54*Math.sin(rad)} rx="9" ry="5.5"
+            fill={['#BCAAA4','#D7CCC8','#A1887F','#EFEBE9'][i%4]} />;
+        })}
+        <ellipse cx="0" cy="0" rx="82" ry="50" fill="#4FC3F7" opacity="0.75" />
+        <ellipse cx="0" cy="0" rx="82" ry="50" fill="none" stroke="#29B6F6" strokeWidth="3" opacity="0.9" />
+        <ellipse cx="-20" cy="-10" rx="18" ry="10" fill="none" stroke="white" strokeWidth="1.5" opacity="0.5" />
+        <ellipse cx="25" cy="14" rx="13" ry="7" fill="none" stroke="white" strokeWidth="1.5" opacity="0.35" />
+        <ellipse cx="-34" cy="-4" rx="13" ry="9" fill="#2E7D32" opacity="0.85" />
+        <circle cx="-34" cy="-4" r="4" fill="#FF80AB" opacity="0.95" />
+        <ellipse cx="22" cy="-18" rx="11" ry="8" fill="#388E3C" opacity="0.85" />
+        <circle cx="22" cy="-18" r="3.5" fill="#FFCC02" opacity="0.95" />
+        <ellipse cx="38" cy="18" rx="12" ry="8" fill="#2E7D32" opacity="0.85" />
+        <circle cx="38" cy="18" r="3.5" fill="#FF80AB" opacity="0.95" />
+        <line x1="-68" y1="32" x2="-68" y2="-10" stroke="#795548" strokeWidth="2.5" />
+        <ellipse cx="-68" cy="-12" rx="4" ry="9" fill="#8D6E63" />
+        <line x1="-77" y1="36" x2="-77" y2="-2" stroke="#6D4C41" strokeWidth="2" />
+        <ellipse cx="-77" cy="-4" rx="4" ry="8" fill="#795548" />
+        <text x="0" y="72" textAnchor="middle" fontSize="11" fontFamily="Nunito" fill="#37474F" fontWeight="bold">🌊 Reflection Pond</text>
+      </g>
+
+      {/* ── DECORATIVE POND (east, near hunger path) ── */}
+      <g transform="translate(2120, 430)">
+        {[0,45,90,135,180,225,270,315].map((angle, i) => {
+          const rad = (angle * Math.PI) / 180;
+          return <ellipse key={i} cx={72*Math.cos(rad)} cy={46*Math.sin(rad)} rx="8" ry="5"
+            fill={['#BCAAA4','#D7CCC8','#A1887F'][i%3]} />;
+        })}
+        <ellipse cx="0" cy="0" rx="65" ry="41" fill="#4FC3F7" opacity="0.70" />
+        <ellipse cx="0" cy="0" rx="65" ry="41" fill="none" stroke="#29B6F6" strokeWidth="2.5" opacity="0.9" />
+        <ellipse cx="-18" cy="-8" rx="14" ry="8" fill="none" stroke="white" strokeWidth="1.5" opacity="0.4" />
+        <ellipse cx="-26" cy="8" rx="11" ry="7" fill="#388E3C" opacity="0.85" />
+        <circle cx="-26" cy="8" r="3.5" fill="#F48FB1" opacity="0.95" />
+        <ellipse cx="22" cy="-14" rx="10" ry="7" fill="#2E7D32" opacity="0.85" />
+        <circle cx="22" cy="-14" r="3" fill="#FFCC02" opacity="0.95" />
+        <text x="0" y="62" textAnchor="middle" fontSize="11" fontFamily="Nunito" fill="#37474F" fontWeight="bold">🌸 Blossom Pond</text>
+      </g>
+
+      {/* ── PLAZA FOUNTAIN (center of plaza) ── */}
+      <g transform="translate(1580, 1055)">
+        <ellipse cx="2" cy="6" rx="65" ry="27" fill="rgba(0,0,0,0.2)" />
+        {/* Stone outer basin */}
+        <ellipse cx="0" cy="0" rx="62" ry="25" fill="#CFD8DC" />
+        <ellipse cx="0" cy="0" rx="62" ry="25" fill="url(#treeHL)" opacity="0.4" />
+        <ellipse cx="0" cy="0" rx="62" ry="25" fill="none" stroke="#90A4AE" strokeWidth="3.5" />
+        {/* Water in basin */}
+        <ellipse cx="0" cy="0" rx="54" ry="20" fill="#4FC3F7" opacity="0.65" />
+        <ellipse cx="-18" cy="-4" rx="12" ry="6" fill="none" stroke="white" strokeWidth="1.5" opacity="0.5" />
+        <ellipse cx="20" cy="6" rx="9" ry="5" fill="none" stroke="white" strokeWidth="1.5" opacity="0.35" />
+        {/* Center pedestal */}
+        <ellipse cx="0" cy="-1" rx="14" ry="6" fill="#B0BEC5" />
+        <rect x="-6" y="-26" width="12" height="27" rx="5" fill="#90A4AE" />
+        <rect x="-4" y="-26" width="3" height="27" rx="2" fill="rgba(255,255,255,0.25)" />
+        {/* Upper bowl */}
+        <ellipse cx="0" cy="-28" rx="18" ry="7" fill="#CFD8DC" />
+        <ellipse cx="0" cy="-28" rx="18" ry="7" fill="none" stroke="#90A4AE" strokeWidth="2" />
+        {/* Water jets */}
+        <path d="M -6 -26 Q -36 -52 -50 -14" fill="none" stroke="#81D4FA" strokeWidth="3" opacity="0.8" strokeLinecap="round" />
+        <path d="M 6 -26 Q 36 -52 50 -14" fill="none" stroke="#81D4FA" strokeWidth="3" opacity="0.8" strokeLinecap="round" />
+        <path d="M 0 -30 Q -4 -56 0 -48 Q 4 -56 0 -30" fill="#81D4FA" opacity="0.7" />
+        {/* Drop sparkles */}
+        <circle cx="-50" cy="-14" r="4" fill="#29B6F6" opacity="0.8" />
+        <circle cx="50" cy="-14" r="4" fill="#29B6F6" opacity="0.8" />
+        <circle cx="0" cy="-54" r="4" fill="#4FC3F7" opacity="0.85" />
+        <circle cx="-25" cy="-44" r="2.5" fill="#81D4FA" opacity="0.7" />
+        <circle cx="25" cy="-44" r="2.5" fill="#81D4FA" opacity="0.7" />
+      </g>
+
+      {/* ── PARK BENCHES around plaza ── */}
+      {[
+        [1410, 1000], [1750, 1000], [1410, 1130], [1750, 1130],
+        [1490, 890], [1670, 890],
+      ].map(([bx, by], i) => (
+        <g key={i} transform={`translate(${bx},${by})`}>
+          <rect x="-18" y="0" width="36" height="4" rx="2" fill="#5D4037" />
+          <rect x="-18" y="-10" width="36" height="10" rx="2" fill="#8D6E63" />
+          <rect x="-18" y="-10" width="36" height="10" rx="2" fill="url(#treeHL)" opacity="0.3" />
+          <rect x="-14" y="4" width="5" height="10" rx="2" fill="#4E342E" />
+          <rect x="9" y="4" width="5" height="10" rx="2" fill="#4E342E" />
+        </g>
+      ))}
+
+      {/* ── PLAZA FLOWER BEDS ── */}
+      {[
+        [1445, 960], [1715, 960], [1445, 1155], [1715, 1155],
+        [1580, 870],
+      ].map(([fx, fy], bi) => (
+        <g key={bi} transform={`translate(${fx},${fy})`}>
+          <ellipse cx="0" cy="0" rx="30" ry="18" fill="#388E3C" opacity="0.6" />
+          {[0,36,72,108,144,180,216,252,288,324].map((a,i) => {
+            const r = (a * Math.PI) / 180;
+            const colors = ['#FF80AB','#FFCC02','#80DEEA','#FFB74D','#CE93D8','#F48FB1','#FF8A65','#80CBC4'];
+            return <circle key={i} cx={22*Math.cos(r)} cy={14*Math.sin(r)} r="5"
+              fill={colors[i % colors.length]} opacity="0.9" />;
+          })}
+          <circle cx="0" cy="0" r="5" fill="#FFF9C4" opacity="0.9" />
+        </g>
+      ))}
+
+      {/* ── CROSSWALK MARKINGS at path intersections ── */}
+      {[1548, 1556, 1564, 1572, 1580, 1588, 1596, 1604, 1612].map((x, i) => (
+        <rect key={i} x={x} y="1175" width="6" height="18" rx="1" fill="white" opacity="0.55" />
+      ))}
+      {[1548, 1556, 1564, 1572, 1580, 1588, 1596, 1604, 1612].map((x, i) => (
+        <rect key={i} x={x} y="940" width="6" height="18" rx="1" fill="white" opacity="0.45" />
+      ))}
+
+      {/* ── STONE BRIDGE UPGRADE ── */}
+      <g transform="translate(1550, 1290)">
+        {/* Bridge deck */}
+        <rect x="0" y="0" width="80" height="52" rx="4" fill="#D7CCC8" />
+        {/* Stone texture */}
+        {[0,20,40,60].map((ox,i) => <rect key={i} x={ox} y="0" width="18" height="52" rx="2" fill="none" stroke="#A1887F" strokeWidth="1.5" opacity="0.4" />)}
+        {/* Railings */}
+        <rect x="0" y="0" width="80" height="8" rx="3" fill="#8D6E63" />
+        <rect x="0" y="44" width="80" height="8" rx="3" fill="#8D6E63" />
+        {/* Railing posts */}
+        {[4,18,32,46,60,74].map((x,i) => <rect key={i} x={x} y="0" width="5" height="52" rx="2" fill="#795548" />)}
+        {/* Bridge pillars */}
+        <rect x="-12" y="0" width="14" height="52" rx="4" fill="#8D6E63" />
+        <rect x="78" y="0" width="14" height="52" rx="4" fill="#8D6E63" />
+        {/* Lanterns on bridge ends */}
+        <rect x="-10" y="-12" width="10" height="12" rx="3" fill="#FFF176" />
+        <ellipse cx="-5" cy="-18" rx="10" ry="8" fill="#FFF9C4" opacity="0.3" />
+        <rect x="80" y="-12" width="10" height="12" rx="3" fill="#FFF176" />
+        <ellipse cx="85" cy="-18" rx="10" ry="8" fill="#FFF9C4" opacity="0.3" />
+      </g>
+
+      {/* ── STREET LAMPS — health path (N) ── */}
+      {[350, 500, 660, 820].map((y, i) => (
+        <g key={`lh${i}`} transform={`translate(${1630+i*4},${y})`}>
+          <ellipse cx="0" cy="52" rx="11" ry="5" fill="rgba(0,0,0,0.22)" />
+          <rect x="-4" y="0" width="8" height="54" rx="4" fill="#455A64" />
+          <rect x="-2" y="0" width="3" height="54" rx="2" fill="rgba(255,255,255,0.2)" />
+          <path d="M 0 8 Q 22 8 26 -4" fill="none" stroke="#455A64" strokeWidth="6" strokeLinecap="round" />
+          <rect x="18" y="-16" width="20" height="14" rx="5" fill="#FFF176" />
+          <ellipse cx="28" cy="-9" rx="20" ry="16" fill="#FFF9C4" opacity="0.28" />
+        </g>
+      ))}
+
+      {/* ── STREET LAMPS — equality path (NW) ── */}
+      {[[870,730],[780,610],[680,490],[570,370]].map(([lx,ly],i) => (
+        <g key={`le${i}`} transform={`translate(${lx},${ly})`}>
+          <ellipse cx="0" cy="52" rx="11" ry="5" fill="rgba(0,0,0,0.22)" />
+          <rect x="-4" y="0" width="8" height="54" rx="4" fill="#455A64" />
+          <rect x="-2" y="0" width="3" height="54" rx="2" fill="rgba(255,255,255,0.2)" />
+          <path d="M 0 8 Q 22 8 26 -4" fill="none" stroke="#455A64" strokeWidth="6" strokeLinecap="round" />
+          <rect x="18" y="-16" width="20" height="14" rx="5" fill="#FFF176" />
+          <ellipse cx="28" cy="-9" rx="20" ry="16" fill="#FFF9C4" opacity="0.28" />
+        </g>
+      ))}
+
+      {/* ── STREET LAMPS — hunger path (NE) ── */}
+      {[[2230,730],[2310,610],[2400,490],[2500,370]].map(([lx,ly],i) => (
+        <g key={`lhu${i}`} transform={`translate(${lx},${ly})`}>
+          <ellipse cx="0" cy="52" rx="11" ry="5" fill="rgba(0,0,0,0.22)" />
+          <rect x="-4" y="0" width="8" height="54" rx="4" fill="#455A64" />
+          <rect x="-2" y="0" width="3" height="54" rx="2" fill="rgba(255,255,255,0.2)" />
+          <path d="M 0 8 Q 22 8 26 -4" fill="none" stroke="#455A64" strokeWidth="6" strokeLinecap="round" />
+          <rect x="18" y="-16" width="20" height="14" rx="5" fill="#FFF176" />
+          <ellipse cx="28" cy="-9" rx="20" ry="16" fill="#FFF9C4" opacity="0.28" />
+        </g>
+      ))}
+
+      {/* ── STREET LAMPS — poverty path (SW) ── */}
+      {[[870,1200],[780,1370],[680,1540],[560,1700]].map(([lx,ly],i) => (
+        <g key={`lp${i}`} transform={`translate(${lx},${ly})`}>
+          <ellipse cx="0" cy="52" rx="11" ry="5" fill="rgba(0,0,0,0.22)" />
+          <rect x="-4" y="0" width="8" height="54" rx="4" fill="#546E7A" />
+          <path d="M 0 8 Q 22 8 26 -4" fill="none" stroke="#546E7A" strokeWidth="6" strokeLinecap="round" />
+          <rect x="18" y="-16" width="20" height="14" rx="5" fill="#FFF176" />
+          <ellipse cx="28" cy="-9" rx="20" ry="16" fill="#FFF9C4" opacity="0.28" />
+        </g>
+      ))}
+
+      {/* ── STREET LAMPS — education path (SE) ── */}
+      {[[2230,1200],[2310,1370],[2400,1540],[2510,1700]].map(([lx,ly],i) => (
+        <g key={`led${i}`} transform={`translate(${lx},${ly})`}>
+          <ellipse cx="0" cy="52" rx="11" ry="5" fill="rgba(0,0,0,0.22)" />
+          <rect x="-4" y="0" width="8" height="54" rx="4" fill="#546E7A" />
+          <path d="M 0 8 Q 22 8 26 -4" fill="none" stroke="#546E7A" strokeWidth="6" strokeLinecap="round" />
+          <rect x="18" y="-16" width="20" height="14" rx="5" fill="#FFF176" />
+          <ellipse cx="28" cy="-9" rx="20" ry="16" fill="#FFF9C4" opacity="0.28" />
+        </g>
+      ))}
+
+      {/* ── STREET LAMPS — around plaza (6 evenly spaced) ── */}
+      {[0,60,120,180,240,300].map((angle, i) => {
+        const rad = (angle * Math.PI) / 180;
+        const lx = 1580 + 210 * Math.cos(rad);
+        const ly = 1060 + 210 * Math.sin(rad);
+        return (
+          <g key={`plz${i}`} transform={`translate(${lx},${ly})`}>
+            <ellipse cx="0" cy="50" rx="9" ry="4" fill="rgba(0,0,0,0.2)" />
+            <rect x="-3.5" y="0" width="7" height="52" rx="3.5" fill="#37474F" />
+            <circle cx="0" cy="-2" r="10" fill="#FFF176" />
+            <circle cx="0" cy="-2" r="10" fill="#FFD54F" opacity="0.5" />
+            <ellipse cx="0" cy="-2" rx="24" ry="20" fill="#FFF9C4" opacity="0.22" />
+          </g>
+        );
+      })}
+
+      {/* ── COFFEE SHOP (on health path east side) ── */}
+      <g transform="translate(1830, 570)">
+        {/* Building shadow */}
+        <rect x="4" y="6" width="120" height="90" rx="8" fill="rgba(0,0,0,0.25)" />
+        {/* Building body */}
+        <rect x="0" y="0" width="120" height="90" rx="8" fill="#FFF8E1" />
+        <rect x="0" y="0" width="120" height="90" rx="8" fill="url(#treeHL)" opacity="0.3" />
+        {/* Side panel */}
+        <rect x="0" y="0" width="10" height="90" rx="4" fill="#FFECB3" />
+        {/* Awning */}
+        <path d="M -10 32 Q 60 22 130 32 L 130 48 Q 60 38 -10 48 Z" fill="#E53935" />
+        <path d="M -10 32 Q 60 22 130 32 L 130 48 Q 60 38 -10 48 Z" fill="url(#treeHL)" opacity="0.25" />
+        {[0,15,30,45,60,75,90,105,120].map((x,i) => (
+          <line key={i} x1={x-10} y1="32" x2={x-10} y2="48" stroke="white" strokeWidth="2" opacity="0.4" />
+        ))}
+        {/* Sign */}
+        <rect x="15" y="10" width="90" height="18" rx="6" fill="#4E342E" />
+        <text x="60" y="22.5" textAnchor="middle" fontSize="10" fill="#FFF9C4" fontFamily="Nunito" fontWeight="bold">☕ CAFÉ VERDE</text>
+        {/* Windows */}
+        <rect x="12" y="52" width="30" height="24" rx="4" fill="#BBDEFB" opacity="0.8" />
+        <rect x="16" y="52" width="5" height="24" fill="white" opacity="0.3" />
+        <rect x="78" y="52" width="30" height="24" rx="4" fill="#BBDEFB" opacity="0.8" />
+        <rect x="82" y="52" width="5" height="24" fill="white" opacity="0.3" />
+        {/* Door */}
+        <rect x="48" y="60" width="24" height="30" rx="5" fill="#8D6E63" />
+        <circle cx="68" cy="76" r="2.5" fill="#FFD54F" />
+        {/* Outdoor tables */}
+        {[-50, -80].map((ox,i) => (
+          <g key={i} transform={`translate(${ox}, 72)`}>
+            <circle cx="0" cy="0" r="14" fill="#FFECB3" stroke="#8D6E63" strokeWidth="2" />
+            <circle cx="0" cy="0" r="5" fill="#BCAAA4" />
+            <ellipse cx="0" cy="-18" rx="18" ry="12" fill="#E53935" opacity="0.8" />
+            <path d="M 0 -6 L 0 -18" stroke="#8D6E63" strokeWidth="2" />
+          </g>
+        ))}
+        {/* Potted plants outside */}
+        <g transform="translate(-10, 55)">
+          <rect x="-5" y="10" width="10" height="8" rx="2" fill="#8D6E63" />
+          <ellipse cx="0" cy="8" rx="9" ry="12" fill="#388E3C" />
+          <ellipse cx="-2" cy="2" rx="5" ry="7" fill="#43A047" />
+        </g>
+        <g transform="translate(130, 55)">
+          <rect x="-5" y="10" width="10" height="8" rx="2" fill="#8D6E63" />
+          <ellipse cx="0" cy="8" rx="9" ry="12" fill="#388E3C" />
+          <ellipse cx="-2" cy="2" rx="5" ry="7" fill="#43A047" />
+        </g>
+      </g>
+
+      {/* ── COFFEE SHOP (on equality/poverty west side) ── */}
+      <g transform="translate(580, 800)">
+        <rect x="4" y="5" width="100" height="80" rx="7" fill="rgba(0,0,0,0.22)" />
+        <rect x="0" y="0" width="100" height="80" rx="7" fill="#FFF3E0" />
+        <rect x="0" y="0" width="100" height="80" rx="7" fill="url(#treeHL)" opacity="0.25" />
+        <path d="M -8 28 Q 50 20 108 28 L 108 42 Q 50 34 -8 42 Z" fill="#0288D1" />
+        {[0,14,28,42,56,70,84].map((x,i) => (
+          <line key={i} x1={x-8} y1="28" x2={x-8} y2="42" stroke="white" strokeWidth="1.5" opacity="0.4" />
+        ))}
+        <rect x="10" y="8" width="80" height="16" rx="5" fill="#01579B" />
+        <text x="50" y="19.5" textAnchor="middle" fontSize="9" fill="#E1F5FE" fontFamily="Nunito" fontWeight="bold">☕ BEAN & BREW</text>
+        <rect x="10" y="46" width="28" height="22" rx="4" fill="#B3E5FC" opacity="0.8" />
+        <rect x="62" y="46" width="28" height="22" rx="4" fill="#B3E5FC" opacity="0.8" />
+        <rect x="38" y="54" width="24" height="26" rx="4" fill="#6D4C41" />
+        <circle cx="58" cy="68" r="2" fill="#FFD54F" />
+      </g>
+
+      {/* ── TOWN HOUSES with balconies — west side ── */}
+      {[[500, 230],[640, 300],[480, 500],[600, 420]].map(([hx,hy],i) => {
+        const colors = ['#FFF8E1','#E8F5E9','#F3E5F5','#E3F2FD'];
+        const roofColors = ['#EF9A9A','#A5D6A7','#CE93D8','#90CAF9'];
+        const awningColors = ['#E53935','#2E7D32','#7B1FA2','#1565C0'];
+        return (
+          <g key={i} transform={`translate(${hx},${hy})`}>
+            {/* Shadow */}
+            <rect x="5" y="6" width="90" height="110" rx="6" fill="rgba(0,0,0,0.22)" />
+            {/* Main walls */}
+            <rect x="0" y="0" width="90" height="110" rx="6" fill={colors[i % 4]} />
+            <rect x="0" y="0" width="90" height="110" rx="6" fill="url(#treeHL)" opacity="0.25" />
+            {/* Side depth */}
+            <rect x="0" y="0" width="8" height="110" rx="3" fill="rgba(0,0,0,0.1)" />
+            {/* Roof */}
+            <path d="M -8 0 L 45 -32 L 98 0 Z" fill={roofColors[i % 4]} />
+            <path d="M -8 0 L 45 -32 L 98 0 Z" fill="url(#treeHL)" opacity="0.3" />
+            {/* Balcony floor */}
+            <rect x="15" y="35" width="60" height="7" rx="3" fill="#D7CCC8" />
+            <rect x="15" y="35" width="60" height="7" rx="3" fill="url(#treeHL)" opacity="0.3" />
+            {/* Balcony railings */}
+            {[18,28,38,48,58,68].map((rx2,ri) => (
+              <rect key={ri} x={rx2} y="20" width="4" height="22" rx="2" fill="#BCAAA4" />
+            ))}
+            <rect x="15" y="20" width="60" height="5" rx="2.5" fill="#BCAAA4" />
+            {/* Balcony window */}
+            <rect x="30" y="22" width="30" height="18" rx="4" fill="#B3E5FC" opacity="0.8" />
+            <rect x="34" y="22" width="5" height="18" fill="white" opacity="0.3" />
+            {/* Awning over balcony */}
+            <path d={`M 10 42 Q 45 36 80 42 L 80 50 Q 45 44 10 50 Z`} fill={awningColors[i % 4]} />
+            {/* Main windows */}
+            <rect x="10" y="62" width="28" height="22" rx="4" fill="#B3E5FC" opacity="0.8" />
+            <rect x="52" y="62" width="28" height="22" rx="4" fill="#B3E5FC" opacity="0.8" />
+            {/* Door */}
+            <rect x="30" y="80" width="30" height="30" rx="5" fill="#8D6E63" />
+            <rect x="32" y="82" width="12" height="14" rx="2" fill="#B3E5FC" opacity="0.5" />
+            <rect x="46" y="82" width="12" height="14" rx="2" fill="#B3E5FC" opacity="0.5" />
+            <circle cx="57" cy="97" r="2.5" fill="#FFD54F" />
+            {/* Flower box on balcony */}
+            <rect x="20" y="40" width="50" height="8" rx="3" fill="#6D4C41" />
+            {[28,38,48,58].map((fx,fi) => (
+              <circle key={fi} cx={fx} cy="38" r="5" fill={['#FF80AB','#FFCC02','#FF8A65','#CE93D8'][fi]} />
+            ))}
+          </g>
+        );
+      })}
+
+      {/* ── TOWN HOUSES with balconies — east side ── */}
+      {[[2550, 230],[2680, 300],[2560, 500],[2700, 420]].map(([hx,hy],i) => {
+        const colors = ['#FFF3E0','#E8EAF6','#FCE4EC','#E0F7FA'];
+        const roofColors = ['#FF8A65','#7986CB','#F48FB1','#4DD0E1'];
+        const awningColors = ['#0288D1','#7B1FA2','#E53935','#00838F'];
+        return (
+          <g key={i} transform={`translate(${hx},${hy})`}>
+            <rect x="5" y="6" width="90" height="110" rx="6" fill="rgba(0,0,0,0.22)" />
+            <rect x="0" y="0" width="90" height="110" rx="6" fill={colors[i % 4]} />
+            <rect x="0" y="0" width="90" height="110" rx="6" fill="url(#treeHL)" opacity="0.25" />
+            <rect x="0" y="0" width="8" height="110" rx="3" fill="rgba(0,0,0,0.1)" />
+            <path d="M -8 0 L 45 -32 L 98 0 Z" fill={roofColors[i % 4]} />
+            <path d="M -8 0 L 45 -32 L 98 0 Z" fill="url(#treeHL)" opacity="0.3" />
+            <rect x="15" y="35" width="60" height="7" rx="3" fill="#D7CCC8" />
+            {[18,28,38,48,58,68].map((rx2,ri) => (
+              <rect key={ri} x={rx2} y="20" width="4" height="22" rx="2" fill="#BCAAA4" />
+            ))}
+            <rect x="15" y="20" width="60" height="5" rx="2.5" fill="#BCAAA4" />
+            <rect x="30" y="22" width="30" height="18" rx="4" fill="#BBDEFB" opacity="0.8" />
+            <rect x="34" y="22" width="5" height="18" fill="white" opacity="0.3" />
+            <path d="M 10 42 Q 45 36 80 42 L 80 50 Q 45 44 10 50 Z" fill={awningColors[i % 4]} />
+            <rect x="10" y="62" width="28" height="22" rx="4" fill="#BBDEFB" opacity="0.8" />
+            <rect x="52" y="62" width="28" height="22" rx="4" fill="#BBDEFB" opacity="0.8" />
+            <rect x="30" y="80" width="30" height="30" rx="5" fill="#6D4C41" />
+            <rect x="32" y="82" width="12" height="14" rx="2" fill="#BBDEFB" opacity="0.5" />
+            <rect x="46" y="82" width="12" height="14" rx="2" fill="#BBDEFB" opacity="0.5" />
+            <circle cx="57" cy="97" r="2.5" fill="#FFD54F" />
+            <rect x="20" y="40" width="50" height="8" rx="3" fill="#5D4037" />
+            {[28,38,48,58].map((fx,fi) => (
+              <circle key={fi} cx={fx} cy="38" r="5" fill={['#FFB74D','#CE93D8','#80DEEA','#F48FB1'][fi]} />
+            ))}
+          </g>
+        );
+      })}
+
+      {/* ── VINES on some buildings ── */}
+      <g opacity="0.75">
+        <path d="M 500 320 Q 510 340 505 360 Q 515 380 508 400" fill="none" stroke="#388E3C" strokeWidth="3" strokeLinecap="round" />
+        <circle cx="510" cy="340" r="5" fill="#43A047" />
+        <circle cx="505" cy="360" r="6" fill="#2E7D32" />
+        <circle cx="508" cy="380" r="5" fill="#43A047" />
+        <path d="M 2680 320 Q 2690 345 2685 365 Q 2695 385 2688 405" fill="none" stroke="#388E3C" strokeWidth="3" strokeLinecap="round" />
+        <circle cx="2690" cy="345" r="5" fill="#43A047" />
+        <circle cx="2685" cy="365" r="6" fill="#2E7D32" />
+      </g>
+
+      {/* ── EXTRA FLOWER PATCHES along paths ── */}
+      {[
+        [700,680],[720,720],[750,760],
+        [1100,400],[1120,440],[1080,460],
+        [2300,680],[2320,720],[2280,760],
+        [750,1460],[720,1490],[700,1520],
+        [2300,1440],[2320,1470],[2360,1500],
+      ].map(([fx, fy], i) => (
+        <g key={i} transform={`translate(${fx},${fy})`}>
+          {[0,72,144,216,288].map((a,j) => {
+            const r2 = (a * Math.PI) / 180;
+            return <circle key={j} cx={10*Math.cos(r2)} cy={8*Math.sin(r2)} r="5"
+              fill={['#FF80AB','#FFCC02','#80DEEA','#FFB74D','#CE93D8'][(i+j) % 5]} opacity="0.88" />;
+          })}
+          <circle cx="0" cy="0" r="4" fill="#FFF9C4" />
+          <line x1="0" y1="5" x2="0" y2="15" stroke="#4CAF50" strokeWidth="2" />
+        </g>
+      ))}
+
+      {/* ── DECORATIVE SLABS / PAVEMENT on paths ── */}
+      {[200,400,600,800].map((offset, i) => (
+        <g key={i} opacity="0.25">
+          <rect x={1562} y={1060 - offset} width="36" height="20" rx="3" fill="none" stroke="#90A4AE" strokeWidth="1.5" />
+          <rect x={1562} y={1060 - offset - 22} width="36" height="20" rx="3" fill="none" stroke="#90A4AE" strokeWidth="1.5" />
+        </g>
+      ))}
+
+      {/* ── PLANET SECTION: STREET LAMPS ── */}
+      {[[900,2750],[1100,2850],[1300,2980],[900,3300],[1100,3400],[1300,3550]].map(([lx,ly],i) => (
+        <g key={`pl${i}`} transform={`translate(${lx},${ly})`}>
+          <ellipse cx="0" cy="50" rx="10" ry="4" fill="rgba(0,0,0,0.22)" />
+          <rect x="-3.5" y="0" width="7" height="52" rx="3.5" fill="#006064" />
+          <path d="M 0 8 Q 20 8 24 -3" fill="none" stroke="#006064" strokeWidth="5" strokeLinecap="round" />
+          <rect x="16" y="-14" width="18" height="12" rx="4" fill="#80DEEA" opacity="0.9" />
+          <ellipse cx="25" cy="-8" rx="18" ry="14" fill="#E0F7FA" opacity="0.2" />
+        </g>
+      ))}
+
+      {/* ── PLANET PLAZA FOUNTAIN ── */}
+      <g transform={`translate(${PLANET_CENTER_X - 100}, ${PLANET_CENTER_Y + 30})`}>
+        <ellipse cx="0" cy="4" rx="40" ry="18" fill="rgba(0,0,0,0.3)" />
+        <ellipse cx="0" cy="0" rx="38" ry="16" fill="#006064" />
+        <ellipse cx="0" cy="0" rx="33" ry="13" fill="#00BCD4" opacity="0.6" />
+        <ellipse cx="-10" cy="-3" rx="8" ry="5" fill="none" stroke="#80DEEA" strokeWidth="1.5" opacity="0.6" />
+        <rect x="-3" y="-18" width="6" height="20" rx="3" fill="#00838F" />
+        <ellipse cx="0" cy="-20" rx="10" ry="4" fill="#006064" />
+        <path d="M -3 -18 Q -16 -32 -26 -10" fill="none" stroke="#4DD0E1" strokeWidth="2.5" opacity="0.8" strokeLinecap="round" />
+        <path d="M 3 -18 Q 16 -32 26 -10" fill="none" stroke="#4DD0E1" strokeWidth="2.5" opacity="0.8" strokeLinecap="round" />
+      </g>
+
+      {/* ── PLANET SECTION BENCHES ── */}
+      {[[PLANET_CENTER_X-200, PLANET_CENTER_Y+100],[PLANET_CENTER_X+150, PLANET_CENTER_Y+80]].map(([bx,by],i) => (
+        <g key={i} transform={`translate(${bx},${by})`}>
+          <rect x="-18" y="-10" width="36" height="10" rx="2" fill="#004D40" />
+          <rect x="-18" y="-10" width="36" height="10" rx="2" fill="url(#treeHL)" opacity="0.3" />
+          <rect x="-18" y="0" width="36" height="4" rx="2" fill="#00695C" />
+          <rect x="-14" y="4" width="5" height="10" rx="2" fill="#004D40" />
+          <rect x="9" y="4" width="5" height="10" rx="2" fill="#004D40" />
+        </g>
+      ))}
+
       {/* Poverty zone rubble (if not healed) */}
       {!completedZones.includes('poverty') && (
         [260, 410, 560, 680].map((x, i) => (

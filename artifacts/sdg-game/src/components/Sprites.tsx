@@ -13,8 +13,9 @@ interface ChibiProps {
   /* head */
   skinColor?: string;
   hairColor?: string;
-  hairStyle?: 'bun' | 'bunDouble' | 'spiky' | 'pigtails' | 'short' | 'cap' | 'none';
+  hairStyle?: 'bun' | 'bunDouble' | 'spiky' | 'pigtails' | 'short' | 'cap' | 'sidePart' | 'bucketHat' | 'none';
   hairAccessory?: React.ReactNode;
+  glasses?: boolean;
   /* face */
   eyeStyle?: 'dots' | 'crescent' | 'hearts' | 'starry';
   cheekColor?: string;
@@ -22,7 +23,7 @@ interface ChibiProps {
   expression?: 'happy' | 'sad' | 'surprised' | 'determined';
   /* body */
   outfitColor?: string;
-  outfitStyle?: 'overalls' | 'dress' | 'jacket' | 'uniform' | 'coat';
+  outfitStyle?: 'overalls' | 'dress' | 'jacket' | 'uniform' | 'coat' | 'hoodie';
   collarColor?: string;
   /* boots */
   bootColor?: string;
@@ -39,6 +40,7 @@ export const ChibiCharacter = ({
   hairColor = '#2C1A0E',
   hairStyle = 'bun',
   hairAccessory,
+  glasses = false,
   eyeStyle = 'dots',
   cheekColor = '#F48FB1',
   blush = true,
@@ -170,6 +172,33 @@ export const ChibiCharacter = ({
           <rect x="13" y="28" width="74" height="9" rx="4.5" fill={HL} />
         </>
       )}
+      {hairStyle === 'sidePart' && (
+        <>
+          {/* Back bowl */}
+          <path d="M 22 37 Q 21 7 50 5 Q 79 7 78 37" fill={hairColor} />
+          <path d="M 22 37 Q 21 7 50 5 Q 79 7 78 37" fill={HL} />
+          {/* Slight volume on sides */}
+          <ellipse cx="22" cy="27" rx="5" ry="8" fill={hairColor} />
+          <ellipse cx="78" cy="27" rx="5" ry="8" fill={hairColor} />
+        </>
+      )}
+      {hairStyle === 'bucketHat' && (
+        <>
+          {/* Hair peeking under hat */}
+          <path d="M 20 33 Q 20 18 50 16 Q 80 18 80 33" fill={hairColor} />
+          {/* Hat crown */}
+          <path d="M 19 17 Q 19 -2 50 -4 Q 81 -2 81 17 Z" fill={outfitColor} />
+          <path d="M 19 17 Q 19 -2 50 -4 Q 81 -2 81 17 Z" fill={HL} opacity="0.4" />
+          {/* Hat brim */}
+          <ellipse cx="50" cy="16" rx="37" ry="9" fill={outfitColor} />
+          <ellipse cx="50" cy="16" rx="37" ry="9" fill={HL} opacity="0.5" />
+          <ellipse cx="50" cy="16" rx="37" ry="9" fill={SH} opacity="0.3" />
+          {/* Hat band */}
+          <path d="M 20 17 Q 50 13 80 17" fill="none" stroke="white" strokeWidth="2.5" opacity="0.35" />
+          {/* Crown highlight */}
+          <path d="M 26 10 Q 32 4 42 3" fill="none" stroke="white" strokeWidth="2" opacity="0.4" strokeLinecap="round" />
+        </>
+      )}
 
       {/* ════ HEAD — realistic 3D clay toy ════ */}
       <ellipse cx="50" cy="37" rx="26" ry="25" fill={skinColor} />
@@ -199,6 +228,15 @@ export const ChibiCharacter = ({
           <path d="M 22 33 Q 32 17 50 19 Q 68 17 78 33" fill={HL} />
         </>
       )}
+      {hairStyle === 'sidePart' && (
+        <>
+          {/* Swept fringe — heavier on left, tapered right */}
+          <path d="M 22 33 Q 24 14 44 13 Q 58 12 70 18 Q 62 16 50 20 Q 37 22 28 30 Z" fill={hairColor} />
+          <path d="M 22 33 Q 24 14 44 13 Q 58 12 70 18 Q 62 16 50 20 Q 37 22 28 30 Z" fill={HL} />
+          {/* Small strand detail */}
+          <path d="M 44 13 Q 41 9 46 11" fill="none" stroke={hairColor} strokeWidth="2" opacity="0.7" strokeLinecap="round" />
+        </>
+      )}
 
       {/* ════ EYES ════ */}
       {eyeEl(38, 37)}
@@ -219,6 +257,21 @@ export const ChibiCharacter = ({
 
       {/* ════ MOUTH ════ */}
       <path d={mouthPath} fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />
+
+      {/* ════ GLASSES ════ */}
+      {glasses && (
+        <g>
+          <circle cx="38" cy="37" r="9.5" fill="none" stroke={hairColor} strokeWidth="2.5" opacity="0.9" />
+          <circle cx="38" cy="37" r="9.5" fill="#E3F2FD" opacity="0.22" />
+          <circle cx="62" cy="37" r="9.5" fill="none" stroke={hairColor} strokeWidth="2.5" opacity="0.9" />
+          <circle cx="62" cy="37" r="9.5" fill="#E3F2FD" opacity="0.22" />
+          <line x1="47.5" y1="37" x2="52.5" y2="37" stroke={hairColor} strokeWidth="2.2" />
+          <line x1="28.5" y1="36" x2="24" y2="35" stroke={hairColor} strokeWidth="2" />
+          <line x1="71.5" y1="36" x2="76" y2="35" stroke={hairColor} strokeWidth="2" />
+          <circle cx="34" cy="32.5" r="2.5" fill="white" opacity="0.55" />
+          <circle cx="58" cy="32.5" r="2.5" fill="white" opacity="0.55" />
+        </g>
+      )}
 
       {/* ════ HAIR ACCESSORY ════ */}
       {hairAccessory}
@@ -285,6 +338,25 @@ export const ChibiCharacter = ({
           <ellipse cx="41" cy="68" rx="9" ry="4.5" fill="white" opacity="0.22" />
         </>
       )}
+      {outfitStyle === 'hoodie' && (
+        <>
+          {/* Hoodie body */}
+          <rect x="29" y="63" width="42" height="34" rx="10" fill={outfitColor} />
+          <rect x="29" y="63" width="42" height="34" rx="10" fill={BHL} />
+          <rect x="29" y="63" width="42" height="34" rx="10" fill={BSH} />
+          {/* Hood collar behind head (drawn before head in z-order but fine here) */}
+          <path d="M 32 64 Q 34 58 50 58 Q 66 58 68 64 L 68 68 Q 60 64 50 64 Q 40 64 32 68 Z" fill={outfitColor} />
+          <path d="M 32 64 Q 34 58 50 58 Q 66 58 68 64 L 68 68 Q 60 64 50 64 Q 40 64 32 68 Z" fill={BHL} />
+          {/* Drawstrings */}
+          <line x1="46" y1="64" x2="44" y2="80" stroke={collarColor} strokeWidth="1.8" opacity="0.7" />
+          <line x1="54" y1="64" x2="56" y2="80" stroke={collarColor} strokeWidth="1.8" opacity="0.7" />
+          <ellipse cx="44" cy="81" rx="2.5" ry="2.5" fill={collarColor} opacity="0.8" />
+          <ellipse cx="56" cy="81" rx="2.5" ry="2.5" fill={collarColor} opacity="0.8" />
+          {/* Kangaroo pocket */}
+          <rect x="38" y="82" width="24" height="14" rx="5" fill={collarColor} opacity="0.3" />
+          <ellipse cx="41" cy="68" rx="9" ry="4.5" fill="white" opacity="0.20" />
+        </>
+      )}
 
       {/* ════ ARMS — outfit sleeves with skin hands ════ */}
       <g className="chibi-arm-l">
@@ -340,20 +412,22 @@ export const ChibiCharacter = ({
 
 export const Warden1 = ({ className, isWalking }: { className?: string; isWalking?: boolean }) => (
   <ChibiCharacter
-    skinColor="#FDDBB0"
-    hairColor="#2C1A0E"
-    hairStyle="bun"
-    eyeStyle="starry"
-    cheekColor="#F48FB1"
-    outfitColor="#A5D6A7"
-    outfitStyle="overalls"
+    skinColor="#FAD4A8"
+    hairColor="#1A1A1A"
+    hairStyle="sidePart"
+    glasses={true}
+    eyeStyle="dots"
+    cheekColor="#FFB8A0"
+    blush={true}
+    expression="happy"
+    outfitColor="#FF7043"
+    outfitStyle="hoodie"
     collarColor="#FFFFFF"
-    bootColor="#FFC107"
+    bootColor="#37474F"
     item={<>
-      <ellipse cx="3" cy="8" rx="8" ry="4" fill="#81C784" transform="rotate(-30 3 8)" stroke="#2C1A0E" strokeWidth="1.5" />
-      <circle cx="10" cy="2" r="5" fill="#4CAF50" stroke="#2C1A0E" strokeWidth="1.5" />
+      <rect x="-4" y="0" width="16" height="11" rx="2" fill="#F5F5F5" stroke="#9E9E9E" strokeWidth="1" />
+      <rect x="-4" y="0" width="16" height="2" rx="1" fill="#FF7043" opacity="0.5" />
     </>}
-    hairAccessory={<circle cx="50" cy="8" r="5" fill="#F48FB1" stroke="#2C1A0E" strokeWidth="1.5" />}
     className={className}
     isWalking={isWalking}
   />
@@ -361,18 +435,23 @@ export const Warden1 = ({ className, isWalking }: { className?: string; isWalkin
 
 export const Warden2 = ({ className, isWalking }: { className?: string; isWalking?: boolean }) => (
   <ChibiCharacter
-    skinColor="#FFE0B2"
-    hairColor="#1A237E"
-    hairStyle="spiky"
+    skinColor="#DEB887"
+    hairColor="#1A1A1A"
+    hairStyle="bucketHat"
     eyeStyle="dots"
-    cheekColor="#90CAF9"
-    outfitColor="#64B5F6"
+    cheekColor="#FFAB91"
+    blush={true}
+    expression="happy"
+    outfitColor="#607D8B"
     outfitStyle="jacket"
-    collarColor="#E3F2FD"
-    bootColor="#1565C0"
+    collarColor="#ECEFF1"
+    bootColor="#FFFFFF"
     item={<>
-      <ellipse cx="4" cy="6" rx="5" ry="8" fill="#29B6F6" stroke="#1A237E" strokeWidth="1.5" />
-      <ellipse cx="4" cy="6" rx="3" ry="6" fill="#B3E5FC" opacity="0.6" />
+      {/* Boba drink */}
+      <rect x="-5" y="-2" width="14" height="18" rx="4" fill="#90CAF9" opacity="0.8" stroke="#64B5F6" strokeWidth="1" />
+      <ellipse cx="2" cy="-2" rx="7" ry="3" fill="#B3E5FC" opacity="0.9" />
+      <line x1="2" y1="-5" x2="2" y2="-14" stroke="#546E7A" strokeWidth="2" />
+      {[0,3,6].map(i => <circle key={i} cx={2 + (i-1)*2} cy={10+i} r="2.5" fill="#4E342E" opacity="0.8" />)}
     </>}
     className={className}
     isWalking={isWalking}
