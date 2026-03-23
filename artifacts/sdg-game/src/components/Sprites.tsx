@@ -69,82 +69,43 @@ export const ChibiCharacter = ({
     determined: `M 43 50 L 57 50`,
   }[expression];
 
-  /* ── vinyl toy eye: large sclera → dark iris → pupil → catchlights ── */
+  /* ── clean amiibo-style eye: simple solid oval, no sclera detail ── */
   const eyeEl = (cx: number, cy: number) => {
     if (eyeStyle === 'crescent') return (
-      <g>
-        {/* sclera */}
-        <ellipse cx={cx} cy={cy} rx="8" ry="7.5" fill="white" />
-        <ellipse cx={cx} cy={cy} rx="8" ry="7.5" fill="none" stroke={hairColor} strokeWidth="1.5" opacity="0.5" />
-        {/* crescent/happy squint */}
-        <path d={`M ${cx-6} ${cy+1} Q ${cx} ${cy-8} ${cx+6} ${cy+1}`}
-          fill="none" stroke={hairColor} strokeWidth="3.5" strokeLinecap="round" />
-        <circle cx={cx-3} cy={cy-2} r="1.5" fill="white" opacity="0.75" />
-      </g>
+      /* happy closed eye — just a smooth curved stroke */
+      <path d={`M ${cx-6} ${cy+2} Q ${cx} ${cy-6} ${cx+6} ${cy+2}`}
+        fill="none" stroke={hairColor} strokeWidth="3.5" strokeLinecap="round" />
     );
     if (eyeStyle === 'hearts') return (
-      <g>
-        <ellipse cx={cx} cy={cy} rx="8.5" ry="8" fill="white" />
-        <path d={`M ${cx} ${cy+2} C ${cx} ${cy-2} ${cx-6} ${cy-4} ${cx-6} ${cy} C ${cx-6} ${cy+4} ${cx} ${cy+7} ${cx} ${cy+7} C ${cx} ${cy+7} ${cx+6} ${cy+4} ${cx+6} ${cy} C ${cx+6} ${cy-4} ${cx} ${cy-2} ${cx} ${cy+2} Z`} fill="#E91E63" />
-        <circle cx={cx-2} cy={cy-1} r="2" fill="white" opacity="0.8" />
-        <ellipse cx={cx} cy={cy} rx="8.5" ry="8" fill="none" stroke={hairColor} strokeWidth="1.5" opacity="0.4" />
-      </g>
+      <path d={`M ${cx} ${cy+1} C ${cx} ${cy-2} ${cx-5} ${cy-3} ${cx-5} ${cy} C ${cx-5} ${cy+3} ${cx} ${cy+6} ${cx} ${cy+6} C ${cx} ${cy+6} ${cx+5} ${cy+3} ${cx+5} ${cy} C ${cx+5} ${cy-3} ${cx} ${cy-2} ${cx} ${cy+1} Z`}
+        fill="#E91E63" />
     );
     if (eyeStyle === 'starry') return (
       <g>
-        {/* sclera */}
-        <ellipse cx={cx} cy={cy} rx="8.5" ry="8" fill="white" />
-        {/* iris — deep dark */}
-        <circle cx={cx} cy={cy+0.5} r="6" fill="#1A1A1A" />
-        {/* star burst */}
-        {[0,45,90,135,180,225,270,315].map((a,i) => {
-          const r = (a * Math.PI) / 180;
-          return <line key={i} x1={cx} y1={cy+0.5} x2={cx+5*Math.cos(r)} y2={cy+0.5+5*Math.sin(r)} stroke="#FFD700" strokeWidth="1" opacity="0.6" />;
-        })}
-        <circle cx={cx} cy={cy+0.5} r="3" fill="#1A1A1A" />
-        {/* catchlights */}
-        <circle cx={cx-2.5} cy={cy-2.5} r="2.5" fill="white" opacity="0.95" />
-        <circle cx={cx+2.5} cy={cy+2} r="1.3" fill="white" opacity="0.6" />
-        <ellipse cx={cx} cy={cy} rx="8.5" ry="8" fill="none" stroke={hairColor} strokeWidth="1.5" opacity="0.35" />
+        <ellipse cx={cx} cy={cy} rx="5.5" ry="6.5" fill={hairColor} />
+        <circle cx={cx-2} cy={cy-2.5} r="1.5" fill="white" opacity="0.85" />
+        <circle cx={cx+2} cy={cy+2} r="0.8" fill="white" opacity="0.6" />
       </g>
     );
-    /* dots — the default: big realistic vinyl toy eye */
-    return (
-      <g>
-        {/* sclera */}
-        <ellipse cx={cx} cy={cy} rx="8.5" ry="8" fill="white" />
-        {/* iris */}
-        <circle cx={cx} cy={cy+0.5} r="5.8" fill="#1A1010" />
-        {/* pupil */}
-        <circle cx={cx} cy={cy+0.5} r="3.2" fill="#0A0A0A" />
-        {/* main catchlight — big and bright */}
-        <circle cx={cx-2.8} cy={cy-2.5} r="2.8" fill="white" opacity="0.98" />
-        {/* secondary small catchlight */}
-        <circle cx={cx+2.6} cy={cy+2.4} r="1.3" fill="white" opacity="0.65" />
-        {/* subtle limbal ring / iris highlight */}
-        <circle cx={cx} cy={cy+0.5} r="5.8" fill="none" stroke="white" strokeWidth="0.8" opacity="0.15" />
-        {/* outline */}
-        <ellipse cx={cx} cy={cy} rx="8.5" ry="8" fill="none" stroke={hairColor} strokeWidth="1.5" opacity="0.35" />
-      </g>
-    );
+    /* dots / default — plain solid oval, clean amiibo look */
+    return <ellipse cx={cx} cy={cy} rx="5.5" ry="6.5" fill={hairColor} />;
   };
 
-  /* ── eyebrow shape per expression ── */
+  /* ── thin expressive eyebrows ── */
   const browEl = (cx: number) => {
-    const y = 27;
+    const y = 28;
     if (expression === 'sad')
-      return <path d={`M ${cx-7} ${y-1} Q ${cx} ${y+3} ${cx+7} ${y-1}`} fill="none" stroke={hairColor} strokeWidth="3.5" strokeLinecap="round" />;
+      return <path d={`M ${cx-6} ${y-1} Q ${cx} ${y+3} ${cx+6} ${y-1}`} fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />;
     if (expression === 'surprised')
-      return <path d={`M ${cx-7} ${y+1} Q ${cx} ${y-4} ${cx+7} ${y+1}`} fill="none" stroke={hairColor} strokeWidth="3.5" strokeLinecap="round" />;
+      return <path d={`M ${cx-6} ${y+1} Q ${cx} ${y-4} ${cx+6} ${y+1}`} fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />;
     if (expression === 'determined')
-      return <line x1={cx-7} y1={y+1} x2={cx+7} y2={y+1} stroke={hairColor} strokeWidth="3.5" strokeLinecap="round" />;
-    /* happy / default — gentle arch */
-    return <path d={`M ${cx-7} ${y} Q ${cx} ${y-4} ${cx+7} ${y}`} fill="none" stroke={hairColor} strokeWidth="3.5" strokeLinecap="round" />;
+      return <line x1={cx-6} y1={y} x2={cx+6} y2={y} stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />;
+    return <path d={`M ${cx-6} ${y} Q ${cx} ${y-3} ${cx+6} ${y}`} fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />;
   };
 
   return (
     <svg
-      viewBox="0 0 100 130"
+      viewBox="0 0 100 134"
       className={cn("w-full h-full", isWalking && "animate-walk", className)}
       style={{ filter: 'drop-shadow(1px 4px 8px rgba(0,0,0,0.30))', ...style }}
     >
@@ -364,131 +325,156 @@ export const ChibiCharacter = ({
       {/* ════ HAIR ACCESSORY ════ */}
       {hairAccessory}
 
-      {/* ════ BODY — clay 3D ════ */}
+      {/* ════ NECK ════ */}
+      <rect x="44" y="60" width="12" height="13" rx="6" fill={skinColor} />
+      <rect x="44" y="60" width="12" height="13" rx="6" fill={HL} opacity="0.5" />
+
+      {/* ════ BODY — human-proportioned torso ════ */}
+
+      {/* --- Base torso shape (common to all outfits) --- */}
+      {/* Shoulders */}
+      <rect x="22" y="69" width="56" height="6" rx="5" fill={outfitColor} />
+      <rect x="22" y="69" width="56" height="6" rx="5" fill={BHL} />
+
       {outfitStyle === 'overalls' && (
         <>
-          <rect x="37" y="63" width="26" height="25" rx="8" fill={collarColor} />
-          <rect x="37" y="63" width="26" height="25" rx="8" fill={BHL} />
-          <rect x="31" y="64" width="38" height="31" rx="10" fill={outfitColor} />
-          <rect x="31" y="64" width="38" height="31" rx="10" fill={BHL} />
-          <rect x="31" y="64" width="38" height="31" rx="10" fill={BSH} />
-          <rect x="39" y="63" width="22" height="16" rx="7" fill={outfitColor} />
-          <rect x="39" y="63" width="22" height="16" rx="7" fill={BHL} />
-          <path d="M 39 65 Q 34 62 32 66" fill="none" stroke={outfitColor} strokeWidth="3.5" strokeLinecap="round" />
-          <path d="M 61 65 Q 66 62 68 66" fill="none" stroke={outfitColor} strokeWidth="3.5" strokeLinecap="round" />
-          <circle cx="50" cy="71" r="2.5" fill={hairColor} opacity="0.75" />
-          <ellipse cx="40" cy="67" rx="8" ry="4" fill="white" opacity="0.22" />
+          {/* Shirt underbase */}
+          <rect x="30" y="66" width="40" height="32" rx="8" fill={collarColor} />
+          <rect x="30" y="66" width="40" height="32" rx="8" fill={BHL} opacity="0.5" />
+          {/* Overall bib */}
+          <rect x="38" y="65" width="24" height="19" rx="6" fill={outfitColor} />
+          <rect x="38" y="65" width="24" height="19" rx="6" fill={BHL} />
+          {/* Overall body */}
+          <rect x="28" y="74" width="44" height="24" rx="7" fill={outfitColor} />
+          <rect x="28" y="74" width="44" height="24" rx="7" fill={BHL} />
+          <rect x="28" y="74" width="44" height="24" rx="7" fill={BSH} />
+          {/* Straps */}
+          <path d="M 38 67 Q 34 64 30 68" fill="none" stroke={outfitColor} strokeWidth="4" strokeLinecap="round" />
+          <path d="M 62 67 Q 66 64 70 68" fill="none" stroke={outfitColor} strokeWidth="4" strokeLinecap="round" />
+          <circle cx="50" cy="72" r="2.5" fill={hairColor} opacity="0.7" />
+          <ellipse cx="39" cy="69" rx="7" ry="3.5" fill="white" opacity="0.22" />
         </>
       )}
       {outfitStyle === 'dress' && (
         <>
-          <path d="M 37 64 Q 27 76 25 96 L 75 96 Q 73 76 63 64 Z" fill={outfitColor} />
-          <path d="M 37 64 Q 27 76 25 96 L 75 96 Q 73 76 63 64 Z" fill={BHL} />
-          <path d="M 37 64 Q 27 76 25 96 L 75 96 Q 73 76 63 64 Z" fill={BSH} />
-          <rect x="37" y="63" width="26" height="18" rx="9" fill={outfitColor} />
-          <rect x="37" y="63" width="26" height="18" rx="9" fill={BHL} />
-          <path d="M 42 64 Q 50 72 58 64" fill={collarColor} opacity="0.95" />
-          <ellipse cx="41" cy="67" rx="8" ry="4" fill="white" opacity="0.22" />
+          {/* Bodice */}
+          <rect x="30" y="65" width="40" height="20" rx="9" fill={outfitColor} />
+          <rect x="30" y="65" width="40" height="20" rx="9" fill={BHL} />
+          {/* Skirt flare */}
+          <path d="M 30 78 Q 18 88 16 100 L 84 100 Q 82 88 70 78 Z" fill={outfitColor} />
+          <path d="M 30 78 Q 18 88 16 100 L 84 100 Q 82 88 70 78 Z" fill={BHL} />
+          <path d="M 30 78 Q 18 88 16 100 L 84 100 Q 82 88 70 78 Z" fill={BSH} />
+          <path d="M 40 66 Q 50 76 60 66" fill={collarColor} opacity="0.95" />
+          <ellipse cx="38" cy="70" rx="8" ry="4" fill="white" opacity="0.22" />
         </>
       )}
       {outfitStyle === 'jacket' && (
         <>
-          <rect x="31" y="64" width="38" height="31" rx="10" fill={outfitColor} />
-          <rect x="31" y="64" width="38" height="31" rx="10" fill={BHL} />
-          <rect x="31" y="64" width="38" height="31" rx="10" fill={BSH} />
-          <path d="M 44 64 Q 50 74 56 64" fill={collarColor} />
-          <path d="M 44 64 L 40 81 L 50 79 L 60 81 L 56 64" fill={collarColor} opacity="0.88" />
-          <circle cx="50" cy="72" r="2" fill={hairColor} opacity="0.65" />
-          <circle cx="50" cy="79" r="2" fill={hairColor} opacity="0.65" />
-          <ellipse cx="40" cy="68" rx="8" ry="4" fill="white" opacity="0.22" />
+          <rect x="28" y="65" width="44" height="32" rx="9" fill={outfitColor} />
+          <rect x="28" y="65" width="44" height="32" rx="9" fill={BHL} />
+          <rect x="28" y="65" width="44" height="32" rx="9" fill={BSH} />
+          {/* Lapels */}
+          <path d="M 44 66 Q 50 76 56 66" fill={collarColor} />
+          <path d="M 44 66 L 40 83 L 50 81 L 60 83 L 56 66" fill={collarColor} opacity="0.88" />
+          <circle cx="50" cy="74" r="2.2" fill={hairColor} opacity="0.65" />
+          <circle cx="50" cy="82" r="2.2" fill={hairColor} opacity="0.65" />
+          <ellipse cx="38" cy="70" rx="8" ry="4" fill="white" opacity="0.22" />
         </>
       )}
       {outfitStyle === 'uniform' && (
         <>
-          <rect x="33" y="64" width="34" height="29" rx="9" fill={outfitColor} />
-          <rect x="33" y="64" width="34" height="29" rx="9" fill={BHL} />
-          <rect x="33" y="64" width="34" height="29" rx="9" fill={BSH} />
-          <rect x="42" y="63" width="16" height="12" rx="6" fill={collarColor} />
-          <rect x="35" y="71" width="12" height="10" rx="3" fill={collarColor} opacity="0.9" />
-          <text x="41" y="78.5" textAnchor="middle" fontSize="5" fill={hairColor}>✦</text>
-          <ellipse cx="43" cy="68" rx="8" ry="4" fill="white" opacity="0.22" />
+          <rect x="30" y="65" width="40" height="31" rx="9" fill={outfitColor} />
+          <rect x="30" y="65" width="40" height="31" rx="9" fill={BHL} />
+          <rect x="30" y="65" width="40" height="31" rx="9" fill={BSH} />
+          <rect x="41" y="64" width="18" height="12" rx="6" fill={collarColor} />
+          <rect x="32" y="73" width="14" height="11" rx="3" fill={collarColor} opacity="0.9" />
+          <text x="39" y="81" textAnchor="middle" fontSize="5" fill={hairColor}>✦</text>
+          <ellipse cx="40" cy="70" rx="8" ry="4" fill="white" opacity="0.22" />
         </>
       )}
       {outfitStyle === 'coat' && (
         <>
-          <rect x="29" y="64" width="42" height="33" rx="10" fill={outfitColor} />
-          <rect x="29" y="64" width="42" height="33" rx="10" fill={BHL} />
-          <rect x="29" y="64" width="42" height="33" rx="10" fill={BSH} />
-          <rect x="43" y="63" width="14" height="20" rx="6" fill={collarColor} opacity="0.9" />
-          <circle cx="50" cy="74" r="2.2" fill={hairColor} opacity="0.7" />
-          <circle cx="50" cy="81" r="2.2" fill={hairColor} opacity="0.7" />
-          <circle cx="50" cy="88" r="2.2" fill={hairColor} opacity="0.7" />
-          <ellipse cx="41" cy="68" rx="9" ry="4.5" fill="white" opacity="0.22" />
+          <rect x="26" y="65" width="48" height="33" rx="10" fill={outfitColor} />
+          <rect x="26" y="65" width="48" height="33" rx="10" fill={BHL} />
+          <rect x="26" y="65" width="48" height="33" rx="10" fill={BSH} />
+          <rect x="42" y="64" width="16" height="22" rx="7" fill={collarColor} opacity="0.9" />
+          <circle cx="50" cy="76" r="2.5" fill={hairColor} opacity="0.7" />
+          <circle cx="50" cy="84" r="2.5" fill={hairColor} opacity="0.7" />
+          <circle cx="50" cy="92" r="2.5" fill={hairColor} opacity="0.7" />
+          <ellipse cx="38" cy="70" rx="9" ry="4.5" fill="white" opacity="0.22" />
         </>
       )}
       {outfitStyle === 'hoodie' && (
         <>
-          {/* Hoodie body */}
-          <rect x="29" y="63" width="42" height="34" rx="10" fill={outfitColor} />
-          <rect x="29" y="63" width="42" height="34" rx="10" fill={BHL} />
-          <rect x="29" y="63" width="42" height="34" rx="10" fill={BSH} />
-          {/* Hood collar behind head (drawn before head in z-order but fine here) */}
-          <path d="M 32 64 Q 34 58 50 58 Q 66 58 68 64 L 68 68 Q 60 64 50 64 Q 40 64 32 68 Z" fill={outfitColor} />
-          <path d="M 32 64 Q 34 58 50 58 Q 66 58 68 64 L 68 68 Q 60 64 50 64 Q 40 64 32 68 Z" fill={BHL} />
-          {/* Drawstrings */}
-          <line x1="46" y1="64" x2="44" y2="80" stroke={collarColor} strokeWidth="1.8" opacity="0.7" />
-          <line x1="54" y1="64" x2="56" y2="80" stroke={collarColor} strokeWidth="1.8" opacity="0.7" />
-          <ellipse cx="44" cy="81" rx="2.5" ry="2.5" fill={collarColor} opacity="0.8" />
-          <ellipse cx="56" cy="81" rx="2.5" ry="2.5" fill={collarColor} opacity="0.8" />
-          {/* Kangaroo pocket */}
-          <rect x="38" y="82" width="24" height="14" rx="5" fill={collarColor} opacity="0.3" />
-          <ellipse cx="41" cy="68" rx="9" ry="4.5" fill="white" opacity="0.20" />
+          <rect x="26" y="65" width="48" height="33" rx="10" fill={outfitColor} />
+          <rect x="26" y="65" width="48" height="33" rx="10" fill={BHL} />
+          <rect x="26" y="65" width="48" height="33" rx="10" fill={BSH} />
+          {/* Hood cowl */}
+          <path d="M 30 66 Q 32 59 50 59 Q 68 59 70 66 L 70 71 Q 62 66 50 66 Q 38 66 30 71 Z" fill={outfitColor} />
+          <path d="M 30 66 Q 32 59 50 59 Q 68 59 70 66 L 70 71 Q 62 66 50 66 Q 38 66 30 71 Z" fill={BHL} />
+          <line x1="47" y1="65" x2="45" y2="82" stroke={collarColor} strokeWidth="1.8" opacity="0.7" />
+          <line x1="53" y1="65" x2="55" y2="82" stroke={collarColor} strokeWidth="1.8" opacity="0.7" />
+          <ellipse cx="45" cy="83" rx="2.5" ry="2.5" fill={collarColor} opacity="0.8" />
+          <ellipse cx="55" cy="83" rx="2.5" ry="2.5" fill={collarColor} opacity="0.8" />
+          <rect x="38" y="84" width="24" height="13" rx="5" fill={collarColor} opacity="0.3" />
+          <ellipse cx="38" cy="70" rx="9" ry="4.5" fill="white" opacity="0.20" />
         </>
       )}
 
-      {/* ════ ARMS — outfit sleeves with skin hands ════ */}
+      {/* ════ ARMS — long human arms with hands ════ */}
+      {/* Left arm */}
       <g className="chibi-arm-l">
-        {/* Sleeve */}
-        <ellipse cx="21" cy="76" rx="9" ry="14" fill={outfitColor} />
-        <ellipse cx="21" cy="76" rx="9" ry="14" fill={BHL} />
-        <ellipse cx="21" cy="76" rx="9" ry="14" fill={BSH} />
-        {/* Cuff highlight */}
-        <ellipse cx="21" cy="85" rx="7" ry="3.5" fill={collarColor} opacity="0.7" />
-        {/* Hand */}
-        <ellipse cx="21" cy="89" rx="7" ry="5.5" fill={skinColor} />
-        <ellipse cx="21" cy="89" rx="7" ry="5.5" fill={HL} />
+        {/* Upper sleeve */}
+        <rect x="13" y="68" width="15" height="30" rx="7.5" fill={outfitColor} />
+        <rect x="13" y="68" width="15" height="30" rx="7.5" fill={BHL} />
+        <rect x="13" y="68" width="15" height="30" rx="7.5" fill={BSH} />
+        {/* Cuff */}
+        <rect x="13" y="94" width="15" height="5" rx="2.5" fill={collarColor} opacity="0.65" />
+        {/* Hand — open oval paddle */}
+        <ellipse cx="20.5" cy="105" rx="7" ry="5.5" fill={skinColor} />
+        <ellipse cx="20.5" cy="105" rx="7" ry="5.5" fill={HL} opacity="0.5" />
+        {/* Thumb nub */}
+        <ellipse cx="13" cy="102" rx="3.5" ry="2.5" fill={skinColor} />
+        <ellipse cx="13" cy="102" rx="3.5" ry="2.5" fill={HL} opacity="0.4" />
       </g>
+      {/* Right arm */}
       <g className="chibi-arm-r">
-        {/* Sleeve */}
-        <ellipse cx="79" cy="76" rx="9" ry="14" fill={outfitColor} />
-        <ellipse cx="79" cy="76" rx="9" ry="14" fill={BHL} />
-        <ellipse cx="79" cy="76" rx="9" ry="14" fill={BSH} />
-        {/* Cuff highlight */}
-        <ellipse cx="79" cy="85" rx="7" ry="3.5" fill={collarColor} opacity="0.7" />
-        {/* Hand */}
-        <ellipse cx="79" cy="89" rx="7" ry="5.5" fill={skinColor} />
-        <ellipse cx="79" cy="89" rx="7" ry="5.5" fill={HL} />
+        <rect x="72" y="68" width="15" height="30" rx="7.5" fill={outfitColor} />
+        <rect x="72" y="68" width="15" height="30" rx="7.5" fill={BHL} />
+        <rect x="72" y="68" width="15" height="30" rx="7.5" fill={BSH} />
+        <rect x="72" y="94" width="15" height="5" rx="2.5" fill={collarColor} opacity="0.65" />
+        <ellipse cx="79.5" cy="105" rx="7" ry="5.5" fill={skinColor} />
+        <ellipse cx="79.5" cy="105" rx="7" ry="5.5" fill={HL} opacity="0.5" />
+        <ellipse cx="87" cy="102" rx="3.5" ry="2.5" fill={skinColor} />
+        <ellipse cx="87" cy="102" rx="3.5" ry="2.5" fill={HL} opacity="0.4" />
       </g>
 
       {/* Item / prop */}
-      {item && <g transform="translate(65, 62)">{item}</g>}
+      {item && <g transform="translate(66, 72)">{item}</g>}
 
-      {/* ════ LEGS / BOOTS — clay rounded ════ */}
+      {/* ════ LEGS — separated with socks + chunky amiibo shoes ════ */}
       <g className="chibi-leg-l">
-        <rect x="37" y="93" width="12" height="19" rx="6" fill={outfitColor} />
-        <rect x="37" y="93" width="12" height="19" rx="6" fill={BHL} />
-        <rect x="37" y="93" width="12" height="19" rx="6" fill={BSH} />
-        <rect x="33" y="105" width="19" height="14" rx="7" fill={bootColor} />
-        <rect x="33" y="105" width="19" height="14" rx="7" fill={HL} />
-        <rect x="33" y="105" width="19" height="14" rx="7" fill={SH} />
+        {/* Pant leg */}
+        <rect x="33" y="96" width="15" height="19" rx="7.5" fill={outfitColor} />
+        <rect x="33" y="96" width="15" height="19" rx="7.5" fill={BHL} />
+        <rect x="33" y="96" width="15" height="19" rx="7.5" fill={BSH} />
+        {/* Sock */}
+        <rect x="32" y="111" width="16" height="7" rx="4" fill="white" opacity="0.92" />
+        {/* Shoe — big amiibo-style, pointing slightly left */}
+        <path d="M 28 116 L 27 126 Q 27 130 33 130 L 50 130 Q 56 130 56 125 L 54 118 Q 52 115 47 115 L 33 115 Z" fill={bootColor} />
+        <path d="M 28 116 L 27 126 Q 27 130 33 130 L 50 130 Q 56 130 56 125 L 54 118 Q 52 115 47 115 L 33 115 Z" fill={HL} opacity="0.4" />
+        {/* Toe highlight */}
+        <ellipse cx="40" cy="119" rx="9" ry="4" fill="white" opacity="0.2" />
       </g>
       <g className="chibi-leg-r">
-        <rect x="51" y="93" width="12" height="19" rx="6" fill={outfitColor} />
-        <rect x="51" y="93" width="12" height="19" rx="6" fill={BHL} />
-        <rect x="51" y="93" width="12" height="19" rx="6" fill={BSH} />
-        <rect x="48" y="105" width="19" height="14" rx="7" fill={bootColor} />
-        <rect x="48" y="105" width="19" height="14" rx="7" fill={HL} />
-        <rect x="48" y="105" width="19" height="14" rx="7" fill={SH} />
+        <rect x="52" y="96" width="15" height="19" rx="7.5" fill={outfitColor} />
+        <rect x="52" y="96" width="15" height="19" rx="7.5" fill={BHL} />
+        <rect x="52" y="96" width="15" height="19" rx="7.5" fill={BSH} />
+        <rect x="52" y="111" width="16" height="7" rx="4" fill="white" opacity="0.92" />
+        {/* Shoe — pointing slightly right */}
+        <path d="M 46 116 L 46 125 Q 46 130 52 130 L 69 130 Q 75 130 75 125 L 75 118 Q 73 115 68 115 L 52 115 Z" fill={bootColor} />
+        <path d="M 46 116 L 46 125 Q 46 130 52 130 L 69 130 Q 75 130 75 125 L 75 118 Q 73 115 68 115 L 52 115 Z" fill={HL} opacity="0.4" />
+        <ellipse cx="60" cy="119" rx="9" ry="4" fill="white" opacity="0.2" />
       </g>
     </svg>
   );
