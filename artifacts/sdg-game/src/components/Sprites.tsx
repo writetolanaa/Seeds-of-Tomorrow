@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { cn } from '@/lib/utils';
 
 /* ────────────────────────────────────────────────────────
@@ -52,184 +52,269 @@ export const ChibiCharacter = ({
   isWalking,
   style,
 }: ChibiProps) => {
+  const uid = useId().replace(/:/g, '');
+
+  /* Gradient IDs */
+  const HL  = `url(#${uid}hl)`;   /* white radial light overlay — top-left */
+  const SH  = `url(#${uid}sh)`;   /* dark  radial shadow overlay — bottom-right */
+  const BHL = `url(#${uid}bhl)`;  /* body highlight */
+  const BSH = `url(#${uid}bsh)`;  /* body shadow */
 
   const mouthPath = {
-    happy: `M 43 49 Q 50 56 57 49`,
-    sad: `M 43 54 Q 50 48 57 54`,
-    surprised: `M 47 52 Q 50 58 53 52`,
+    happy:      `M 42 49 Q 50 58 58 49`,
+    sad:        `M 43 54 Q 50 48 57 54`,
+    surprised:  `M 47 52 Q 50 59 53 52`,
     determined: `M 43 51 L 57 51`,
   }[expression];
 
+  /* Eyes — each style gets a white highlight dot for that clay-toy shine */
   const eyeEl = (cx: number, cy: number) => {
-    if (eyeStyle === 'dots') return <circle cx={cx} cy={cy} r="3.5" fill={hairColor} />;
-    if (eyeStyle === 'crescent') return <path d={`M ${cx-4} ${cy} Q ${cx} ${cy-6} ${cx+4} ${cy}`} fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />;
-    if (eyeStyle === 'hearts') return <path d={`M ${cx} ${cy+1} C ${cx} ${cy-2} ${cx-5} ${cy-3} ${cx-5} ${cy} C ${cx-5} ${cy+3} ${cx} ${cy+5} ${cx} ${cy+5} C ${cx} ${cy+5} ${cx+5} ${cy+3} ${cx+5} ${cy} C ${cx+5} ${cy-3} ${cx} ${cy-2} ${cx} ${cy+1} Z`} fill="#E91E63" />;
-    if (eyeStyle === 'starry') return (
+    if (eyeStyle === 'crescent') return (
+      <path d={`M ${cx-4.5} ${cy+1} Q ${cx} ${cy-7} ${cx+4.5} ${cy+1}`}
+        fill="none" stroke={hairColor} strokeWidth="3.5" strokeLinecap="round" />
+    );
+    if (eyeStyle === 'hearts') return (
       <g>
-        <circle cx={cx} cy={cy} r="4" fill={hairColor} />
-        <circle cx={cx-1.5} cy={cy-1.5} r="1.2" fill="white" opacity="0.8" />
+        <path d={`M ${cx} ${cy+1} C ${cx} ${cy-2} ${cx-5} ${cy-3} ${cx-5} ${cy} C ${cx-5} ${cy+3} ${cx} ${cy+5} ${cx} ${cy+5} C ${cx} ${cy+5} ${cx+5} ${cy+3} ${cx+5} ${cy} C ${cx+5} ${cy-3} ${cx} ${cy-2} ${cx} ${cy+1} Z`} fill="#E91E63" />
+        <circle cx={cx-1.5} cy={cy-1} r="1.4" fill="white" opacity="0.75" />
       </g>
     );
-    return <circle cx={cx} cy={cy} r="3.5" fill={hairColor} />;
+    /* dots / starry share the same clay eyeball */
+    return (
+      <g>
+        <circle cx={cx} cy={cy} r="4.5" fill={hairColor} />
+        <circle cx={cx-1.8} cy={cy-1.8} r="1.7" fill="white" opacity="0.88" />
+      </g>
+    );
   };
 
   return (
     <svg
       viewBox="0 0 100 130"
-      className={cn("w-full h-full drop-shadow-md", isWalking && "animate-walk", className)}
-      style={style}
+      className={cn("w-full h-full", isWalking && "animate-walk", className)}
+      style={{ filter: 'drop-shadow(1px 4px 8px rgba(0,0,0,0.30))', ...style }}
     >
-      {/* ── HAIR BACK ── */}
+      <defs>
+        {/* ── Clay shading overlays (work on any base color) ── */}
+        <radialGradient id={`${uid}hl`} cx="33%" cy="26%" r="65%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="white" stopOpacity="0.55" />
+          <stop offset="50%"  stopColor="white" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id={`${uid}sh`} cx="72%" cy="80%" r="55%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="black" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="black" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id={`${uid}bhl`} cx="30%" cy="15%" r="72%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="white" stopOpacity="0.48" />
+          <stop offset="50%"  stopColor="white" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id={`${uid}bsh`} cx="76%" cy="90%" r="50%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="black" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="black" stopOpacity="0" />
+        </radialGradient>
+        {/* Soft blur for rosy cheeks */}
+        <filter id={`${uid}blush`} x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="2.8" />
+        </filter>
+      </defs>
+
+      {/* ════ HAIR BACK ════ */}
       {hairStyle === 'bun' && (
         <>
-          <circle cx="50" cy="16" r="10" fill={hairColor} />
-          <path d="M 22 34 Q 20 15 50 12 Q 78 15 78 34" fill={hairColor} />
+          <circle cx="50" cy="14" r="11" fill={hairColor} />
+          <circle cx="50" cy="14" r="11" fill={HL} />
+          <path d="M 21 35 Q 20 13 50 10 Q 80 13 79 35" fill={hairColor} />
+          <path d="M 21 35 Q 20 13 50 10 Q 80 13 79 35" fill={HL} />
         </>
       )}
       {hairStyle === 'bunDouble' && (
         <>
-          <circle cx="32" cy="14" r="9" fill={hairColor} />
-          <circle cx="68" cy="14" r="9" fill={hairColor} />
-          <path d="M 22 35 Q 22 14 50 12 Q 78 14 78 35" fill={hairColor} />
+          <circle cx="31" cy="13" r="10" fill={hairColor} />
+          <circle cx="31" cy="13" r="10" fill={HL} />
+          <circle cx="69" cy="13" r="10" fill={hairColor} />
+          <circle cx="69" cy="13" r="10" fill={HL} />
+          <path d="M 21 35 Q 22 13 50 10 Q 78 13 79 35" fill={hairColor} />
+          <path d="M 21 35 Q 22 13 50 10 Q 78 13 79 35" fill={HL} />
         </>
       )}
       {hairStyle === 'pigtails' && (
         <>
-          <ellipse cx="18" cy="35" rx="9" ry="12" fill={hairColor} transform="rotate(-15 18 35)" />
-          <ellipse cx="82" cy="35" rx="9" ry="12" fill={hairColor} transform="rotate(15 82 35)" />
-          <path d="M 22 35 Q 22 14 50 12 Q 78 14 78 35" fill={hairColor} />
+          <ellipse cx="17" cy="35" rx="10" ry="13" fill={hairColor} transform="rotate(-15 17 35)" />
+          <ellipse cx="17" cy="35" rx="10" ry="13" fill={HL}       transform="rotate(-15 17 35)" />
+          <ellipse cx="83" cy="35" rx="10" ry="13" fill={hairColor} transform="rotate(15 83 35)" />
+          <ellipse cx="83" cy="35" rx="10" ry="13" fill={HL}       transform="rotate(15 83 35)" />
+          <path d="M 21 35 Q 22 13 50 10 Q 78 13 79 35" fill={hairColor} />
+          <path d="M 21 35 Q 22 13 50 10 Q 78 13 79 35" fill={HL} />
         </>
       )}
       {hairStyle === 'spiky' && (
         <>
-          <path d="M 22 35 Q 28 10 38 14 Q 44 5 50 12 Q 56 5 62 14 Q 72 10 78 35 Z" fill={hairColor} />
+          <path d="M 21 35 Q 28 8 38 13 Q 44 3 50 10 Q 56 3 62 13 Q 72 8 79 35 Z" fill={hairColor} />
+          <path d="M 21 35 Q 28 8 38 13 Q 44 3 50 10 Q 56 3 62 13 Q 72 8 79 35 Z" fill={HL} />
         </>
       )}
       {hairStyle === 'short' && (
-        <path d="M 22 38 Q 22 12 50 10 Q 78 12 78 38 Q 78 24 50 22 Q 22 24 22 38 Z" fill={hairColor} />
+        <>
+          <path d="M 21 38 Q 21 10 50 8 Q 79 10 79 38 Q 79 24 50 22 Q 21 24 21 38 Z" fill={hairColor} />
+          <path d="M 21 38 Q 21 10 50 8 Q 79 10 79 38 Q 79 24 50 22 Q 21 24 21 38 Z" fill={HL} />
+        </>
       )}
       {hairStyle === 'cap' && (
         <>
-          <path d="M 22 35 Q 22 14 50 12 Q 78 14 78 35" fill={hairColor} />
-          <rect x="18" y="23" width="64" height="10" rx="5" fill="#4A148C" />
-          <rect x="15" y="29" width="70" height="7" rx="3.5" fill="#4A148C" />
+          <path d="M 21 35 Q 21 13 50 10 Q 79 13 79 35" fill={hairColor} />
+          <rect x="16" y="21" width="68" height="12" rx="6" fill="#4A148C" />
+          <rect x="16" y="21" width="68" height="12" rx="6" fill={HL} />
+          <rect x="13" y="28" width="74" height="9" rx="4.5" fill="#4A148C" />
+          <rect x="13" y="28" width="74" height="9" rx="4.5" fill={HL} />
         </>
       )}
 
-      {/* ── HEAD ── */}
-      <ellipse cx="50" cy="38" rx="28" ry="27" fill={skinColor} stroke={hairColor} strokeWidth="2.5" />
+      {/* ════ HEAD — clay sphere ════ */}
+      <ellipse cx="50" cy="38" rx="29" ry="28" fill={skinColor} />
+      <ellipse cx="50" cy="38" rx="29" ry="28" fill={HL} />
+      <ellipse cx="50" cy="38" rx="29" ry="28" fill={SH} />
+      {/* Specular shine — the defining clay toy highlight */}
+      <ellipse cx="36" cy="24" rx="10" ry="7" fill="white" opacity="0.42" />
 
-      {/* ── HAIR FRONT FRINGE ── */}
+      {/* ════ HAIR FRONT FRINGE ════ */}
       {(hairStyle === 'bun' || hairStyle === 'short') && (
-        <path d="M 23 32 Q 30 18 50 20 Q 70 18 77 32" fill={hairColor} />
+        <>
+          <path d="M 22 32 Q 30 17 50 19 Q 70 17 78 32" fill={hairColor} />
+          <path d="M 22 32 Q 30 17 50 19 Q 70 17 78 32" fill={HL} />
+        </>
       )}
       {hairStyle === 'bunDouble' && (
-        <path d="M 23 32 Q 30 18 50 20 Q 70 18 77 32" fill={hairColor} />
+        <>
+          <path d="M 22 32 Q 30 17 50 19 Q 70 17 78 32" fill={hairColor} />
+          <path d="M 22 32 Q 30 17 50 19 Q 70 17 78 32" fill={HL} />
+        </>
       )}
       {hairStyle === 'pigtails' && (
-        <path d="M 23 33 Q 32 18 50 20 Q 68 18 77 33" fill={hairColor} />
+        <>
+          <path d="M 22 33 Q 32 17 50 19 Q 68 17 78 33" fill={hairColor} />
+          <path d="M 22 33 Q 32 17 50 19 Q 68 17 78 33" fill={HL} />
+        </>
       )}
 
-      {/* ── EYES ── */}
+      {/* ════ EYES ════ */}
       {eyeEl(38, 38)}
       {eyeEl(62, 38)}
 
-      {/* ── BLUSH ── */}
+      {/* ════ BLUSH (soft blurred circles for clay look) ════ */}
       {blush && (
         <>
-          <ellipse cx="27" cy="44" rx="7" ry="4" fill={cheekColor} opacity="0.55" />
-          <ellipse cx="73" cy="44" rx="7" ry="4" fill={cheekColor} opacity="0.55" />
+          <ellipse cx="25" cy="45" rx="9.5" ry="6.5" fill={cheekColor} opacity="0.82"
+            filter={`url(#${uid}blush)`} />
+          <ellipse cx="75" cy="45" rx="9.5" ry="6.5" fill={cheekColor} opacity="0.82"
+            filter={`url(#${uid}blush)`} />
         </>
       )}
 
-      {/* ── NOSE ── */}
-      <circle cx="50" cy="44" r="2" fill={cheekColor} opacity="0.7" />
+      {/* ════ NOSE ════ */}
+      <circle cx="50" cy="44" r="2.5" fill={cheekColor} opacity="0.75" />
 
-      {/* ── MOUTH ── */}
-      <path d={mouthPath} fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
+      {/* ════ MOUTH ════ */}
+      <path d={mouthPath} fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />
 
-      {/* ── HAIR ACCESSORY ── */}
+      {/* ════ HAIR ACCESSORY ════ */}
       {hairAccessory}
 
-      {/* ── BODY / TORSO ── */}
+      {/* ════ BODY — clay 3D ════ */}
       {outfitStyle === 'overalls' && (
         <>
-          {/* white inner shirt */}
-          <rect x="38" y="63" width="24" height="22" rx="6" fill={collarColor} />
-          {/* overalls */}
-          <rect x="32" y="64" width="36" height="30" rx="8" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-          {/* bib */}
-          <rect x="40" y="63" width="20" height="14" rx="5" fill={outfitColor} stroke={hairColor} strokeWidth="1.5" />
-          {/* straps */}
-          <path d="M 40 64 Q 36 61 34 65" fill="none" stroke={hairColor} strokeWidth="2" />
-          <path d="M 60 64 Q 64 61 66 65" fill="none" stroke={hairColor} strokeWidth="2" />
-          {/* button */}
-          <circle cx="50" cy="70" r="2" fill={hairColor} />
+          <rect x="37" y="63" width="26" height="25" rx="8" fill={collarColor} />
+          <rect x="37" y="63" width="26" height="25" rx="8" fill={BHL} />
+          <rect x="31" y="64" width="38" height="31" rx="10" fill={outfitColor} />
+          <rect x="31" y="64" width="38" height="31" rx="10" fill={BHL} />
+          <rect x="31" y="64" width="38" height="31" rx="10" fill={BSH} />
+          <rect x="39" y="63" width="22" height="16" rx="7" fill={outfitColor} />
+          <rect x="39" y="63" width="22" height="16" rx="7" fill={BHL} />
+          <path d="M 39 65 Q 34 62 32 66" fill="none" stroke={outfitColor} strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M 61 65 Q 66 62 68 66" fill="none" stroke={outfitColor} strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="50" cy="71" r="2.5" fill={hairColor} opacity="0.75" />
+          <ellipse cx="40" cy="67" rx="8" ry="4" fill="white" opacity="0.22" />
         </>
       )}
       {outfitStyle === 'dress' && (
         <>
-          <path d="M 38 64 Q 30 75 28 95 L 72 95 Q 70 75 62 64 Z" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-          <rect x="38" y="63" width="24" height="16" rx="8" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-          {/* collar */}
-          <path d="M 42 64 Q 50 70 58 64" fill={collarColor} stroke={hairColor} strokeWidth="1.5" />
+          <path d="M 37 64 Q 27 76 25 96 L 75 96 Q 73 76 63 64 Z" fill={outfitColor} />
+          <path d="M 37 64 Q 27 76 25 96 L 75 96 Q 73 76 63 64 Z" fill={BHL} />
+          <path d="M 37 64 Q 27 76 25 96 L 75 96 Q 73 76 63 64 Z" fill={BSH} />
+          <rect x="37" y="63" width="26" height="18" rx="9" fill={outfitColor} />
+          <rect x="37" y="63" width="26" height="18" rx="9" fill={BHL} />
+          <path d="M 42 64 Q 50 72 58 64" fill={collarColor} opacity="0.95" />
+          <ellipse cx="41" cy="67" rx="8" ry="4" fill="white" opacity="0.22" />
         </>
       )}
       {outfitStyle === 'jacket' && (
         <>
-          <rect x="32" y="64" width="36" height="30" rx="8" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-          {/* inner shirt */}
-          <path d="M 44 64 Q 50 72 56 64" fill={collarColor} />
-          {/* lapels */}
-          <path d="M 44 64 L 40 80 L 50 78 L 60 80 L 56 64" fill={collarColor} stroke={hairColor} strokeWidth="1.5" />
-          {/* zipper/buttons */}
-          <circle cx="50" cy="71" r="1.5" fill={hairColor} />
-          <circle cx="50" cy="78" r="1.5" fill={hairColor} />
+          <rect x="31" y="64" width="38" height="31" rx="10" fill={outfitColor} />
+          <rect x="31" y="64" width="38" height="31" rx="10" fill={BHL} />
+          <rect x="31" y="64" width="38" height="31" rx="10" fill={BSH} />
+          <path d="M 44 64 Q 50 74 56 64" fill={collarColor} />
+          <path d="M 44 64 L 40 81 L 50 79 L 60 81 L 56 64" fill={collarColor} opacity="0.88" />
+          <circle cx="50" cy="72" r="2" fill={hairColor} opacity="0.65" />
+          <circle cx="50" cy="79" r="2" fill={hairColor} opacity="0.65" />
+          <ellipse cx="40" cy="68" rx="8" ry="4" fill="white" opacity="0.22" />
         </>
       )}
       {outfitStyle === 'uniform' && (
         <>
-          <rect x="34" y="64" width="32" height="28" rx="7" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-          {/* collar band */}
-          <rect x="43" y="63" width="14" height="10" rx="4" fill={collarColor} stroke={hairColor} strokeWidth="1.5" />
-          {/* badge */}
-          <rect x="36" y="70" width="10" height="8" rx="2" fill={collarColor} stroke={hairColor} strokeWidth="1" />
-          <text x="41" y="77" textAnchor="middle" fontSize="5" fill={hairColor}>✦</text>
+          <rect x="33" y="64" width="34" height="29" rx="9" fill={outfitColor} />
+          <rect x="33" y="64" width="34" height="29" rx="9" fill={BHL} />
+          <rect x="33" y="64" width="34" height="29" rx="9" fill={BSH} />
+          <rect x="42" y="63" width="16" height="12" rx="6" fill={collarColor} />
+          <rect x="35" y="71" width="12" height="10" rx="3" fill={collarColor} opacity="0.9" />
+          <text x="41" y="78.5" textAnchor="middle" fontSize="5" fill={hairColor}>✦</text>
+          <ellipse cx="43" cy="68" rx="8" ry="4" fill="white" opacity="0.22" />
         </>
       )}
       {outfitStyle === 'coat' && (
         <>
-          <rect x="30" y="64" width="40" height="32" rx="8" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-          <rect x="44" y="63" width="12" height="18" rx="4" fill={collarColor} stroke={hairColor} strokeWidth="1.5" />
-          <circle cx="50" cy="72" r="2" fill={hairColor} />
-          <circle cx="50" cy="79" r="2" fill={hairColor} />
-          <circle cx="50" cy="86" r="2" fill={hairColor} />
+          <rect x="29" y="64" width="42" height="33" rx="10" fill={outfitColor} />
+          <rect x="29" y="64" width="42" height="33" rx="10" fill={BHL} />
+          <rect x="29" y="64" width="42" height="33" rx="10" fill={BSH} />
+          <rect x="43" y="63" width="14" height="20" rx="6" fill={collarColor} opacity="0.9" />
+          <circle cx="50" cy="74" r="2.2" fill={hairColor} opacity="0.7" />
+          <circle cx="50" cy="81" r="2.2" fill={hairColor} opacity="0.7" />
+          <circle cx="50" cy="88" r="2.2" fill={hairColor} opacity="0.7" />
+          <ellipse cx="41" cy="68" rx="9" ry="4.5" fill="white" opacity="0.22" />
         </>
       )}
 
-      {/* ── ARMS (grouped for walk-swing animation) ── */}
+      {/* ════ ARMS — clay rounded ════ */}
       <g className="chibi-arm-l">
-        <ellipse cx="24" cy="75" rx="7" ry="10" fill={skinColor} stroke={hairColor} strokeWidth="2" />
+        <ellipse cx="22" cy="75" rx="8.5" ry="11.5" fill={skinColor} />
+        <ellipse cx="22" cy="75" rx="8.5" ry="11.5" fill={HL} />
+        <ellipse cx="22" cy="75" rx="8.5" ry="11.5" fill={SH} />
       </g>
       <g className="chibi-arm-r">
-        <ellipse cx="76" cy="75" rx="7" ry="10" fill={skinColor} stroke={hairColor} strokeWidth="2" />
+        <ellipse cx="78" cy="75" rx="8.5" ry="11.5" fill={skinColor} />
+        <ellipse cx="78" cy="75" rx="8.5" ry="11.5" fill={HL} />
+        <ellipse cx="78" cy="75" rx="8.5" ry="11.5" fill={SH} />
       </g>
 
-      {/* Item / prop held in right arm */}
-      {item && (
-        <g transform="translate(64, 62)">
-          {item}
-        </g>
-      )}
+      {/* Item / prop */}
+      {item && <g transform="translate(65, 62)">{item}</g>}
 
-      {/* ── LEGS / BOOTS (grouped for walk-step animation) ── */}
+      {/* ════ LEGS / BOOTS — clay rounded ════ */}
       <g className="chibi-leg-l">
-        <rect x="38" y="92" width="11" height="18" rx="5" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-        <rect x="35" y="104" width="17" height="12" rx="6" fill={bootColor} stroke={hairColor} strokeWidth="2" />
+        <rect x="37" y="93" width="12" height="19" rx="6" fill={outfitColor} />
+        <rect x="37" y="93" width="12" height="19" rx="6" fill={BHL} />
+        <rect x="37" y="93" width="12" height="19" rx="6" fill={BSH} />
+        <rect x="33" y="105" width="19" height="14" rx="7" fill={bootColor} />
+        <rect x="33" y="105" width="19" height="14" rx="7" fill={HL} />
+        <rect x="33" y="105" width="19" height="14" rx="7" fill={SH} />
       </g>
       <g className="chibi-leg-r">
-        <rect x="51" y="92" width="11" height="18" rx="5" fill={outfitColor} stroke={hairColor} strokeWidth="2" />
-        <rect x="48" y="104" width="17" height="12" rx="6" fill={bootColor} stroke={hairColor} strokeWidth="2" />
+        <rect x="51" y="93" width="12" height="19" rx="6" fill={outfitColor} />
+        <rect x="51" y="93" width="12" height="19" rx="6" fill={BHL} />
+        <rect x="51" y="93" width="12" height="19" rx="6" fill={BSH} />
+        <rect x="48" y="105" width="19" height="14" rx="7" fill={bootColor} />
+        <rect x="48" y="105" width="19" height="14" rx="7" fill={HL} />
+        <rect x="48" y="105" width="19" height="14" rx="7" fill={SH} />
       </g>
     </svg>
   );

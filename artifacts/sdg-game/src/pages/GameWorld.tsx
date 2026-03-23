@@ -172,6 +172,20 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
           <feGaussianBlur stdDeviation="8" result="blur" />
           <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
+        {/* ── Clay 3D tree gradients ── */}
+        <radialGradient id="treeHL" cx="32%" cy="26%" r="65%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="white" stopOpacity="0.50" />
+          <stop offset="55%"  stopColor="white" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="treeSH" cx="72%" cy="80%" r="55%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="black" stopOpacity="0.20" />
+          <stop offset="100%" stopColor="black" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="plazaHL" cx="35%" cy="30%" r="70%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="white" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
       </defs>
 
       {/* ════ PEOPLE SECTION BASE ════ */}
@@ -406,19 +420,34 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
       <rect x={1535} y={1290} width="12" height="52" fill="#8D6E63" />
       <rect x={1625} y={1290} width="12" height="52" fill="#8D6E63" />
 
-      {/* ════ PEOPLE TREES ════ */}
+      {/* ════ PEOPLE TREES — clay 3D ════ */}
       {[
         [820, 200], [920, 310], [1060, 190], [2100, 200], [2200, 310], [2300, 190],
         [820, 1380], [940, 1460], [2100, 1380], [2250, 1440],
         [100, 800], [110, 950], [2980, 800], [2990, 950],
         [1150, 480], [2010, 480], [1150, 1680], [2010, 1680],
-      ].map(([x, y], i) => (
-        <g key={i} transform={`translate(${x},${y})`}>
-          <rect x="-5" y="15" width="10" height="28" fill="#795548" />
-          <ellipse cx="0" cy="0" rx="26" ry="30" fill={i % 3 === 0 ? '#558B2F' : i % 3 === 1 ? '#388E3C' : '#33691E'} />
-          <ellipse cx="0" cy="-10" rx="18" ry="21" fill={i % 3 === 0 ? '#7CB342' : i % 3 === 1 ? '#43A047' : '#2E7D32'} />
-        </g>
-      ))}
+      ].map(([x, y], i) => {
+        const base = [['#558B2F','#33691E'],['#388E3C','#1B5E20'],['#33691E','#1B5E20']][i % 3];
+        return (
+          <g key={i} transform={`translate(${x},${y})`}>
+            {/* Ground shadow */}
+            <ellipse cx="0" cy="42" rx="18" ry="6" fill="rgba(0,0,0,0.18)" />
+            {/* Trunk — clay cylinder */}
+            <rect x="-6" y="14" width="12" height="32" rx="5" fill="#8D6E63" />
+            <rect x="-6" y="14" width="12" height="32" rx="5" fill="url(#treeHL)" />
+            {/* Back crown sphere */}
+            <ellipse cx="0" cy="-4" rx="27" ry="30" fill={base[1]} />
+            <ellipse cx="0" cy="-4" rx="27" ry="30" fill="url(#treeHL)" />
+            <ellipse cx="0" cy="-4" rx="27" ry="30" fill="url(#treeSH)" />
+            {/* Front crown sphere (slightly lighter, offset up-left) */}
+            <ellipse cx="-4" cy="-12" rx="20" ry="22" fill={base[0]} />
+            <ellipse cx="-4" cy="-12" rx="20" ry="22" fill="url(#treeHL)" />
+            <ellipse cx="-4" cy="-12" rx="20" ry="22" fill="url(#treeSH)" />
+            {/* Specular highlight */}
+            <ellipse cx="-10" cy="-22" rx="7" ry="5" fill="white" opacity="0.35" />
+          </g>
+        );
+      })}
 
       {/* Flowers */}
       {[
@@ -442,15 +471,27 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         </g>
       ))}
 
-      {/* ════ PLANET JUNGLE TREES (forest zone detail) ════ */}
-      {[[280,3560],[340,3590],[430,3545],[510,3580],[600,3555],[680,3590],[760,3560],[840,3590]].map(([x, y], i) => (
-        <g key={i} transform={`translate(${x},${y})`}>
-          <rect x="-6" y="20" width="12" height="50" fill="#3E2723" opacity="0.7" />
-          <ellipse cx="0" cy="0" rx="30" ry="35" fill={i % 2 === 0 ? '#1B5E20' : '#2E7D32'} opacity="0.8" />
-          <ellipse cx="10" cy="-15" rx="22" ry="25" fill={i % 2 === 0 ? '#388E3C' : '#43A047'} opacity="0.8" />
-          <ellipse cx="-8" cy="-18" rx="18" ry="20" fill="#558B2F" opacity="0.7" />
-        </g>
-      ))}
+      {/* ════ PLANET JUNGLE TREES — clay 3D ════ */}
+      {[[280,3560],[340,3590],[430,3545],[510,3580],[600,3555],[680,3590],[760,3560],[840,3590]].map(([x, y], i) => {
+        const base = i % 2 === 0 ? ['#388E3C','#1B5E20'] : ['#43A047','#2E7D32'];
+        return (
+          <g key={i} transform={`translate(${x},${y})`}>
+            <ellipse cx="0" cy="52" rx="20" ry="7" fill="rgba(0,0,0,0.20)" />
+            <rect x="-7" y="18" width="14" height="40" rx="6" fill="#5D4037" />
+            <rect x="-7" y="18" width="14" height="40" rx="6" fill="url(#treeHL)" />
+            <ellipse cx="0" cy="-2" rx="32" ry="36" fill={base[1]} />
+            <ellipse cx="0" cy="-2" rx="32" ry="36" fill="url(#treeHL)" />
+            <ellipse cx="0" cy="-2" rx="32" ry="36" fill="url(#treeSH)" />
+            <ellipse cx="8" cy="-16" rx="22" ry="25" fill={base[0]} />
+            <ellipse cx="8" cy="-16" rx="22" ry="25" fill="url(#treeHL)" />
+            <ellipse cx="8" cy="-16" rx="22" ry="25" fill="url(#treeSH)" />
+            <ellipse cx="-6" cy="-19" rx="14" ry="16" fill="#66BB6A" />
+            <ellipse cx="-6" cy="-19" rx="14" ry="16" fill="url(#treeHL)" />
+            <ellipse cx="-6" cy="-19" rx="14" ry="16" fill="url(#treeSH)" />
+            <ellipse cx="-12" cy="-28" rx="6" ry="5" fill="white" opacity="0.30" />
+          </g>
+        );
+      })}
 
       {/* ════ OCEAN ZONE FISH & DETAILS ════ */}
       {[[2350,2680],[2500,2750],[2700,2700],[2900,2760],[3050,2720]].map(([x, y], i) => (
@@ -479,161 +520,254 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
   );
 }
 
-/* ── Building renderer ── */
+/* ── Building renderer — clay toy 3D isometric style ── */
 function Buildings() {
+  const D = 14; /* isometric depth offset in px */
+
+  /* Label tag helper */
+  const Label = ({ mx, y, color, text }: { mx: number; y: number; color: string; text: string }) => (
+    <>
+      <rect x={mx - 44} y={y - 30} width="88" height="20" rx="10" fill="white" opacity="0.92" />
+      <rect x={mx - 44} y={y - 30} width="88" height="20" rx="10" fill={color} opacity="0.20" />
+      <text x={mx} y={y - 16} textAnchor="middle" fontSize="10" fontWeight="bold" fontFamily="Nunito" fill={color}>{text}</text>
+    </>
+  );
+
   return (
     <svg width={WORLD_W} height={WORLD_H} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+      <defs>
+        <radialGradient id="bldHL" cx="30%" cy="20%" r="70%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="white" stopOpacity="0.42" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="bldSH" cx="75%" cy="85%" r="55%" gradientUnits="objectBoundingBox">
+          <stop offset="0%"   stopColor="black" stopOpacity="0.20" />
+          <stop offset="100%" stopColor="black" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
       {WORLD_BUILDINGS.map((b, i) => {
         const mx = b.x + b.w / 2;
+
         if (['cottage', 'clinic', 'shop', 'barn'].includes(b.type)) {
+          const rx = b.x, ry = b.y, rw = b.w, rh = b.h;
+          const roofPeak = ry - rh * 0.48;
           return (
             <g key={i}>
-              <ellipse cx={mx} cy={b.y + b.h + 10} rx={b.w * 0.45} ry={10} fill="rgba(0,0,0,0.15)" />
-              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="6" fill={b.color} stroke="#5D4037" strokeWidth="2.5" />
-              <polygon points={`${b.x - 8},${b.y}  ${mx},${b.y - b.h * 0.45}  ${b.x + b.w + 8},${b.y}`}
-                fill={b.roofColor} stroke="#5D4037" strokeWidth="2.5" />
-              <rect x={b.x + b.w * 0.15} y={b.y + b.h * 0.25} width={b.w * 0.22} height={b.h * 0.25} rx="3"
-                fill="#B3E5FC" stroke="#5D4037" strokeWidth="1.5" />
-              <rect x={b.x + b.w * 0.60} y={b.y + b.h * 0.25} width={b.w * 0.22} height={b.h * 0.25} rx="3"
-                fill="#B3E5FC" stroke="#5D4037" strokeWidth="1.5" />
-              <rect x={mx - b.w * 0.12} y={b.y + b.h * 0.55} width={b.w * 0.24} height={b.h * 0.44} rx="4"
-                fill="#5D4037" />
+              {/* Ground shadow */}
+              <ellipse cx={mx + D/2} cy={ry + rh + D + 8} rx={rw * 0.48} ry={9} fill="rgba(0,0,0,0.18)" />
+              {/* Isometric right side face */}
+              <polygon
+                points={`${rx+rw},${ry} ${rx+rw+D},${ry-D} ${rx+rw+D},${ry+rh-D} ${rx+rw},${ry+rh}`}
+                fill={b.color} style={{ filter: 'brightness(0.68)' }} />
+              {/* Isometric roof side face */}
+              <polygon
+                points={`${rx+rw},${ry} ${rx+rw+D},${ry-D} ${mx+D},${roofPeak-D} ${mx},${roofPeak}`}
+                fill={b.roofColor} style={{ filter: 'brightness(0.72)' }} />
+              {/* Front wall */}
+              <rect x={rx} y={ry} width={rw} height={rh} rx="7" fill={b.color} />
+              <rect x={rx} y={ry} width={rw} height={rh} rx="7" fill="url(#bldHL)" />
+              <rect x={rx} y={ry} width={rw} height={rh} rx="7" fill="url(#bldSH)" />
+              {/* Roof front face */}
+              <polygon points={`${rx - 8},${ry}  ${mx},${roofPeak}  ${rx + rw + 8},${ry}`}
+                fill={b.roofColor} />
+              <polygon points={`${rx - 8},${ry}  ${mx},${roofPeak}  ${rx + rw + 8},${ry}`}
+                fill="url(#bldHL)" />
+              {/* Windows */}
+              <rect x={rx + rw * 0.12} y={ry + rh * 0.22} width={rw * 0.24} height={rh * 0.26} rx="4"
+                fill="#B3E5FC" />
+              <rect x={rx + rw * 0.12} y={ry + rh * 0.22} width={rw * 0.24} height={rh * 0.26} rx="4"
+                fill="url(#bldHL)" opacity="0.5" />
+              <rect x={rx + rw * 0.62} y={ry + rh * 0.22} width={rw * 0.24} height={rh * 0.26} rx="4"
+                fill="#B3E5FC" />
+              <rect x={rx + rw * 0.62} y={ry + rh * 0.22} width={rw * 0.24} height={rh * 0.26} rx="4"
+                fill="url(#bldHL)" opacity="0.5" />
+              {/* Door */}
+              <rect x={mx - rw * 0.13} y={ry + rh * 0.55} width={rw * 0.26} height={rh * 0.44} rx="5"
+                fill="#795548" />
+              <rect x={mx - rw * 0.13} y={ry + rh * 0.55} width={rw * 0.26} height={rh * 0.44} rx="5"
+                fill="url(#bldHL)" opacity="0.4" />
               {b.type === 'clinic' && (
                 <>
-                  <rect x={mx - 5} y={b.y + b.h * 0.05} width={10} height={26} rx="3" fill="white" stroke="#4CAF50" strokeWidth="1.5" />
-                  <rect x={mx - 13} y={b.y + b.h * 0.05 + 8} width={26} height={10} rx="3" fill="white" stroke="#4CAF50" strokeWidth="1.5" />
+                  <rect x={mx - 5} y={ry + rh * 0.04} width={10} height={26} rx="3" fill="white" />
+                  <rect x={mx - 13} y={ry + rh * 0.04 + 8} width={26} height={10} rx="3" fill="white" />
+                  <circle cx={mx} cy={ry + rh * 0.04 + 13} r="6" fill="#4CAF50" opacity="0.3" />
                 </>
               )}
-              {b.label && (
-                <>
-                  <rect x={mx - 40} y={b.y - 30} width="80" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
-                  <text x={mx} y={b.y - 17} textAnchor="middle" fontSize="10" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
-                </>
-              )}
+              {b.label && <Label mx={mx} y={ry} color={b.roofColor} text={b.label} />}
             </g>
           );
         }
+
         if (b.type === 'tower') {
+          const rx = b.x, ry = b.y, rw = b.w, rh = b.h;
           return (
             <g key={i}>
-              <ellipse cx={mx} cy={b.y + b.h + 8} rx={b.w * 0.4} ry={8} fill="rgba(0,0,0,0.12)" />
-              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="4" fill={b.color} stroke="#5D4037" strokeWidth="2.5" />
-              <rect x={b.x} y={b.y} width={b.w} height={b.h * 0.2} rx="4" fill={b.roofColor} stroke="#5D4037" strokeWidth="2" />
-              {[0, 1, 2].map(r => [0, 1].map(c => (
-                <rect key={`${r}-${c}`}
-                  x={b.x + b.w * 0.12 + c * b.w * 0.45} y={b.y + b.h * 0.28 + r * b.h * 0.22}
-                  width={b.w * 0.30} height={b.h * 0.16} rx="2"
-                  fill="#FFF9C4" stroke="#5D4037" strokeWidth="1.5" />
+              <ellipse cx={mx + D/2} cy={ry + rh + D + 6} rx={rw * 0.42} ry={8} fill="rgba(0,0,0,0.16)" />
+              {/* Isometric right side */}
+              <polygon points={`${rx+rw},${ry} ${rx+rw+D},${ry-D} ${rx+rw+D},${ry+rh-D} ${rx+rw},${ry+rh}`}
+                fill={b.color} style={{ filter: 'brightness(0.62)' }} />
+              {/* Roof right side */}
+              <polygon points={`${rx+rw},${ry} ${rx+rw+D},${ry-D} ${rx+rw+D},${ry+rh*0.17-D} ${rx+rw},${ry+rh*0.17}`}
+                fill={b.roofColor} style={{ filter: 'brightness(0.68)' }} />
+              {/* Front wall */}
+              <rect x={rx} y={ry} width={rw} height={rh} rx="5" fill={b.color} />
+              <rect x={rx} y={ry} width={rw} height={rh} rx="5" fill="url(#bldHL)" />
+              <rect x={rx} y={ry} width={rw} height={rh} rx="5" fill="url(#bldSH)" />
+              {/* Roof band */}
+              <rect x={rx} y={ry} width={rw} height={rh * 0.18} rx="5" fill={b.roofColor} />
+              <rect x={rx} y={ry} width={rw} height={rh * 0.18} rx="5" fill="url(#bldHL)" />
+              {/* Windows grid */}
+              {[0,1,2].flatMap(r => [0,1].map(c => (
+                <g key={`${r}-${c}`}>
+                  <rect x={rx + rw * 0.10 + c * rw * 0.46} y={ry + rh * 0.26 + r * rh * 0.22}
+                    width={rw * 0.32} height={rh * 0.16} rx="3" fill="#FFF9C4" />
+                  <rect x={rx + rw * 0.10 + c * rw * 0.46} y={ry + rh * 0.26 + r * rh * 0.22}
+                    width={rw * 0.32} height={rh * 0.16} rx="3" fill="url(#bldHL)" opacity="0.5" />
+                </g>
               )))}
-              {b.label && (
-                <>
-                  <rect x={mx - 38} y={b.y - 28} width="76" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
-                  <text x={mx} y={b.y - 15} textAnchor="middle" fontSize="10" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
-                </>
-              )}
+              {b.label && <Label mx={mx} y={ry} color={b.roofColor} text={b.label} />}
             </g>
           );
         }
+
         if (b.type === 'school') {
+          const rx = b.x, ry = b.y, rw = b.w, rh = b.h;
+          const roofPeak = ry - rh * 0.52;
           return (
             <g key={i}>
-              <ellipse cx={mx} cy={b.y + b.h + 10} rx={b.w * 0.45} ry={10} fill="rgba(0,0,0,0.18)" />
-              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="6" fill={b.color} stroke="#4A148C" strokeWidth="3" />
-              <polygon points={`${b.x - 10},${b.y}  ${mx},${b.y - b.h * 0.5}  ${b.x + b.w + 10},${b.y}`}
-                fill={b.roofColor} stroke="#4A148C" strokeWidth="3" />
-              <rect x={mx - 18} y={b.y - b.h * 0.5 - 30} width="36" height="28" rx="4" fill={b.color} stroke="#4A148C" strokeWidth="2" />
-              <polygon points={`${mx - 20},${b.y - b.h * 0.5 - 30}  ${mx},${b.y - b.h * 0.5 - 55}  ${mx + 20},${b.y - b.h * 0.5 - 30}`}
-                fill={b.roofColor} stroke="#4A148C" strokeWidth="2" />
-              <ellipse cx={mx} cy={b.y - b.h * 0.5 - 18} rx="8" ry="7" fill="#FFD700" />
+              <ellipse cx={mx + D/2} cy={ry + rh + D + 10} rx={rw * 0.48} ry={10} fill="rgba(0,0,0,0.20)" />
+              {/* Right side */}
+              <polygon points={`${rx+rw},${ry} ${rx+rw+D},${ry-D} ${rx+rw+D},${ry+rh-D} ${rx+rw},${ry+rh}`}
+                fill={b.color} style={{ filter: 'brightness(0.62)' }} />
+              <polygon points={`${rx+rw},${ry} ${rx+rw+D},${ry-D} ${mx+D},${roofPeak-D} ${mx},${roofPeak}`}
+                fill={b.roofColor} style={{ filter: 'brightness(0.68)' }} />
+              {/* Front wall */}
+              <rect x={rx} y={ry} width={rw} height={rh} rx="7" fill={b.color} />
+              <rect x={rx} y={ry} width={rw} height={rh} rx="7" fill="url(#bldHL)" />
+              <rect x={rx} y={ry} width={rw} height={rh} rx="7" fill="url(#bldSH)" />
+              {/* Roof + steeple */}
+              <polygon points={`${rx-10},${ry} ${mx},${roofPeak} ${rx+rw+10},${ry}`} fill={b.roofColor} />
+              <polygon points={`${rx-10},${ry} ${mx},${roofPeak} ${rx+rw+10},${ry}`} fill="url(#bldHL)" />
+              <rect x={mx - 18} y={roofPeak - 30} width="36" height="28" rx="4" fill={b.color} />
+              <polygon points={`${mx-20},${roofPeak-30} ${mx},${roofPeak-55} ${mx+20},${roofPeak-30}`} fill={b.roofColor} />
+              <ellipse cx={mx} cy={roofPeak - 18} rx="8" ry="7" fill="#FFD700" />
+              {/* Windows */}
               {[-0.35, 0, 0.35].map((off, wi) => (
-                <rect key={wi} x={mx + off * b.w - 12} y={b.y + b.h * 0.2} width="24" height={b.h * 0.22} rx="3"
-                  fill="#FFF9C4" stroke="#4A148C" strokeWidth="2" />
+                <g key={wi}>
+                  <rect x={mx + off * rw - 12} y={ry + rh * 0.18} width="24" height={rh * 0.23} rx="4"
+                    fill="#FFF9C4" />
+                  <rect x={mx + off * rw - 12} y={ry + rh * 0.18} width="24" height={rh * 0.23} rx="4"
+                    fill="url(#bldHL)" opacity="0.5" />
+                </g>
               ))}
-              <rect x={mx - 18} y={b.y + b.h * 0.52} width="36" height={b.h * 0.47} rx="4" fill="#4A148C" />
-              {b.label && (
-                <>
-                  <rect x={mx - 48} y={b.y - 32} width="96" height="22" rx="11" fill="white" stroke="#4A148C" strokeWidth="2" />
-                  <text x={mx} y={b.y - 15} textAnchor="middle" fontSize="11" fontWeight="bold" fontFamily="Nunito" fill="#4A148C">{b.label}</text>
-                </>
-              )}
+              {/* Door */}
+              <rect x={mx - 18} y={ry + rh * 0.52} width="36" height={rh * 0.47} rx="5" fill="#4A148C" />
+              <rect x={mx - 18} y={ry + rh * 0.52} width="36" height={rh * 0.47} rx="5" fill="url(#bldHL)" opacity="0.3" />
+              {b.label && <Label mx={mx} y={ry} color="#4A148C" text={b.label} />}
             </g>
           );
         }
+
         if (b.type === 'factory') {
+          const rx = b.x, ry = b.y, rw = b.w, rh = b.h;
           return (
             <g key={i}>
-              <ellipse cx={mx} cy={b.y + b.h + 8} rx={b.w * 0.4} ry={8} fill="rgba(0,0,0,0.25)" />
-              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="4" fill={b.color} stroke="#263238" strokeWidth="3" />
-              <rect x={b.x} y={b.y} width={b.w} height={b.h * 0.15} fill={b.roofColor} stroke="#263238" strokeWidth="2" />
-              <rect x={mx - 12} y={b.y - 35} width="16" height="40" rx="4" fill="#37474F" />
-              <ellipse cx={mx - 4} cy={b.y - 42} rx="10" ry="18" fill="#B0BEC5" opacity="0.5" />
-              {[0, 1].map(r => [0, 1, 2].map(c => (
-                <rect key={`${r}-${c}`}
-                  x={b.x + b.w * 0.08 + c * b.w * 0.30} y={b.y + b.h * 0.25 + r * b.h * 0.32}
-                  width={b.w * 0.20} height={b.h * 0.22} rx="2"
-                  fill="#FFF9C4" stroke="#455A64" strokeWidth="1.5" opacity="0.8" />
+              <ellipse cx={mx + D/2} cy={ry + rh + D + 8} rx={rw * 0.44} ry={8} fill="rgba(0,0,0,0.28)" />
+              {/* Isometric side */}
+              <polygon points={`${rx+rw},${ry} ${rx+rw+D},${ry-D} ${rx+rw+D},${ry+rh-D} ${rx+rw},${ry+rh}`}
+                fill={b.color} style={{ filter: 'brightness(0.58)' }} />
+              {/* Roof side */}
+              <polygon points={`${rx+rw},${ry} ${rx+rw+D},${ry-D} ${rx+rw+D},${ry+rh*0.14-D} ${rx+rw},${ry+rh*0.14}`}
+                fill={b.roofColor} style={{ filter: 'brightness(0.65)' }} />
+              {/* Front */}
+              <rect x={rx} y={ry} width={rw} height={rh} rx="5" fill={b.color} />
+              <rect x={rx} y={ry} width={rw} height={rh} rx="5" fill="url(#bldHL)" />
+              <rect x={rx} y={ry} width={rw} height={rh} rx="5" fill="url(#bldSH)" />
+              <rect x={rx} y={ry} width={rw} height={rh * 0.14} fill={b.roofColor} />
+              <rect x={rx} y={ry} width={rw} height={rh * 0.14} fill="url(#bldHL)" />
+              {/* Chimney */}
+              <rect x={mx - 12} y={ry - 38} width="18" height="44" rx="5" fill="#37474F" />
+              <rect x={mx - 12} y={ry - 38} width="18" height="44" rx="5" fill="url(#bldHL)" opacity="0.4" />
+              <ellipse cx={mx - 3} cy={ry - 46} rx="11" ry="20" fill="#B0BEC5" opacity="0.45" />
+              {/* Windows */}
+              {[0,1].flatMap(r => [0,1,2].map(c => (
+                <g key={`${r}-${c}`}>
+                  <rect x={rx + rw * 0.06 + c * rw * 0.30} y={ry + rh * 0.24 + r * rh * 0.33}
+                    width={rw * 0.22} height={rh * 0.22} rx="3" fill="#FFF9C4" opacity="0.85" />
+                  <rect x={rx + rw * 0.06 + c * rw * 0.30} y={ry + rh * 0.24 + r * rh * 0.33}
+                    width={rw * 0.22} height={rh * 0.22} rx="3" fill="url(#bldHL)" opacity="0.4" />
+                </g>
               )))}
-              {b.label && (
-                <>
-                  <rect x={mx - 45} y={b.y - 55} width="90" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
-                  <text x={mx} y={b.y - 42} textAnchor="middle" fontSize="9" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
-                </>
-              )}
+              {b.label && <Label mx={mx} y={ry - 40} color={b.roofColor} text={b.label} />}
             </g>
           );
         }
+
         if (b.type === 'lighthouse') {
+          const rx = b.x, ry = b.y, rw = b.w, rh = b.h;
           return (
             <g key={i}>
-              <ellipse cx={mx} cy={b.y + b.h + 6} rx={b.w * 0.4} ry={6} fill="rgba(0,0,0,0.2)" />
-              <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="5"
-                fill={`url(#stripe_${i})`}
-                stroke={b.roofColor} strokeWidth="3" />
-              {/* red/white stripes */}
+              <ellipse cx={mx + D/2} cy={ry + rh + D + 5} rx={rw * 0.42} ry={6} fill="rgba(0,0,0,0.20)" />
+              {/* Side (slightly darker for lighthouse stripes) */}
+              <polygon points={`${rx+rw},${ry} ${rx+rw+D},${ry-D} ${rx+rw+D},${ry+rh-D} ${rx+rw},${ry+rh}`}
+                fill="rgba(0,0,0,0.25)" />
+              {/* Front body with red/white stripes */}
+              <rect x={rx} y={ry} width={rw} height={rh} rx="6" fill="white" />
               {[0,1,2,3,4].map(si => (
-                <rect key={si} x={b.x} y={b.y + si * b.h / 5} width={b.w} height={b.h / 5}
-                  fill={si % 2 === 0 ? 'white' : '#F44336'} opacity="0.7" />
+                <rect key={si} x={rx} y={ry + si * rh / 5} width={rw} height={rh / 5}
+                  fill={si % 2 === 0 ? 'white' : '#EF5350'} />
               ))}
-              <ellipse cx={mx} cy={b.y} rx={b.w * 0.7} ry={12} fill="#FFF176" stroke={b.roofColor} strokeWidth="2" />
-              <ellipse cx={mx} cy={b.y} rx={8} ry={8} fill="#FFD700" />
-              {b.label && (
-                <>
-                  <rect x={mx - 42} y={b.y - 28} width="84" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
-                  <text x={mx} y={b.y - 15} textAnchor="middle" fontSize="9" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
-                </>
-              )}
+              <rect x={rx} y={ry} width={rw} height={rh} rx="6" fill="url(#bldHL)" opacity="0.6" />
+              <rect x={rx} y={ry} width={rw} height={rh} rx="6" fill="url(#bldSH)" opacity="0.5" />
+              {/* Lantern top */}
+              <ellipse cx={mx} cy={ry} rx={rw * 0.72} ry={13} fill="#FFF176" />
+              <ellipse cx={mx} cy={ry} rx={rw * 0.72} ry={13} fill="url(#bldHL)" />
+              <ellipse cx={mx} cy={ry} rx={9} ry={9} fill="#FFD700" />
+              {b.label && <Label mx={mx} y={ry} color={b.roofColor} text={b.label} />}
             </g>
           );
         }
+
         if (b.type === 'treehouse') {
+          const rx = b.x, ry = b.y, rw = b.w, rh = b.h;
+          const houseX = rx + 10, houseW = rw - 20, houseH = rh * 0.68;
           return (
             <g key={i}>
-              <rect x={mx - 8} y={b.y + b.h - 20} width="16" height="60" fill="#5D4037" opacity="0.8" />
-              <ellipse cx={mx} cy={b.y + b.h - 30} rx={b.w * 0.55} ry={b.h * 0.35} fill="#388E3C" opacity="0.9" />
-              <rect x={b.x + 10} y={b.y} width={b.w - 20} height={b.h * 0.7} rx="6" fill={b.color} stroke="#2E7D32" strokeWidth="2" />
-              <polygon points={`${b.x + 5},${b.y}  ${mx},${b.y - b.h * 0.4}  ${b.x + b.w - 5},${b.y}`}
-                fill={b.roofColor} stroke="#2E7D32" strokeWidth="2" />
-              {b.label && (
-                <>
-                  <rect x={mx - 38} y={b.y - 32} width="76" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
-                  <text x={mx} y={b.y - 19} textAnchor="middle" fontSize="9" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
-                </>
-              )}
+              {/* Tree trunk (clay cylinder) */}
+              <rect x={mx - 9} y={ry + houseH - 22} width="18" height="60" rx="8" fill="#6D4C41" />
+              <rect x={mx - 9} y={ry + houseH - 22} width="18" height="60" rx="8" fill="url(#bldHL)" opacity="0.4" />
+              {/* Tree canopy (clay 3D sphere) */}
+              <ellipse cx={mx} cy={ry + houseH - 28} rx={rw * 0.58} ry={rh * 0.38} fill="#2E7D32" />
+              <ellipse cx={mx} cy={ry + houseH - 28} rx={rw * 0.58} ry={rh * 0.38} fill="url(#bldHL)" />
+              <ellipse cx={mx} cy={ry + houseH - 28} rx={rw * 0.58} ry={rh * 0.38} fill="url(#bldSH)" />
+              <ellipse cx={mx - rw*0.2} cy={ry + houseH - 36} rx={rw * 0.15} ry={rh * 0.12} fill="white" opacity="0.25" />
+              {/* Isometric right side of house */}
+              <polygon points={`${houseX+houseW},${ry} ${houseX+houseW+D},${ry-D} ${houseX+houseW+D},${ry+houseH-D} ${houseX+houseW},${ry+houseH}`}
+                fill={b.color} style={{ filter: 'brightness(0.65)' }} />
+              {/* House */}
+              <rect x={houseX} y={ry} width={houseW} height={houseH} rx="6" fill={b.color} />
+              <rect x={houseX} y={ry} width={houseW} height={houseH} rx="6" fill="url(#bldHL)" />
+              <rect x={houseX} y={ry} width={houseW} height={houseH} rx="6" fill="url(#bldSH)" />
+              {/* Roof */}
+              <polygon points={`${rx+6},${ry} ${mx},${ry - rh * 0.42} ${rx+rw-6},${ry}`} fill={b.roofColor} />
+              <polygon points={`${rx+6},${ry} ${mx},${ry - rh * 0.42} ${rx+rw-6},${ry}`} fill="url(#bldHL)" />
+              {b.label && <Label mx={mx} y={ry} color={b.roofColor} text={b.label} />}
             </g>
           );
         }
-        // well
+
+        /* well */
         return (
           <g key={i}>
-            <circle cx={mx} cy={b.y + 50} r="36" fill={b.color} stroke={b.roofColor} strokeWidth="3" />
+            <ellipse cx={mx + D/2} cy={b.y + 60 + D} rx={36} ry={10} fill="rgba(0,0,0,0.18)" />
+            <circle cx={mx} cy={b.y + 50} r="36" fill={b.color} />
+            <circle cx={mx} cy={b.y + 50} r="36" fill="url(#bldHL)" />
+            <circle cx={mx} cy={b.y + 50} r="36" fill="url(#bldSH)" />
             <circle cx={mx} cy={b.y + 50} r="24" fill={b.roofColor} />
+            <circle cx={mx} cy={b.y + 50} r="24" fill="url(#bldHL)" />
             <text x={mx} y={b.y + 57} textAnchor="middle" fontSize="20">💧</text>
-            {b.label && (
-              <>
-                <rect x={mx - 40} y={b.y - 10} width="80" height="18" rx="9" fill="white" stroke={b.roofColor} strokeWidth="1.5" />
-                <text x={mx} y={b.y + 3} textAnchor="middle" fontSize="9" fontWeight="bold" fontFamily="Nunito" fill={b.roofColor}>{b.label}</text>
-              </>
-            )}
+            {b.label && <Label mx={mx} y={b.y + 10} color={b.roofColor} text={b.label} />}
           </g>
         );
       })}

@@ -74,25 +74,25 @@
 /* ── Sketch / hand-drawn utilities ── */
 @layer utilities {
   .sketch-border {
-    border: 3px solid hsl(var(--foreground));
-    border-radius: 8px;
-    box-shadow: 3px 3px 0 hsl(var(--foreground));
+    border: 2px solid rgba(0,0,0,0.12);
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.14), 0 2px 6px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.55);
   }
   .sketch-border-sm {
-    border: 2px solid hsl(var(--foreground));
-    border-radius: 6px;
-    box-shadow: 2px 2px 0 hsl(var(--foreground));
+    border: 1.5px solid rgba(0,0,0,0.10);
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.45);
   }
   .sketch-shadow {
-    box-shadow: 4px 4px 0 hsl(var(--foreground));
+    box-shadow: 0 8px 24px rgba(0,0,0,0.16), 0 3px 8px rgba(0,0,0,0.10);
   }
   .sketch-shadow-hover:hover {
-    box-shadow: 2px 2px 0 hsl(var(--foreground));
-    transform: translate(2px, 2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
+    transform: translateY(2px);
   }
   .sketch-shadow-active:active {
-    box-shadow: 0px 0px 0 hsl(var(--foreground));
-    transform: translate(4px, 4px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+    transform: translateY(4px);
   }
 
   /* Zone colors */
