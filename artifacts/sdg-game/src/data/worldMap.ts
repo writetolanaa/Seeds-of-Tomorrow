@@ -1,7 +1,7 @@
 import type { ZoneId } from './gameData';
 
 export const WORLD_W = 3200;
-export const WORLD_H = 7200;
+export const WORLD_H = 11000;
 export const PLAYER_SPEED = 5;
 export const INTERACT_RADIUS = 100;
 export const PLAYER_SPAWN = { x: 1580, y: 1200 };
@@ -15,7 +15,7 @@ export interface ZoneRegion {
   name: string;
   emoji: string;
   sdg: number;
-  level: 'people' | 'planet' | 'prosperity';
+  level: 'people' | 'planet' | 'prosperity' | 'peace' | 'partnership';
 }
 
 export interface WorldNPC {
@@ -70,7 +70,17 @@ export const PROSPERITY_ZONE_REGIONS: ZoneRegion[] = [
   { id: 'cities',      x: 2320, y: 6040, w: 680, h: 560, color: '#E0F2F1', borderColor: '#00695C', name: "Skylar's Smart City",         emoji: '🏙️', sdg: 11, level: 'prosperity' },
 ];
 
-export const ZONE_REGIONS: ZoneRegion[] = [...PEOPLE_ZONE_REGIONS, ...PLANET_ZONE_REGIONS, ...PROSPERITY_ZONE_REGIONS];
+/* ── PEACE LEVEL – 1 zone (SDG 16) y=7400-9000 ── */
+export const PEACE_ZONE_REGIONS: ZoneRegion[] = [
+  { id: 'peace', x: 800, y: 7500, w: 1600, h: 1200, color: '#E8EAF6', borderColor: '#1A237E', name: "Justia's Peace Court", emoji: '⚖️', sdg: 16, level: 'peace' },
+];
+
+/* ── PARTNERSHIP LEVEL – 1 zone (SDG 17) y=9200-10800 ── */
+export const PARTNERSHIP_ZONE_REGIONS: ZoneRegion[] = [
+  { id: 'partnership', x: 800, y: 9300, w: 1600, h: 1200, color: '#F3E5F5', borderColor: '#4A148C', name: "Accord's Global Summit", emoji: '🤝', sdg: 17, level: 'partnership' },
+];
+
+export const ZONE_REGIONS: ZoneRegion[] = [...PEOPLE_ZONE_REGIONS, ...PLANET_ZONE_REGIONS, ...PROSPERITY_ZONE_REGIONS, ...PEACE_ZONE_REGIONS, ...PARTNERSHIP_ZONE_REGIONS];
 
 /* ── PEOPLE LEVEL NPCs ── */
 export const PEOPLE_NPCS: WorldNPC[] = [
@@ -185,7 +195,35 @@ export const PROSPERITY_NPCS: WorldNPC[] = [
     dialogues: ["The city app tells me where the cleanest air parks are.", "Smart cities use data to make daily life better!"] },
 ];
 
-export const WORLD_NPCS: WorldNPC[] = [...PEOPLE_NPCS, ...PLANET_NPCS, ...PROSPERITY_NPCS];
+/* ── PEACE LEVEL NPCs (SDG 16) ── */
+export const PEACE_NPCS: WorldNPC[] = [
+  { id: 'justia', name: 'Justia', x: 1580, y: 7880, zoneId: 'peace', isLord: true, spriteKey: 'thinklet', bubble: '⚖️',
+    dialogues: ["The courts are broken and corruption runs rampant through our institutions!", "Real peace comes from fair laws applied equally to everyone.", "Help me investigate cases and make just decisions to restore trust in our system!"] },
+  { id: 'justice_elder', name: 'Elder Ward', x: 1000, y: 7960, zoneId: 'peace', isLord: false, spriteKey: 'grandpajoe',
+    dialogues: ["I waited 3 years for a simple court case to be resolved.", "Slow justice is no justice — efficient courts matter as much as fair ones."] },
+  { id: 'whistleblower', name: 'Pat', x: 1380, y: 7980, zoneId: 'peace', isLord: false, spriteKey: 'youngmaya',
+    dialogues: ["I reported corruption and was ignored for months.", "Transparency laws exist to protect people like me!"] },
+  { id: 'mediator', name: 'Soren', x: 1780, y: 7960, zoneId: 'peace', isLord: false, spriteKey: 'farmerali', facing: 'left',
+    dialogues: ["Mediation resolved our land dispute in one week.", "Peaceful dialogue prevents conflicts from escalating."] },
+  { id: 'youth_rights', name: 'Amira', x: 2160, y: 7950, zoneId: 'peace', isLord: false, spriteKey: 'girl',
+    dialogues: ["Young people have a right to participate in decisions that affect us.", "Inclusive institutions build lasting peace!"] },
+];
+
+/* ── PARTNERSHIP LEVEL NPCs (SDG 17) ── */
+export const PARTNERSHIP_NPCS: WorldNPC[] = [
+  { id: 'accord', name: 'Accord', x: 1580, y: 9680, zoneId: 'partnership', isLord: true, spriteKey: 'nexus', bubble: '🤝',
+    dialogues: ["The world's SDGs are stalling — nations are working in silos instead of together!", "No single country, company, or NGO can solve global challenges alone.", "Help me forge the right partnerships to unlock progress on all 17 Goals!"] },
+  { id: 'diplomat', name: 'Ambassador Li', x: 1000, y: 9760, zoneId: 'partnership', isLord: false, spriteKey: 'grandpajoe',
+    dialogues: ["Our nations share 80% of the same challenges.", "Joint research partnerships save billions compared to working alone."] },
+  { id: 'ngo_leader', name: 'Dr. Kofi', x: 1380, y: 9780, zoneId: 'partnership', isLord: false, spriteKey: 'citizentom',
+    dialogues: ["NGOs connect communities with the funding they need.", "Local knowledge makes global funding 3× more effective."] },
+  { id: 'tech_transfer', name: 'Mia', x: 1780, y: 9760, zoneId: 'partnership', isLord: false, spriteKey: 'youngmaya', facing: 'left',
+    dialogues: ["Technology transfer to developing nations accelerates all SDGs.", "Open-source solutions multiply impact across borders."] },
+  { id: 'funding_rep', name: 'Commissioner Ray', x: 2160, y: 9750, zoneId: 'partnership', isLord: false, spriteKey: 'worker',
+    dialogues: ["Public-private partnerships can fund clean infrastructure.", "When governments and companies align on SDGs — magic happens!"] },
+];
+
+export const WORLD_NPCS: WorldNPC[] = [...PEOPLE_NPCS, ...PLANET_NPCS, ...PROSPERITY_NPCS, ...PEACE_NPCS, ...PARTNERSHIP_NPCS];
 
 /* ── BUILDINGS ── */
 export const WORLD_BUILDINGS: WorldBuilding[] = [
@@ -321,6 +359,49 @@ export const WORLD_BUILDINGS: WorldBuilding[] = [
   { x: 2290, y: 6400, w: 130, h: 100, type: 'shop',    color: '#B2DFDB', roofColor: '#00695C', label: '☕ Smart Café' },
   { x: 2445, y: 6398, w: 115, h: 100, type: 'cottage', color: '#80CBC4', roofColor: '#004D40' },
   { x: 2580, y: 6402, w: 120, h: 100, type: 'clinic',  color: '#B2EBF2', roofColor: '#006064', label: '🚲 Bike Share' },
+
+  // ── PEACE SPACE BUILDINGS (SDG 16) y~7400-9000 ──
+  { x: 900,  y: 7540, w: 260, h: 200, type: 'school',  color: '#C5CAE9', roofColor: '#1A237E', label: '⚖️ Courthouse' },
+  { x: 1190, y: 7550, w: 200, h: 185, type: 'clinic',  color: '#E8EAF6', roofColor: '#283593', label: '🏛️ Court of Appeals' },
+  { x: 1420, y: 7545, w: 160, h: 170, type: 'tower',   color: '#C5CAE9', roofColor: '#1A237E' },
+  { x: 1610, y: 7540, w: 200, h: 190, type: 'shop',    color: '#E8EAF6', roofColor: '#3949AB', label: '🕊️ Peace Center' },
+  { x: 1840, y: 7545, w: 160, h: 175, type: 'cottage', color: '#C5CAE9', roofColor: '#283593', label: '🤝 Mediation Hall' },
+  { x: 2025, y: 7550, w: 130, h: 165, type: 'factory', color: '#E8EAF6', roofColor: '#1565C0', label: '📰 Transparency Office' },
+  { x: 2180, y: 7545, w: 180, h: 180, type: 'school',  color: '#C5CAE9', roofColor: '#1A237E', label: '🏫 Justice Academy' },
+  // Peace zone lower row
+  { x: 920,  y: 7780, w: 150, h: 120, type: 'shop',    color: '#E8EAF6', roofColor: '#303F9F', label: '📋 Legal Aid Clinic' },
+  { x: 1090, y: 7778, w: 130, h: 115, type: 'cottage', color: '#C5CAE9', roofColor: '#1A237E' },
+  { x: 1240, y: 7776, w: 100, h: 110, type: 'cottage', color: '#E8EAF6', roofColor: '#3F51B5' },
+  { x: 2050, y: 7778, w: 140, h: 115, type: 'shop',    color: '#E8EAF6', roofColor: '#283593', label: '📡 Anti-Corruption Hub' },
+  { x: 2210, y: 7780, w: 110, h: 112, type: 'cottage', color: '#C5CAE9', roofColor: '#1A237E' },
+  // Peace hub
+  { x: 1530, y: 8000, w: 100, h: 100, type: 'well',    color: '#C5CAE9', roofColor: '#1A237E', label: 'Peace Plaza' },
+  // Lower peace buildings
+  { x: 900,  y: 8200, w: 200, h: 140, type: 'clinic',  color: '#E3F2FD', roofColor: '#1565C0', label: '🌐 Human Rights Court' },
+  { x: 1130, y: 8195, w: 170, h: 130, type: 'shop',    color: '#E8EAF6', roofColor: '#283593', label: '🗳️ Election Commission' },
+  { x: 1980, y: 8195, w: 160, h: 135, type: 'factory', color: '#C5CAE9', roofColor: '#1A237E', label: '🔍 Audit Bureau' },
+  { x: 2165, y: 8200, w: 180, h: 140, type: 'school',  color: '#E8EAF6', roofColor: '#303F9F', label: '🏅 Citizens Forum' },
+
+  // ── PARTNERSHIP SPACE BUILDINGS (SDG 17) y~9200-10800 ──
+  { x: 900,  y: 9340, w: 250, h: 200, type: 'tower',   color: '#EDE7F6', roofColor: '#4A148C', label: '🌐 Global Summit Hall' },
+  { x: 1180, y: 9348, w: 200, h: 185, type: 'school',  color: '#F3E5F5', roofColor: '#6A1B9A', label: '🎓 Knowledge Bridge' },
+  { x: 1410, y: 9345, w: 160, h: 170, type: 'clinic',  color: '#EDE7F6', roofColor: '#7B1FA2', label: '💡 Innovation Hub' },
+  { x: 1600, y: 9340, w: 200, h: 190, type: 'factory', color: '#F3E5F5', roofColor: '#4A148C', label: '🔗 Partnership Center' },
+  { x: 1830, y: 9345, w: 160, h: 175, type: 'shop',    color: '#EDE7F6', roofColor: '#6A1B9A', label: '💰 Global Fund Office' },
+  { x: 2015, y: 9350, w: 155, h: 165, type: 'tower',   color: '#F3E5F5', roofColor: '#4A148C' },
+  { x: 2190, y: 9345, w: 170, h: 180, type: 'school',  color: '#EDE7F6', roofColor: '#6A1B9A', label: '📡 Tech Transfer Lab' },
+  // Partnership zone lower row
+  { x: 920,  y: 9575, w: 155, h: 120, type: 'shop',    color: '#F3E5F5', roofColor: '#7B1FA2', label: '🤝 NGO Center' },
+  { x: 1095, y: 9572, w: 130, h: 115, type: 'cottage', color: '#EDE7F6', roofColor: '#4A148C' },
+  { x: 2055, y: 9572, w: 140, h: 118, type: 'clinic',  color: '#F3E5F5', roofColor: '#6A1B9A', label: '🏦 Development Bank' },
+  { x: 2215, y: 9575, w: 120, h: 115, type: 'cottage', color: '#EDE7F6', roofColor: '#4A148C' },
+  // Partnership hub
+  { x: 1530, y: 9800, w: 100, h: 100, type: 'well',    color: '#EDE7F6', roofColor: '#4A148C', label: 'World Summit' },
+  // Lower partnership buildings
+  { x: 900,  y: 9990, w: 200, h: 140, type: 'factory', color: '#F3E5F5', roofColor: '#4A148C', label: '🌍 Earth Council' },
+  { x: 1130, y: 9988, w: 160, h: 130, type: 'shop',    color: '#EDE7F6', roofColor: '#7B1FA2', label: '🔬 Science Council' },
+  { x: 1980, y: 9988, w: 165, h: 135, type: 'clinic',  color: '#F3E5F5', roofColor: '#6A1B9A', label: '📊 Data Partnership' },
+  { x: 2165, y: 9990, w: 175, h: 140, type: 'tower',   color: '#EDE7F6', roofColor: '#4A148C', label: '💫 SDG Observatory' },
 ];
 
 /* ── COLLISION RECTS ── */

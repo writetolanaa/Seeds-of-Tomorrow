@@ -58,15 +58,24 @@ A top-down RPG browser game about the UN SDGs (Sustainable Development Goals). P
 - **Character system**: `ChibiCharacter` in Sprites.tsx; `pantsColor` prop separates top from bottom; blush filter always on; happy expression has no brows (boombim style)
 - **Level 1 – People** (SDGs 1–5): Baloo/Poverty, Pebblepuff/Hunger, Leaflet/Health, Thinklet/Education, Sparkleflame/Equality
 - **Level 2 – Planet** (SDGs 6,12,13,14,15): Aqua/Water, Coralina/Ocean, Ferra/Forest, Gaia/Climate, Reevo/Consumption
-- **Gate**: Teal portal arch at GATE_Y=3100 (planet hub center); planet section biome backgrounds start at y=2500 (hardcoded separate from GATE_Y); Planet NPCs are locked until People is complete
+- **Level 3 – Prosperity** (SDGs 7-11): Voltra/Energy, Gilda/Industry, Nexus/Innovation, Mira/Communities, Skylar/Cities — futuristic city biome (y=4920-7200)
+- **Level 4 – Peace Space** (SDG 16): Justia — indigo space biome with aurora/stars (y=7400-9100)
+- **Level 5 – Partnership Space** (SDG 17): Accord — deep cosmic biome with nebulas/galaxies (y=9300-11000)
+- **Gates**: Teal arch (y=3100, Planet), Gold arch (y=4640, Prosperity), Indigo arch (y=7200, Peace), Purple arch (y=9100, Partnership) — each gate locks NPCs until previous level is complete
+- **Dev unlock flag**: `DEV_UNLOCK_ALL = true` in GameContext.tsx — set `false` for release
 - **Education quiz**: GeneralKnowledgeQuiz shows an intro screen first ("Let's reform the exam system!") before starting
-- **Mini-games**: 10 unique puzzle types (PovertyPuzzle, HungerPuzzle, HealthPuzzle, EducationPuzzle, EqualityPuzzle, WaterPuzzle, OceanPuzzle, ForestPuzzle, ClimatePuzzle, ConsumptionPuzzle)
+- **Mini-games**: 17 unique puzzle types across all SDGs:
+  - People: PovertyPuzzle, HungerHub, HealthPuzzle, EducationPuzzle, EqualityPuzzle
+  - Planet: WaterPuzzle, OceanPuzzle (OceanDiverRPG), ForestPuzzle, ClimatePuzzle, ConsumptionPuzzle
+  - Prosperity: EnergyPuzzle (match clean energy to cities), IndustryPuzzle (worker-job matching), InnovationPuzzle (budget allocation), CommunitiesPuzzle (resource sliders), CitiesPuzzle (sustainable choice quiz)
+  - Peace: JusticeQuestPuzzle (judge 5 court cases, need 4/5 correct)
+  - Partnership: GlobalLinkPuzzle (memory-match nations to partnership projects)
 - **Tech**: React + Vite + Framer Motion + canvas-confetti, no backend needed
 - **State**: localStorage-persisted game progress (`sdg_game_save_v3`)
-- **Pages**: TitleScreen, GameWorld (main walk-around), PuzzleScreen
+- **Pages**: TitleScreen, GameWorld (main walk-around), PuzzleScreen, OceanDiverRPG
 - **Key files**: `src/pages/GameWorld.tsx`, `src/pages/PuzzleScreen.tsx`, `src/components/Sprites.tsx`, `src/data/worldMap.ts`, `src/data/gameData.ts`, `src/context/GameContext.tsx`
-- **World constants**: WORLD_W=3200, WORLD_H=4600, PLAYER_SPAWN=(1580,1200), PLAYER_SPEED=5, INTERACT_RADIUS=100
-- **HUD**: Dual progress bars (People 0-5, Planet 0-5) + overall World Healing % + level transition banner
+- **World constants**: WORLD_W=3200, WORLD_H=11000, PLAYER_SPAWN=(1580,1200), PLAYER_SPEED=5, INTERACT_RADIUS=100
+- **HUD**: Progress bars (People 0-5, Planet 0-5) + overall World Healing % + map toggle button (top-right, shows full 5-level minimap)
 
 ## Packages
 

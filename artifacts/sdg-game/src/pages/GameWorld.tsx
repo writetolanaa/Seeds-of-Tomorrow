@@ -46,7 +46,8 @@ function wouldCollide(nx: number, ny: number, pw = 28, ph = 40): boolean {
 
 /* ── Dialogue component ── */
 function Dialogue({
-  npc, onNext, onClose, onGoToPuzzle, dialogIndex, completedZones, peopleLevelComplete,
+  npc, onNext, onClose, onGoToPuzzle, dialogIndex, completedZones,
+  peopleLevelComplete, planetLevelComplete, prosperityLevelComplete, peaceLevelComplete,
 }: {
   npc: WorldNPC;
   onNext: () => void;
@@ -55,7 +56,9 @@ function Dialogue({
   dialogIndex: number;
   completedZones: string[];
   peopleLevelComplete: boolean;
-  planetLevelComplete?: boolean;
+  planetLevelComplete: boolean;
+  prosperityLevelComplete: boolean;
+  peaceLevelComplete: boolean;
 }) {
   const zoneData = (ZONES as any)[npc.zoneId] ?? ZONES[npc.zoneId as keyof typeof ZONES];
   if (!zoneData) return null;
@@ -63,7 +66,13 @@ function Dialogue({
   const isCompleted = completedZones.includes(npc.zoneId);
   const isPlanetZone = zoneData.level === 'planet';
   const isProsperityZone = zoneData.level === 'prosperity';
-  const isLocked = (isPlanetZone && !peopleLevelComplete) || (isProsperityZone && !planetLevelComplete);
+  const isPeaceZone = zoneData.level === 'peace';
+  const isPartnershipZone = zoneData.level === 'partnership';
+  const isLocked =
+    (isPlanetZone      && !peopleLevelComplete)      ||
+    (isProsperityZone  && !planetLevelComplete)       ||
+    (isPeaceZone       && !prosperityLevelComplete)   ||
+    (isPartnershipZone && !peaceLevelComplete);
 
   return (
     <motion.div
@@ -83,9 +92,10 @@ function Dialogue({
         </div>
         <p className="text-base text-gray-700 leading-relaxed mt-3 min-h-[2.5rem] font-sans">
           {isLocked && isLast
-            ? isProsperityZone
-              ? "🔒 The Prosperity level is still sealed... Complete all 5 Planet challenges first to unlock it!"
-              : "🔒 The Planet level is still sealed... Complete all 5 People challenges first to unlock it!"
+            ? isProsperityZone  ? "🔒 The Prosperity level is still sealed... Complete all 5 Planet challenges first!"
+            : isPeaceZone       ? "🔒 Peace Space is sealed... Complete all 5 Prosperity challenges to unlock it!"
+            : isPartnershipZone ? "🔒 Partnership Space is sealed... Complete the Peace challenge to unlock it!"
+                                : "🔒 The Planet level is still sealed... Complete all 5 People challenges first!"
             : npc.dialogues[dialogIndex]}
         </p>
         <div className="flex justify-end gap-3 mt-4">
@@ -1428,6 +1438,235 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
           d={`M ${x} ${y} Q ${x+30} ${y-14} ${x+60} ${y+10} Q ${x+90} ${y+28} ${x+120} ${y+8}`}
           stroke={i%2===0?'#FF3D00':'#FF6D00'} strokeWidth="4" fill="none" opacity="0.5" strokeLinecap="round" />
       ))}
+
+      {/* ════════════════════════════════════════════════════════════
+           PEACE LEVEL GATEWAY  (y=7200-7500)
+      ════════════════════════════════════════════════════════════ */}
+      {(() => {
+        const PCE_GY = 7200;
+        const PCE_CX = 1600;
+        return (
+          <g>
+            {/* Dark transition band */}
+            <rect x="0" y={PCE_GY} width={WORLD_W} height="300" fill="#0D1B2A" />
+            {[0,1,2,3,4,5,6,7].map(i => (
+              <rect key={i} x={i * WORLD_W / 8} y={PCE_GY} width={WORLD_W / 8} height="300"
+                fill={i % 2 === 0 ? '#0A1628' : '#0D1B2A'} opacity="0.9" />
+            ))}
+            {/* Stars in transition */}
+            {[[200,7230],[500,7210],[850,7240],[1200,7220],[1650,7210],[2000,7235],[2400,7215],[2800,7240],[3050,7220]].map(([x,y],i) => (
+              <circle key={i} cx={x} cy={y} r="2" fill="white" opacity={0.5 + (i%3)*0.2} />
+            ))}
+            {/* Gate arch */}
+            <ellipse cx={PCE_CX} cy={PCE_GY + 60} rx="240" ry="120"
+              fill="none" stroke="#3949AB" strokeWidth="12" opacity="0.9" filter="url(#glow)" />
+            <ellipse cx={PCE_CX} cy={PCE_GY + 60} rx="218" ry="106"
+              fill="none" stroke="#7986CB" strokeWidth="5" opacity="0.7" />
+            {/* Pillars */}
+            <rect x={PCE_CX - 248} y={PCE_GY - 20} width="26" height="190" rx="12" fill="#283593" opacity="0.9" />
+            <rect x={PCE_CX + 222} y={PCE_GY - 20} width="26" height="190" rx="12" fill="#283593" opacity="0.9" />
+            <circle cx={PCE_CX - 235} cy={PCE_GY - 34} r="22" fill="#3949AB" stroke="white" strokeWidth="3" />
+            <circle cx={PCE_CX + 235} cy={PCE_GY - 34} r="22" fill="#3949AB" stroke="white" strokeWidth="3" />
+            <text x={PCE_CX - 235} y={PCE_GY - 26} textAnchor="middle" fontSize="16">⚖️</text>
+            <text x={PCE_CX + 235} y={PCE_GY - 26} textAnchor="middle" fontSize="16">🕊️</text>
+            {/* Banner */}
+            <rect x={PCE_CX - 200} y={PCE_GY + 78} width="400" height="44" rx="22" fill="#1A237E" />
+            <text x={PCE_CX} y={PCE_GY + 106} textAnchor="middle" fontSize="16" fontWeight="bold"
+              fontFamily="Nunito" fill="white">⚖️ Peace Space Gateway 🕊️</text>
+            {/* Path below */}
+            <rect x={PCE_CX - 60} y={PCE_GY + 122} width="120" height="180" rx="8" fill="#1A237E" opacity="0.35" />
+          </g>
+        );
+      })()}
+
+      {/* ════ PEACE SPACE BIOME BACKGROUND (y=7400-9200) ════ */}
+      <rect x="0" y="7400" width={WORLD_W} height="1800" fill="#1A1E3C" />
+      {/* Starfield */}
+      {Array.from({length: 60}).map((_,i) => {
+        const sx = ((i * 137 + 50) % WORLD_W);
+        const sy = 7420 + ((i * 97 + 30) % 1760);
+        return <circle key={`pce-star-${i}`} cx={sx} cy={sy} r={i%5===0?2.5:1.5} fill="white" opacity={0.3 + (i%4)*0.15} />;
+      })}
+      {/* Aurora bands */}
+      <path d="M 0 7700 Q 800 7640 1600 7700 Q 2400 7760 3200 7700" stroke="#3F51B5" strokeWidth="80" fill="none" opacity="0.18" />
+      <path d="M 0 7820 Q 800 7760 1600 7820 Q 2400 7880 3200 7820" stroke="#5C6BC0" strokeWidth="50" fill="none" opacity="0.14" />
+      <path d="M 0 7950 Q 800 7890 1600 7950 Q 2400 8010 3200 7950" stroke="#7986CB" strokeWidth="35" fill="none" opacity="0.12" />
+      {/* Dove silhouettes */}
+      {[[400,7600],[900,7650],[1450,7580],[2100,7640],[2700,7600]].map(([x,y],i) => (
+        <text key={i} x={x} y={y} fontSize="22" opacity="0.3">🕊️</text>
+      ))}
+      {/* Scales of justice decorations */}
+      {[[600,8100],[1200,8050],[1900,8100],[2600,8060]].map(([x,y],i) => (
+        <text key={i} x={x} y={y} fontSize="28" opacity="0.2">⚖️</text>
+      ))}
+
+      {/* ════ PEACE ZONE GROUND AREAS ════ */}
+      {ZONE_REGIONS.filter(z => z.level === 'peace').map(z => {
+        const done = completedZones.includes(z.id);
+        return (
+          <g key={z.id}>
+            <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="24" ry="24"
+              fill={done ? z.color : 'rgba(63,81,181,0.15)'}
+              stroke={done ? z.borderColor : '#5C6BC0'}
+              strokeWidth="5" strokeDasharray={done ? 'none' : '14 7'}
+              filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 170} y={z.y - 70} width="340" height="54" rx="27"
+              fill={done ? z.borderColor : '#283593'} filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 170} y={z.y - 70} width="340" height="54" rx="27"
+              fill="white" opacity="0.10" />
+            <text x={z.x + z.w / 2} y={z.y - 52} textAnchor="middle" fill="white"
+              fontSize="11" fontFamily="Nunito" opacity="0.88">
+              {done ? '✅ Peace Restored!' : '🔒 Undiscovered'}
+            </text>
+            <text x={z.x + z.w / 2} y={z.y - 30} textAnchor="middle" fill="white"
+              fontSize="20" fontWeight="bold" fontFamily="Patrick Hand, cursive">
+              {z.emoji} SDG {z.sdg} · {z.name}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* ════ PEACE HUB ════ */}
+      {(() => {
+        const PHX = 1580, PHY = 8100;
+        return (
+          <g>
+            <circle cx={PHX} cy={PHY} r="180" fill="#1A237E" stroke="#3949AB" strokeWidth="7" filter="url(#shadow)" />
+            <circle cx={PHX} cy={PHY} r="180" fill="none" stroke="#7986CB" strokeWidth="4" opacity="0.6" />
+            <text x={PHX} y={PHY - 40} textAnchor="middle" fontSize="22" fontWeight="bold" fontFamily="Patrick Hand, cursive" fill="#C5CAE9">⚖️ Peace Space</text>
+            <text x={PHX} y={PHY - 12} textAnchor="middle" fontSize="12" fontFamily="Nunito" fill="#9FA8DA">SDG 16: Justice & Strong Institutions</text>
+            {/* Road to peace zone */}
+            <path d={`M ${PHX} ${PHY} Q 1300 7900 1000 7750`} stroke="#283593" strokeWidth="44" fill="none" strokeLinecap="round" opacity="0.5" />
+            <path d={`M ${PHX} ${PHY} Q 1300 7900 1000 7750`} stroke="#3949AB" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.4" />
+          </g>
+        );
+      })()}
+
+      {/* ════ PEACE ROAD EXTENSION (y=7400-9200) ════ */}
+      <rect x="1520" y="7500" width="120" height="800" fill="#283593" opacity="0.4" />
+      <rect x="1540" y="7500" width="80"  height="800" fill="#3949AB" opacity="0.35" />
+      {Array.from({ length: 7 }).map((_, i) => (
+        <rect key={`rd-pce-${i}`} x="1574" y={7540 + i * 110} width="12" height="65"
+          fill="rgba(200,210,255,0.5)" rx="3" />
+      ))}
+
+      {/* ════════════════════════════════════════════════════════════
+           PARTNERSHIP LEVEL GATEWAY  (y=9100-9400)
+      ════════════════════════════════════════════════════════════ */}
+      {(() => {
+        const PAR_GY = 9100;
+        const PAR_CX = 1600;
+        return (
+          <g>
+            <rect x="0" y={PAR_GY} width={WORLD_W} height="260" fill="#1A0030" />
+            {[0,1,2,3,4,5,6,7].map(i => (
+              <rect key={i} x={i * WORLD_W / 8} y={PAR_GY} width={WORLD_W / 8} height="260"
+                fill={i % 2 === 0 ? '#150025' : '#1A0030'} opacity="0.9" />
+            ))}
+            {[[250,9130],[600,9110],[1000,9140],[1400,9120],[1800,9110],[2200,9135],[2600,9115],[2950,9130]].map(([x,y],i) => (
+              <circle key={i} cx={x} cy={y} r="2.5" fill="#E040FB" opacity={0.4 + (i%3)*0.2} />
+            ))}
+            {/* Gate */}
+            <ellipse cx={PAR_CX} cy={PAR_GY + 60} rx="245" ry="122"
+              fill="none" stroke="#7B1FA2" strokeWidth="12" opacity="0.9" filter="url(#glow)" />
+            <ellipse cx={PAR_CX} cy={PAR_GY + 60} rx="222" ry="108"
+              fill="none" stroke="#CE93D8" strokeWidth="5" opacity="0.7" />
+            <rect x={PAR_CX - 254} y={PAR_GY - 18} width="26" height="192" rx="12" fill="#4A148C" opacity="0.9" />
+            <rect x={PAR_CX + 228} y={PAR_GY - 18} width="26" height="192" rx="12" fill="#4A148C" opacity="0.9" />
+            <circle cx={PAR_CX - 241} cy={PAR_GY - 32} r="22" fill="#7B1FA2" stroke="white" strokeWidth="3" />
+            <circle cx={PAR_CX + 241} cy={PAR_GY - 32} r="22" fill="#7B1FA2" stroke="white" strokeWidth="3" />
+            <text x={PAR_CX - 241} y={PAR_GY - 24} textAnchor="middle" fontSize="16">🤝</text>
+            <text x={PAR_CX + 241} y={PAR_GY - 24} textAnchor="middle" fontSize="16">🌍</text>
+            <rect x={PAR_CX - 205} y={PAR_GY + 80} width="410" height="44" rx="22" fill="#4A148C" />
+            <text x={PAR_CX} y={PAR_GY + 108} textAnchor="middle" fontSize="16" fontWeight="bold"
+              fontFamily="Nunito" fill="white">🤝 Partnership Space Gateway 🌍</text>
+            <rect x={PAR_CX - 60} y={PAR_GY + 124} width="120" height="180" rx="8" fill="#4A148C" opacity="0.35" />
+          </g>
+        );
+      })()}
+
+      {/* ════ PARTNERSHIP SPACE BIOME BACKGROUND (y=9300-11000) ════ */}
+      <rect x="0" y="9300" width={WORLD_W} height="1700" fill="#0D0020" />
+      {/* Galaxy backdrop */}
+      {Array.from({length: 80}).map((_,i) => {
+        const sx = ((i * 179 + 70) % WORLD_W);
+        const sy = 9320 + ((i * 113 + 40) % 1660);
+        const col = ['#CE93D8','#F48FB1','#80DEEA','#FFD700','white'][i%5];
+        return <circle key={`par-star-${i}`} cx={sx} cy={sy} r={i%6===0?3:i%3===0?2:1.2} fill={col} opacity={0.2 + (i%5)*0.12} />;
+      })}
+      {/* Nebula clouds */}
+      <ellipse cx="800"  cy="9700" rx="400" ry="180" fill="#7B1FA2" opacity="0.08" />
+      <ellipse cx="2400" cy="9800" rx="350" ry="160" fill="#4A148C" opacity="0.10" />
+      <ellipse cx="1600" cy="10200" rx="500" ry="220" fill="#6A1B9A" opacity="0.09" />
+      {/* Globe/network decorations */}
+      {[[500,9600],[1100,9650],[2000,9600],[2700,9640]].map(([x,y],i) => (
+        <text key={i} x={x} y={y} fontSize="30" opacity="0.2">🌐</text>
+      ))}
+      {[[700,10100],[1400,10050],[2100,10100],[2850,10070]].map(([x,y],i) => (
+        <text key={i} x={x} y={y} fontSize="24" opacity="0.18">🤝</text>
+      ))}
+      {/* Network connection lines */}
+      {[[500,9700,1100,9750],[1100,9750,2000,9700],[2000,9700,2700,9740],[700,10150,1400,10100],[1400,10100,2100,10150]].map(([x1,y1,x2,y2],i) => (
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#CE93D8" strokeWidth="2" opacity="0.15" strokeDasharray="12 8" />
+      ))}
+
+      {/* ════ PARTNERSHIP ZONE GROUND AREAS ════ */}
+      {ZONE_REGIONS.filter(z => z.level === 'partnership').map(z => {
+        const done = completedZones.includes(z.id);
+        return (
+          <g key={z.id}>
+            <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="24" ry="24"
+              fill={done ? z.color : 'rgba(123,31,162,0.15)'}
+              stroke={done ? z.borderColor : '#9C27B0'}
+              strokeWidth="5" strokeDasharray={done ? 'none' : '14 7'}
+              filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 175} y={z.y - 70} width="350" height="54" rx="27"
+              fill={done ? z.borderColor : '#4A148C'} filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 175} y={z.y - 70} width="350" height="54" rx="27"
+              fill="white" opacity="0.10" />
+            <text x={z.x + z.w / 2} y={z.y - 52} textAnchor="middle" fill="white"
+              fontSize="11" fontFamily="Nunito" opacity="0.88">
+              {done ? '✅ Global Partnerships Forged!' : '🔒 Undiscovered'}
+            </text>
+            <text x={z.x + z.w / 2} y={z.y - 30} textAnchor="middle" fill="white"
+              fontSize="20" fontWeight="bold" fontFamily="Patrick Hand, cursive">
+              {z.emoji} SDG {z.sdg} · {z.name}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* ════ PARTNERSHIP HUB ════ */}
+      {(() => {
+        const PAX = 1580, PAY = 9900;
+        return (
+          <g>
+            <circle cx={PAX} cy={PAY} r="185" fill="#1A0035" stroke="#7B1FA2" strokeWidth="7" filter="url(#shadow)" />
+            <circle cx={PAX} cy={PAY} r="185" fill="none" stroke="#CE93D8" strokeWidth="4" opacity="0.6" />
+            <text x={PAX} y={PAY - 40} textAnchor="middle" fontSize="22" fontWeight="bold" fontFamily="Patrick Hand, cursive" fill="#CE93D8">🤝 Partnership Space</text>
+            <text x={PAX} y={PAY - 12} textAnchor="middle" fontSize="12" fontFamily="Nunito" fill="#E1BEE7">SDG 17: Partnerships for the Goals</text>
+            {/* Road to partnership zone */}
+            <path d={`M ${PAX} ${PAY} Q 1300 9700 1000 9570`} stroke="#4A148C" strokeWidth="44" fill="none" strokeLinecap="round" opacity="0.5" />
+            <path d={`M ${PAX} ${PAY} Q 1300 9700 1000 9570`} stroke="#7B1FA2" strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.4" />
+          </g>
+        );
+      })()}
+
+      {/* ════ PARTNERSHIP ROAD EXTENSION (y=9400-11000) ════ */}
+      <rect x="1520" y="9400" width="120" height="900" fill="#4A148C" opacity="0.35" />
+      <rect x="1540" y="9400" width="80"  height="900" fill="#6A1B9A" opacity="0.3" />
+      {Array.from({ length: 8 }).map((_, i) => (
+        <rect key={`rd-par-${i}`} x="1574" y={9440 + i * 110} width="12" height="65"
+          fill="rgba(230,180,255,0.45)" rx="3" />
+      ))}
+
+      {/* ════ ROAD BETWEEN PEACE AND PARTNERSHIP ════ */}
+      <rect x="1520" y="8950" width="120" height="160" fill="#1A0030" opacity="0.5" />
+      <rect x="1540" y="8950" width="80" height="160" fill="#2A0050" opacity="0.45" />
+      {[0,1,2].map(i => (
+        <rect key={`rd-mid-${i}`} x="1574" y={8960 + i * 50} width="12" height="30"
+          fill="rgba(220,180,255,0.45)" rx="3" />
+      ))}
     </svg>
   );
 }
@@ -1801,7 +2040,7 @@ const PLAYER_H = 72;
 /* ── MAIN GAME WORLD ── */
 export default function GameWorld() {
   const [, setLocation] = useLocation();
-  const { completedZones, playerCharacter, playerName, getWorldHealPercent, peopleLevelComplete, planetLevelComplete, peopleProgress, planetProgress } = useGame();
+  const { completedZones, playerCharacter, playerName, getWorldHealPercent, peopleLevelComplete, planetLevelComplete, prosperityLevelComplete, peaceLevelComplete, peopleProgress, planetProgress } = useGame();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
@@ -1814,6 +2053,7 @@ export default function GameWorld() {
   const isMovingRef = useRef(false);
   const facingRef = useRef<'left' | 'right'>('right');
   const [focused, setFocused] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   const [nearNPC, setNearNPC] = useState<WorldNPC | null>(null);
   const nearNPCIdRef = useRef<string | null>(null);
@@ -2293,38 +2533,73 @@ export default function GameWorld() {
             completedZones={completedZones}
             peopleLevelComplete={peopleLevelComplete}
             planetLevelComplete={planetLevelComplete}
+            prosperityLevelComplete={prosperityLevelComplete}
+            peaceLevelComplete={peaceLevelComplete}
           />
         )}
       </AnimatePresence>
 
+      {/* ── MAP TOGGLE BUTTON ── */}
+      <button
+        onClick={() => setShowMap(m => !m)}
+        className="absolute top-3 right-3 z-40 bg-white/90 hover:bg-white rounded-xl px-3 py-2 shadow-lg border border-gray-300 text-sm font-bold text-gray-700 flex items-center gap-1.5 transition-all"
+      >
+        🗺️ {showMap ? 'Hide Map' : 'World Map'}
+      </button>
+
       {/* ── MINI MAP ── */}
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-40">
-        <div className="bg-white/90 rounded-xl p-2 shadow-lg" style={{ border: '1.5px solid #ccc' }}>
-          <svg width="140" height="120" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`}>
-            {/* People section */}
-            <rect x="0" y="0" width={WORLD_W} height="2200" fill="#8BC34A" rx="10" />
-            {/* Gate */}
-            <rect x="0" y="2200" width={WORLD_W} height="300" fill="#263238" />
-            {/* Planet section */}
-            <rect x="0" y="2500" width={WORLD_W} height="2140" fill="#2E7D52" />
-            {/* Prosperity section */}
-            <rect x="0" y="4640" width={WORLD_W} height="280" fill="#2A2060" />
-            <rect x="0" y="4920" width={WORLD_W} height={WORLD_H - 4920} fill="#1A3D5C" rx="10" />
-            {ZONE_REGIONS.map(z => (
-              <rect key={z.id} x={z.x} y={z.y} width={z.w} height={z.h}
-                fill={completedZones.includes(z.id) ? z.color : z.level === 'prosperity' ? 'rgba(249,168,37,0.15)' : z.level === 'planet' ? 'rgba(255,255,255,0.15)' : '#D7CCC8'}
-                stroke={z.borderColor} strokeWidth="15" rx="20" />
-            ))}
-            {/* Planet Gate marker */}
-            <rect x={WORLD_W / 2 - 150} y="2200" width="300" height="80" fill="#00BCD4" opacity="0.6" />
-            {/* Prosperity Gate marker */}
-            <rect x={WORLD_W / 2 - 150} y="4640" width="300" height="80" fill="#F9A825" opacity="0.7" />
-            {/* Player dot */}
-            <circle cx={playerPos.current.x} cy={playerPos.current.y} r="45" fill="#E53935" stroke="white" strokeWidth="20" id="minimap-player" />
-          </svg>
-          <div className="text-[9px] text-center text-gray-500 mt-0.5 font-bold">🗺️ World Map</div>
+      {showMap && (
+        <div className="absolute top-12 right-3 z-40">
+          <div className="bg-white/95 rounded-2xl p-3 shadow-xl" style={{ border: '2px solid #bbb' }}>
+            <svg width="180" height="200" viewBox={`0 0 ${WORLD_W} ${WORLD_H}`}>
+              {/* People section */}
+              <rect x="0" y="0" width={WORLD_W} height="2200" fill="#8BC34A" />
+              {/* People-Planet Gate */}
+              <rect x="0" y="2200" width={WORLD_W} height="300" fill="#263238" />
+              {/* Planet section */}
+              <rect x="0" y="2500" width={WORLD_W} height="2140" fill="#2E7D52" />
+              {/* Planet-Prosperity Gate */}
+              <rect x="0" y="4640" width={WORLD_W} height="280" fill="#2A2060" />
+              {/* Prosperity section */}
+              <rect x="0" y="4920" width={WORLD_W} height="2280" fill="#1A3D5C" />
+              {/* Prosperity-Peace Gate */}
+              <rect x="0" y="7200" width={WORLD_W} height="300" fill="#0D1B2A" />
+              {/* Peace section */}
+              <rect x="0" y="7500" width={WORLD_W} height="1600" fill="#1A1E3C" />
+              {/* Peace-Partnership Gate */}
+              <rect x="0" y="9100" width={WORLD_W} height="260" fill="#1A0030" />
+              {/* Partnership section */}
+              <rect x="0" y="9360" width={WORLD_W} height={WORLD_H - 9360} fill="#0D0020" />
+              {/* Zone regions */}
+              {ZONE_REGIONS.map(z => (
+                <rect key={z.id} x={z.x} y={z.y} width={z.w} height={z.h}
+                  fill={completedZones.includes(z.id)
+                    ? z.color
+                    : z.level === 'partnership' ? 'rgba(156,39,176,0.18)'
+                    : z.level === 'peace'        ? 'rgba(57,73,171,0.18)'
+                    : z.level === 'prosperity'   ? 'rgba(249,168,37,0.15)'
+                    : z.level === 'planet'        ? 'rgba(255,255,255,0.15)'
+                    :                              '#D7CCC8'}
+                  stroke={z.borderColor} strokeWidth="18" rx="20" />
+              ))}
+              {/* Gate markers */}
+              <rect x={WORLD_W/2-150} y="2200" width="300" height="80" fill="#00BCD4" opacity="0.7" />
+              <rect x={WORLD_W/2-150} y="4640" width="300" height="80" fill="#F9A825" opacity="0.7" />
+              <rect x={WORLD_W/2-150} y="7200" width="300" height="80" fill="#3949AB" opacity="0.7" />
+              <rect x={WORLD_W/2-150} y="9100" width="300" height="80" fill="#7B1FA2" opacity="0.7" />
+              {/* Level labels */}
+              <text x="80" y="140" fontSize="110" fill="#fff" opacity="0.6" fontFamily="sans-serif" fontWeight="bold">P</text>
+              <text x="80" y="3400" fontSize="110" fill="#fff" opacity="0.6" fontFamily="sans-serif" fontWeight="bold">🌍</text>
+              <text x="80" y="6200" fontSize="110" fill="#FFD700" opacity="0.5" fontFamily="sans-serif" fontWeight="bold">🌟</text>
+              <text x="80" y="8100" fontSize="110" fill="#C5CAE9" opacity="0.5" fontFamily="sans-serif" fontWeight="bold">⚖</text>
+              <text x="80" y="9900" fontSize="110" fill="#CE93D8" opacity="0.4" fontFamily="sans-serif" fontWeight="bold">🤝</text>
+              {/* Player dot */}
+              <circle cx={playerPos.current.x} cy={playerPos.current.y} r="55" fill="#E53935" stroke="white" strokeWidth="22" id="minimap-player" />
+            </svg>
+            <div className="text-[9px] text-center text-gray-500 mt-1 font-bold">🗺️ World Map — all 5 levels</div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

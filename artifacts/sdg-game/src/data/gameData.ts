@@ -1,9 +1,10 @@
 export type ZoneId =
   | 'poverty' | 'hunger' | 'health' | 'education' | 'equality'
   | 'water' | 'ocean' | 'forest' | 'climate' | 'consumption'
-  | 'energy' | 'industry' | 'innovation' | 'communities' | 'cities';
+  | 'energy' | 'industry' | 'innovation' | 'communities' | 'cities'
+  | 'peace' | 'partnership';
 
-export type LevelId = 'people' | 'planet' | 'prosperity';
+export type LevelId = 'people' | 'planet' | 'prosperity' | 'peace' | 'partnership';
 
 export interface ZoneData {
   id: ZoneId;
@@ -210,7 +211,36 @@ Object.assign(ZONES as any, {
   },
 });
 
+Object.assign(ZONES as any, {
+  peace: {
+    id: 'peace', level: 'peace', number: 16, name: "Justia's Peace Court", lordName: 'Justia',
+    sdg: 16, sdgTitle: 'Peace, Justice & Strong Institutions',
+    themeColor: '#1A237E', bgColor: '#E8EAF6', textColor: '#0D1B8E',
+    emoji: '⚖️',
+    description: 'Justice Quest — Build Fair Institutions',
+    brokenDesc: 'Corruption spreads unchecked — the courts are broken, trust has collapsed, and unrest fills the streets.',
+    healedDesc: 'Justice flows freely! Fair courts, transparent institutions, and peaceful communities thrive.',
+    puzzleIntro: 'Cases of injustice are piling up. Investigate carefully and make fair decisions to restore peace!',
+    successFact: 'Countries with strong institutions reduce corruption by up to 80%. Justice and peace go hand in hand.',
+    mapX: 35, mapY: 78,
+  },
+  partnership: {
+    id: 'partnership', level: 'partnership', number: 17, name: "Accord's Global Summit", lordName: 'Accord',
+    sdg: 17, sdgTitle: 'Partnerships for the Goals',
+    themeColor: '#4A148C', bgColor: '#F3E5F5', textColor: '#38006B',
+    emoji: '🤝',
+    description: 'Global Link — Connect the World',
+    brokenDesc: 'Nations work alone — siloed, competing, failing. No SDG can succeed without cooperation.',
+    healedDesc: 'A web of partnerships stretches across the globe! Every SDG accelerates when nations unite.',
+    puzzleIntro: 'Match partners to global challenges — the right alliances unlock solutions that no one can achieve alone!',
+    successFact: 'When countries collaborate on SDGs, progress is 3× faster. Partnership is the engine of all change.',
+    mapX: 65, mapY: 85,
+  },
+});
+
 export const PEOPLE_ZONES: ZoneId[] = ['poverty', 'hunger', 'health', 'education', 'equality'];
 export const PLANET_ZONES: ZoneId[] = ['water', 'ocean', 'forest', 'climate', 'consumption'];
 export const PROSPERITY_ZONES: ZoneId[] = ['energy', 'industry', 'innovation', 'communities', 'cities'];
-export const ZONE_ORDER: ZoneId[] = [...PEOPLE_ZONES, ...PLANET_ZONES, ...PROSPERITY_ZONES];
+export const PEACE_ZONES: ZoneId[] = ['peace'];
+export const PARTNERSHIP_ZONES: ZoneId[] = ['partnership'];
+export const ZONE_ORDER: ZoneId[] = [...PEOPLE_ZONES, ...PLANET_ZONES, ...PROSPERITY_ZONES, ...PEACE_ZONES, ...PARTNERSHIP_ZONES];

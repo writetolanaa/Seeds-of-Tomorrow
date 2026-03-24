@@ -1,0 +1,214 @@
+SDG 16 – Peace, Justice & Strong Institutions: Justice Quest
+
+Genre: Narrative Simulation / Decision-Based Strategy
+Target Audience: Teens, young adults
+Tone: Serious but accessible, thoughtful, empowering
+
+⸻
+
+1. Core Game Idea
+
+The player manages a small society (town, district, or country) and must build trust, justice, peace, and strong institutions.
+The game focuses on fair decision-making, transparency, conflict resolution, and rule of law, not violence.
+
+⸻
+
+2. Core Gameplay Loop
+	1.	Observe conflicts, disputes, corruption, or institutional failures.
+	2.	Investigate problems using limited information.
+	3.	Make decisions through laws, mediation, courts, or reforms.
+	4.	See short-term and long-term consequences.
+	5.	Track trust, peace, and justice metrics.
+	6.	Repeat across days, cases, and story chapters.
+
+⸻
+
+3. Step-by-Step Player Actions
+
+Step 0: Start of Day / Turn
+	•	Player sees a dashboard showing:
+	•	Public trust
+	•	Peace level
+	•	Justice fairness score
+	•	Institutional strength
+	•	New cases or events appear (disputes, corruption reports, protests).
+
+⸻
+
+Step 1: Review a Case or Issue
+
+Cases can include:
+	•	A conflict between two groups
+	•	A report of corruption
+	•	An unfair arrest
+	•	A protest against unfair laws
+	•	A missing transparency issue
+
+Each case shows:
+	•	People involved
+	•	Initial evidence
+	•	Public opinion (which may be biased or incomplete)
+
+⸻
+
+Step 2: Investigate
+
+Player chooses investigation actions:
+	•	Interview witnesses
+	•	Request documents
+	•	Send inspectors
+	•	Hold public hearings
+
+Each action:
+	•	Costs time or resources
+	•	Reveals partial or full information
+	•	May increase or decrease public trust
+
+⸻
+
+Step 3: Make a Decision
+
+Based on gathered information, player chooses an action:
+	•	Mediate peacefully between parties
+	•	Send the case to court
+	•	Reform a rule or law
+	•	Punish corruption
+	•	Protect human rights
+	•	Increase transparency (publish reports)
+
+Decisions can be:
+	•	Fast but risky
+	•	Slow but fair
+	•	Popular but unjust
+	•	Unpopular but necessary
+
+⸻
+
+Step 4: Consequences
+
+The game simulates outcomes:
+	•	Peace level may rise or fall
+	•	Trust in institutions changes
+	•	Future cases become easier or harder
+	•	Groups may cooperate or radicalize
+
+Consequences are:
+	•	Immediate (public reaction)
+	•	Long-term (institutional strength)
+
+⸻
+
+Step 5: End of Day / Turn
+	•	Metrics update visibly
+	•	News headlines summarize the day
+	•	Player prepares for the next set of challenges
+
+⸻
+
+4. Key Game Systems & Variables
+
+Society Metrics
+	•	Peace Level (0–100)
+	•	Public Trust (0–100)
+	•	Justice Fairness (0–100)
+	•	Institutional Strength (0–100)
+
+Case Variables
+	•	Conflict intensity
+	•	Evidence completeness
+	•	Public bias level
+	•	Urgency
+
+Institution Variables
+	•	Court efficiency
+	•	Transparency level
+	•	Corruption risk
+	•	Law enforcement fairness
+
+⸻
+
+5. Player Abilities
+
+The player can:
+	•	Reform laws
+	•	Improve courts
+	•	Train officials
+	•	Increase transparency systems
+	•	Create peaceful dialogue programs
+	•	Strengthen anti-corruption measures
+
+Abilities unlock gradually as institutions improve.
+
+⸻
+
+6. User Interface Design
+	•	Top bar: peace, trust, justice, institutions
+	•	Case panel: active disputes and reports
+	•	Investigation panel: actions and costs
+	•	Decision panel: available responses
+	•	News panel: public reaction and narrative feedback
+	•	End-of-turn summary: metric changes and consequences
+
+⸻
+
+7. Feedback Systems
+
+Visual
+	•	Calm city when peace is high
+	•	Protests or unrest when trust is low
+	•	Institutions visually upgrade as they strengthen
+
+Narrative
+	•	News headlines
+	•	Citizen quotes
+	•	Case follow-ups
+
+Audio
+	•	Calm ambient sounds during peace
+	•	Tense music during crises
+	•	Positive chimes for fair resolutions
+
+⸻
+
+8. Progression System
+	•	Start with weak institutions and limited authority
+	•	Unlock:
+	•	Independent courts
+	•	Anti-corruption agencies
+	•	Transparency tools
+	•	Community mediation systems
+	•	Later stages introduce complex, multi-layered conflicts
+
+⸻
+
+9. Win / Loss Conditions
+
+Win
+	•	Peace remains high
+	•	Justice is fair and consistent
+	•	Institutions are strong and trusted
+	•	Conflicts are resolved without violence
+
+Loss
+	•	Trust collapses
+	•	Corruption spreads
+	•	Justice becomes biased
+	•	Society descends into unrest or instability
+
+⸻
+
+10. Educational Outcome
+
+The player learns that:
+	•	Peace is built through fairness, not force
+	•	Institutions matter more than single decisions
+	•	Transparency prevents corruption
+	•	Justice requires patience and consistency
+
+⸻
+
+This version is fully coder-ready, with:
+	•	Clear systems
+	•	Step-by-step player actions
+	•	Explicit variables
+	•	Strong narrative and feedback logic

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useLocation } from 'wouter';
 import { useGame } from '@/context/GameContext';
 import { ZONES, type ZoneId } from '@/data/gameData';
@@ -2545,17 +2545,648 @@ function HungerHub({ onWin }: { onWin: () => void }) {
 /* ═══════════════════════════════════════════════════════════════
    PUZZLE MAP & SCREEN WRAPPER
 ═══════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════
+   SDG 7 — ENERGY PUZZLE  (Voltra's Energy Fields)
+   Match each city to its ideal clean energy source.
+════════════════════════════════════════════════════════════════ */
+const EN_CITIES = [
+  { id:'c1', name:'Solar Falls',  need:'solar', emoji:'🏙️' },
+  { id:'c2', name:'Windy Heights',need:'wind',  emoji:'🏘️' },
+  { id:'c3', name:'River Bend',   need:'hydro', emoji:'🌆' },
+  { id:'c4', name:'Green Valleys',need:'solar', emoji:'🌇' },
+  { id:'c5', name:'Shore Town',   need:'wind',  emoji:'🌃' },
+  { id:'c6', name:'Mountain City',need:'hydro', emoji:'🏔️' },
+];
+const EN_SOURCES = [
+  { id:'solar', emoji:'☀️', name:'Solar Panel',  color:'#FF8F00' },
+  { id:'wind',  emoji:'💨', name:'Wind Turbine', color:'#1565C0' },
+  { id:'hydro', emoji:'💧', name:'Hydropower',   color:'#00838F' },
+];
+
+function EnergyPuzzle({ onWin }: { onWin: () => void }) {
+  const [cities, setCities] = useState(EN_CITIES.map(c => ({ ...c, assigned: '' })));
+  const [selected, setSelected] = useState<string | null>(null);
+  const [log, setLog] = useState<string[]>(['⚡ Select an energy source, then click a city to power it!']);
+  const allPowered = cities.every(c => c.assigned === c.need);
+  useEffect(() => { if (allPowered) onWin(); }, [allPowered, onWin]);
+  const assign = (cid: string) => {
+    if (!selected) { setLog(l => ['⚠️ Choose an energy source first!', ...l.slice(0,3)]); return; }
+    const city = cities.find(c => c.id === cid)!;
+    if (city.assigned === city.need) return;
+    const ok = selected === city.need;
+    setCities(p => p.map(c => c.id === cid ? { ...c, assigned: selected } : c));
+    const src = EN_SOURCES.find(s => s.id === selected)!;
+    setLog(l => [ok
+      ? `✅ ${city.name} powered by ${src.name}! Perfect match!`
+      : `⚠️ ${city.name} needs a different source. Try again!`, ...l.slice(0,3)]);
+  };
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="text-center text-sm font-semibold text-yellow-700 bg-yellow-50 rounded-xl p-2">
+        ⚡ Match each city to the right clean energy source to restore power!
+      </div>
+      <div className="flex gap-3 justify-center flex-wrap">
+        {EN_SOURCES.map(src => (
+          <motion.button key={src.id} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}
+            onClick={() => setSelected(selected === src.id ? null : src.id)}
+            className={cn('flex flex-col items-center p-3 rounded-xl border-3 font-bold text-sm transition-all',
+              selected === src.id ? 'shadow-lg bg-yellow-50' : 'bg-white border-gray-200')}
+            style={{ borderWidth: 3, borderColor: selected === src.id ? src.color : '#e5e7eb' }}>
+            <span className="text-3xl">{src.emoji}</span>
+            <span className="text-xs mt-1">{src.name}</span>
+            {selected === src.id && <span className="text-[10px] text-green-600 font-bold">Selected ✓</span>}
+          </motion.button>
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        {cities.map(city => {
+          const powered = city.assigned === city.need;
+          const wrong = city.assigned && !powered;
+          return (
+            <motion.button key={city.id} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+              onClick={() => assign(city.id)}
+              className={cn('rounded-xl p-3 text-left border-3 transition-all',
+                powered ? 'border-green-400 bg-green-50' :
+                wrong   ? 'border-red-300 bg-red-50' :
+                selected ? 'border-blue-300 hover:bg-blue-50 cursor-pointer' : 'border-gray-200')}
+              style={{ borderWidth: 3 }}>
+              <div className="text-2xl mb-1">{powered ? '⚡✅' : city.emoji}</div>
+              <div className="font-bold text-xs">{city.name}</div>
+              <div className="text-[10px] text-gray-500 mt-1">Needs: {EN_SOURCES.find(s=>s.id===city.need)?.emoji} {city.need}</div>
+              {city.assigned && <div className={cn('text-[10px] font-bold mt-0.5', powered ? 'text-green-600' : 'text-red-500')}>
+                {powered ? '✅ Powered!' : `❌ Wrong source`}
+              </div>}
+            </motion.button>
+          );
+        })}
+      </div>
+      <div className="bg-gray-800 rounded-xl p-3 max-h-24 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-xs text-gray-200 font-mono mb-0.5">{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SDG 8 — INDUSTRY / DECENT WORK PUZZLE  (Gilda's Factory Town)
+   Match workers to fair jobs by skill & wage requirements.
+════════════════════════════════════════════════════════════════ */
+const WORKERS = [
+  { id:'w1', name:'Aisha', skill:'tech',    emoji:'👩‍💻', exp:'3 yrs' },
+  { id:'w2', name:'Marco', skill:'craft',   emoji:'👨‍🔧', exp:'5 yrs' },
+  { id:'w3', name:'Lena',  skill:'care',    emoji:'👩‍⚕️', exp:'2 yrs' },
+  { id:'w4', name:'Kwame', skill:'trade',   emoji:'🧑‍🌾', exp:'4 yrs' },
+  { id:'w5', name:'Sana',  skill:'edu',     emoji:'👩‍🏫', exp:'6 yrs' },
+];
+const JOBS = [
+  { id:'j1', title:'Software Dev',   need:'tech',  wage:'Fair ✅', emoji:'💻', benefits:'Health+Pension' },
+  { id:'j2', title:'Master Craftsman',need:'craft', wage:'Fair ✅', emoji:'🔨', benefits:'Safety+Bonus'   },
+  { id:'j3', title:'Community Nurse', need:'care',  wage:'Fair ✅', emoji:'💊', benefits:'Health+Leave'   },
+  { id:'j4', title:'Agri-Expert',     need:'trade', wage:'Fair ✅', emoji:'🌾', benefits:'Training+Land'  },
+  { id:'j5', title:'Teacher',         need:'edu',   wage:'Fair ✅', emoji:'📚', benefits:'Pension+CPD'    },
+];
+
+function IndustryPuzzle({ onWin }: { onWin: () => void }) {
+  const [matches, setMatches] = useState<Record<string,string>>({});
+  const [selWorker, setSelWorker] = useState<string|null>(null);
+  const [log, setLog] = useState<string[]>(['🏭 Select a worker, then click a fair job to match them!']);
+  const matched = Object.keys(matches).length;
+  useEffect(() => { if (matched === WORKERS.length) onWin(); }, [matched, onWin]);
+  const assign = (jid: string) => {
+    if (!selWorker) { setLog(l => ['⚠️ Select a worker first!', ...l.slice(0,3)]); return; }
+    if (Object.values(matches).includes(jid)) { setLog(l => ['❌ That job is taken!', ...l.slice(0,3)]); return; }
+    if (matches[selWorker]) { setLog(l => ['⚠️ Worker already placed. Select a different one.', ...l.slice(0,3)]); return; }
+    const w = WORKERS.find(x => x.id === selWorker)!;
+    const j = JOBS.find(x => x.id === jid)!;
+    const ok = w.skill === j.need;
+    if (ok) {
+      setMatches(p => ({ ...p, [selWorker]: jid }));
+      setLog(l => [`✅ ${w.name} → ${j.title}: Great skills match! ${j.benefits}`, ...l.slice(0,3)]);
+    } else {
+      setLog(l => [`❌ ${w.name} isn't right for ${j.title}. Skills don't match!`, ...l.slice(0,3)]);
+    }
+    setSelWorker(null);
+  };
+  const matchedJobFor = (wid: string) => matches[wid] ? JOBS.find(j => j.id === matches[wid]) : null;
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="text-center text-sm font-semibold text-orange-700 bg-orange-50 rounded-xl p-2">
+        🏭 Match each worker to a decent job that fits their skills!
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <div className="text-xs font-bold text-gray-500 mb-2">👷 Workers ({matched}/{WORKERS.length} placed)</div>
+          <div className="flex flex-col gap-2">
+            {WORKERS.map(w => {
+              const job = matchedJobFor(w.id);
+              return (
+                <motion.button key={w.id} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                  onClick={() => !job && setSelWorker(selWorker === w.id ? null : w.id)}
+                  className={cn('rounded-xl p-2 text-left border-2 transition-all',
+                    job ? 'border-green-400 bg-green-50' :
+                    selWorker === w.id ? 'border-orange-400 bg-orange-50' : 'border-gray-200 bg-white hover:bg-gray-50')}>
+                  <span className="text-xl mr-2">{w.emoji}</span>
+                  <span className="text-xs font-bold">{w.name}</span>
+                  <span className="text-[10px] text-gray-500 ml-1">({w.skill}, {w.exp})</span>
+                  {job && <div className="text-[10px] text-green-600 font-bold mt-0.5">→ {job.title} ✅</div>}
+                  {selWorker === w.id && !job && <div className="text-[10px] text-orange-600 font-bold">Selected — pick a job →</div>}
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+        <div>
+          <div className="text-xs font-bold text-gray-500 mb-2">💼 Fair Jobs</div>
+          <div className="flex flex-col gap-2">
+            {JOBS.map(j => {
+              const taken = Object.values(matches).includes(j.id);
+              return (
+                <motion.button key={j.id} whileHover={{ scale: taken ? 1 : 1.02 }} whileTap={{ scale: 0.98 }}
+                  onClick={() => !taken && assign(j.id)}
+                  className={cn('rounded-xl p-2 text-left border-2 transition-all',
+                    taken ? 'border-green-400 bg-green-50 opacity-70' :
+                    selWorker ? 'border-blue-300 bg-blue-50 cursor-pointer' : 'border-gray-200 bg-white')}>
+                  <span className="text-xl mr-2">{j.emoji}</span>
+                  <span className="text-xs font-bold">{j.title}</span>
+                  <div className="text-[10px] text-gray-500">{j.wage} · {j.benefits}</div>
+                  {taken && <div className="text-[10px] text-green-600 font-bold">✅ Filled!</div>}
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <div className="bg-gray-800 rounded-xl p-3 max-h-20 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-xs text-gray-200 font-mono mb-0.5">{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SDG 9 — INNOVATION PUZZLE  (Nexus Innovation Hub)
+   Fund infrastructure projects to unlock economic connections.
+════════════════════════════════════════════════════════════════ */
+const INFRA_PROJECTS = [
+  { id:'p1', name:'High-Speed Rail',      emoji:'🚆', cost:3, impact:35, desc:'Connect 3 cities, cut emissions 40%' },
+  { id:'p2', name:'Rural Internet Grid',  emoji:'📡', cost:2, impact:28, desc:'Bring broadband to 500k people'      },
+  { id:'p3', name:'Clean Water Pipeline', emoji:'🚰', cost:2, impact:32, desc:'Safe water for 200k households'       },
+  { id:'p4', name:'Solar Farm',           emoji:'☀️', cost:2, impact:25, desc:'Power 80k homes with clean energy'   },
+  { id:'p5', name:'Smart Bridge',         emoji:'🌉', cost:3, impact:30, desc:'Trade link, 20k daily commuters'     },
+  { id:'p6', name:'Innovation Lab',       emoji:'🔬', cost:1, impact:18, desc:'100 local startups incubated/year'   },
+];
+const INFRA_BUDGET = 8;
+const INFRA_TARGET = 80;
+
+function InnovationPuzzle({ onWin }: { onWin: () => void }) {
+  const [funded, setFunded] = useState<string[]>([]);
+  const [log, setLog] = useState<string[]>([`🔬 You have ${INFRA_BUDGET} budget tokens. Fund projects to reach ${INFRA_TARGET}+ impact!`]);
+  const spent = funded.reduce((s, id) => s + (INFRA_PROJECTS.find(p => p.id === id)?.cost ?? 0), 0);
+  const impact = funded.reduce((s, id) => s + (INFRA_PROJECTS.find(p => p.id === id)?.impact ?? 0), 0);
+  const won = impact >= INFRA_TARGET;
+  useEffect(() => { if (won) onWin(); }, [won, onWin]);
+  const toggle = (pid: string) => {
+    const proj = INFRA_PROJECTS.find(p => p.id === pid)!;
+    if (funded.includes(pid)) {
+      setFunded(f => f.filter(x => x !== pid));
+      setLog(l => [`💸 Defunded: ${proj.name} (−${proj.cost} tokens)`, ...l.slice(0,3)]);
+    } else if (spent + proj.cost > INFRA_BUDGET) {
+      setLog(l => [`❌ Not enough budget! (${INFRA_BUDGET - spent} remaining)`, ...l.slice(0,3)]);
+    } else {
+      setFunded(f => [...f, pid]);
+      setLog(l => [`✅ Funded: ${proj.name} (+${proj.impact} impact, −${proj.cost} tokens)`, ...l.slice(0,3)]);
+    }
+  };
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-3 justify-center text-sm font-bold">
+        <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-xl">
+          💰 Budget: {INFRA_BUDGET - spent}/{INFRA_BUDGET}
+        </div>
+        <div className={cn('px-4 py-2 rounded-xl font-bold', impact >= INFRA_TARGET ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800')}>
+          🚀 Impact: {impact}/{INFRA_TARGET} {impact >= INFRA_TARGET && '🎉'}
+        </div>
+      </div>
+      {/* Progress bar */}
+      <div className="bg-gray-200 rounded-full h-4 overflow-hidden">
+        <motion.div className="h-full rounded-full bg-gradient-to-r from-purple-500 to-blue-500"
+          animate={{ width: `${Math.min(100, impact / INFRA_TARGET * 100)}%` }} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        {INFRA_PROJECTS.map(proj => {
+          const isFunded = funded.includes(proj.id);
+          const cantAfford = !isFunded && spent + proj.cost > INFRA_BUDGET;
+          return (
+            <motion.button key={proj.id} whileHover={{ scale: cantAfford ? 1 : 1.03 }} whileTap={{ scale: 0.97 }}
+              onClick={() => toggle(proj.id)}
+              className={cn('rounded-xl p-3 text-left border-3 transition-all',
+                isFunded   ? 'border-purple-400 bg-purple-50' :
+                cantAfford ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed' :
+                             'border-gray-200 bg-white hover:bg-purple-50 cursor-pointer')}
+              style={{ borderWidth: 3 }}>
+              <div className="text-2xl mb-1">{proj.emoji}</div>
+              <div className="font-bold text-xs">{proj.name}</div>
+              <div className="text-[10px] text-gray-500 my-0.5">{proj.desc}</div>
+              <div className="flex gap-2 text-[10px] font-bold mt-1">
+                <span className="text-orange-600">💰 {proj.cost}</span>
+                <span className="text-blue-600">🚀 +{proj.impact}</span>
+                {isFunded && <span className="text-green-600">✅ Funded</span>}
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+      <div className="bg-gray-800 rounded-xl p-3 max-h-20 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-xs text-gray-200 font-mono mb-0.5">{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SDG 10 — COMMUNITIES PUZZLE  (Mira's Community Housing)
+   Distribute resources fairly so every community thrives.
+════════════════════════════════════════════════════════════════ */
+const COMM_NEEDS = [
+  { id:'n1', name:'Highland Village',  emoji:'🏔️', need:30, color:'#7B1FA2', desc:'Needs: schools & roads' },
+  { id:'n2', name:'Coastal Flats',     emoji:'🌊', need:25, color:'#1565C0', desc:'Needs: flood barriers'  },
+  { id:'n3', name:'Urban District',    emoji:'🏙️', need:20, color:'#E65100', desc:'Needs: affordable homes'},
+  { id:'n4', name:'Farming Plains',    emoji:'🌾', need:25, color:'#2E7D32', desc:'Needs: irrigation & markets'},
+];
+const COMM_TOTAL = 100;
+
+function CommunitiesPuzzle({ onWin }: { onWin: () => void }) {
+  const [alloc, setAlloc] = useState<Record<string,number>>({ n1:25, n2:25, n3:25, n4:25 });
+  const [locked, setLocked] = useState(false);
+  const [log, setLog] = useState<string[]>(['🏘️ Distribute 100 resource points. Each community needs its minimum!']);
+  const total = Object.values(alloc).reduce((a,b)=>a+b,0);
+  const allMet = COMM_NEEDS.every(n => (alloc[n.id]??0) >= n.need);
+  useEffect(() => { if (locked && allMet) onWin(); }, [locked, allMet, onWin]);
+  const change = (id: string, delta: number) => {
+    if (locked) return;
+    const cur = alloc[id] ?? 0;
+    const newVal = Math.max(0, Math.min(50, cur + delta));
+    const diff = newVal - cur;
+    const remaining = COMM_TOTAL - total;
+    if (diff > 0 && remaining < diff) { setLog(l => ['❌ No resources left to allocate!', ...l.slice(0,3)]); return; }
+    setAlloc(p => ({ ...p, [id]: newVal }));
+  };
+  const commit = () => {
+    if (total !== COMM_TOTAL) { setLog(l => [`⚠️ Must allocate exactly ${COMM_TOTAL} points (${total} used)`, ...l.slice(0,3)]); return; }
+    setLocked(true);
+    if (allMet) setLog(['✅ Every community reached their minimum! Inequalities reduced!']);
+    else setLog([`❌ ${COMM_NEEDS.filter(n=>alloc[n.id]<n.need).map(n=>n.name).join(', ')} didn't get enough!`]);
+  };
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center bg-purple-50 rounded-xl p-3">
+        <span className="text-sm font-bold text-purple-800">💰 Remaining: {COMM_TOTAL - total}/{COMM_TOTAL}</span>
+        <div className="h-3 w-40 bg-gray-200 rounded-full overflow-hidden">
+          <motion.div className="h-full rounded-full bg-purple-500" animate={{ width: `${total}%` }} />
+        </div>
+        <span className="text-xs text-gray-600">{total}/100 used</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        {COMM_NEEDS.map(n => {
+          const v = alloc[n.id] ?? 0;
+          const met = v >= n.need;
+          return (
+            <div key={n.id} className={cn('rounded-xl p-3 border-3', met ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-white')}
+              style={{ borderWidth: 3, borderColor: met ? '#4CAF50' : n.color+'55' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl">{n.emoji}</span>
+                <div>
+                  <div className="font-bold text-xs">{n.name}</div>
+                  <div className="text-[10px] text-gray-500">{n.desc}</div>
+                  <div className="text-[10px] font-bold" style={{ color: n.color }}>Min needed: {n.need}</div>
+                </div>
+              </div>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                <motion.div className="h-full rounded-full" animate={{ width: `${(v/50)*100}%` }}
+                  style={{ background: met ? '#4CAF50' : n.color }} />
+              </div>
+              <div className="flex items-center gap-2 justify-center">
+                <button onClick={() => change(n.id, -5)}
+                  className="w-8 h-8 rounded-full bg-red-100 text-red-600 font-bold text-lg hover:bg-red-200 disabled:opacity-40"
+                  disabled={locked}>−</button>
+                <span className="font-bold text-sm w-8 text-center">{v}</span>
+                <button onClick={() => change(n.id, 5)}
+                  className="w-8 h-8 rounded-full bg-green-100 text-green-600 font-bold text-lg hover:bg-green-200 disabled:opacity-40"
+                  disabled={locked}>+</button>
+                {met && <span className="text-green-600 text-sm">✅</span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {!locked && (
+        <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+          onClick={commit}
+          className="bg-purple-600 text-white font-bold py-3 rounded-xl hover:bg-purple-700">
+          🏘️ Distribute Resources!
+        </motion.button>
+      )}
+      <div className="bg-gray-800 rounded-xl p-3 max-h-20 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-xs text-gray-200 font-mono mb-0.5">{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SDG 11 — CITIES PUZZLE  (Skylar's Smart City)
+   Choose sustainable options to build a smart city!
+════════════════════════════════════════════════════════════════ */
+const CITY_CHOICES = [
+  { id:'ch1', category:'Transport',  options:[
+    { label:'Electric Bus Fleet', score:30, emoji:'🚌' },
+    { label:'Highway Expansion',  score:5,  emoji:'🛣️' },
+  ]},
+  { id:'ch2', category:'Housing',    options:[
+    { label:'Green Affordable Homes', score:28, emoji:'🏡' },
+    { label:'Luxury Tower Blocks',    score:8,  emoji:'🏢' },
+  ]},
+  { id:'ch3', category:'Energy',     options:[
+    { label:'Solar Microgrids',   score:25, emoji:'☀️' },
+    { label:'Coal Power Station', score:3,  emoji:'🏭' },
+  ]},
+  { id:'ch4', category:'Waste',      options:[
+    { label:'Circular Recycling Hub', score:22, emoji:'♻️' },
+    { label:'Open Landfill',          score:4,  emoji:'🗑️' },
+  ]},
+];
+const CITY_TARGET = 90;
+
+function CitiesPuzzle({ onWin }: { onWin: () => void }) {
+  const [picks, setPicks] = useState<Record<string,number>>({});
+  const [log, setLog] = useState<string[]>(['🏙️ Choose the most sustainable option for each city system!']);
+  const score = Object.entries(picks).reduce((s, [cid, oi]) => {
+    const ch = CITY_CHOICES.find(c => c.id === cid);
+    return s + (ch?.options[oi]?.score ?? 0);
+  }, 0);
+  const maxScore = CITY_CHOICES.reduce((s, c) => s + Math.max(...c.options.map(o=>o.score)), 0);
+  const allPicked = Object.keys(picks).length === CITY_CHOICES.length;
+  const won = allPicked && score >= CITY_TARGET;
+  useEffect(() => { if (won) onWin(); }, [won, onWin]);
+  const pick = (cid: string, oi: number) => {
+    const ch = CITY_CHOICES.find(c => c.id === cid)!;
+    setPicks(p => ({ ...p, [cid]: oi }));
+    setLog(l => [`${ch.options[oi].score >= 20 ? '✅' : '⚠️'} ${ch.category}: "${ch.options[oi].label}" chosen`, ...l.slice(0,3)]);
+  };
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-3 justify-center">
+        <div className={cn('px-4 py-2 rounded-xl font-bold text-sm',
+          score >= CITY_TARGET ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800')}>
+          🌆 Sustainability Score: {score}/{maxScore} {won && '🎉'}
+        </div>
+      </div>
+      <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
+        <motion.div className="h-full rounded-full bg-gradient-to-r from-blue-400 to-green-400"
+          animate={{ width: `${(score/maxScore)*100}%` }} />
+      </div>
+      <div className="flex flex-col gap-3">
+        {CITY_CHOICES.map(ch => (
+          <div key={ch.id} className="bg-gray-50 rounded-xl p-3">
+            <div className="text-xs font-bold text-gray-600 mb-2">🏗️ {ch.category}</div>
+            <div className="flex gap-2">
+              {ch.options.map((opt, oi) => {
+                const chosen = picks[ch.id] === oi;
+                const isGreen = opt.score >= 20;
+                return (
+                  <motion.button key={oi} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                    onClick={() => pick(ch.id, oi)}
+                    className={cn('flex-1 rounded-xl p-3 border-3 text-left transition-all text-sm',
+                      chosen ? (isGreen ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50')
+                               : 'border-gray-200 bg-white hover:bg-blue-50 cursor-pointer')}
+                    style={{ borderWidth: 3 }}>
+                    <div className="text-2xl mb-1">{opt.emoji}</div>
+                    <div className="font-bold text-xs">{opt.label}</div>
+                    {chosen && <div className={cn('text-[10px] font-bold mt-1', isGreen ? 'text-green-600' : 'text-red-500')}>
+                      {isGreen ? `+${opt.score} points ✅` : `Only +${opt.score} pts ⚠️`}
+                    </div>}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      {allPicked && !won && (
+        <div className="text-center text-red-600 text-sm font-bold">
+          ⚠️ Need {CITY_TARGET}+ points. Try more sustainable choices!
+          <button onClick={() => { setPicks({}); setLog(['🔄 Reset! Try again with better choices!']); }}
+            className="ml-3 px-3 py-1 bg-red-100 rounded-lg text-red-700 hover:bg-red-200">Reset</button>
+        </div>
+      )}
+      <div className="bg-gray-800 rounded-xl p-3 max-h-20 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-xs text-gray-200 font-mono mb-0.5">{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SDG 16 — JUSTICE QUEST  (Justia's Peace Court)
+   Judge 5 court cases by weighing the evidence correctly.
+════════════════════════════════════════════════════════════════ */
+const COURT_CASES = [
+  { id:'case1', title:'The Contaminated River',
+    evidence:['Factory X recorded dumping chemicals 3 nights in a row', 'River fish population dropped 70%', 'Locals report rashes from water use'],
+    options:['Fine Factory X & order cleanup','Ignore — need economic growth','Blame the weather'],
+    correct:0, explanation:'All evidence points to Factory X. Polluters must be held accountable.' },
+  { id:'case2', title:'The Disappearing Land Deed',
+    evidence:['Elder Maria held land title for 40 years', 'Developer claims a newer document (unsigned)','No court approved any transfer'],
+    options:['Uphold elder\'s original title','Grant developer the land','Split the land 50/50'],
+    correct:0, explanation:'An unsigned, unapproved document cannot override a valid 40-year title.' },
+  { id:'case3', title:'The Silenced Whistleblower',
+    evidence:['Sam reported corruption in writing to authorities', 'Sam was fired the next week', 'Law requires protected status for whistleblowers'],
+    options:['Reinstate Sam + investigate corruption','Employer\'s right to fire anyone','Sam should have stayed quiet'],
+    correct:0, explanation:'Whistleblower protection laws exist to encourage reporting of corruption.' },
+  { id:'case4', title:'The Biased Election',
+    evidence:['Voting machines failed in 3 opposition districts only', 'Turnout in those areas was near zero','Repair logs show sabotage'],
+    options:['Order a re-vote in affected districts','Certify results as-is','Declare the winner by margin'],
+    correct:0, explanation:'Deliberate sabotage of voting infrastructure invalidates those results.' },
+  { id:'case5', title:'The Child Labour Factory',
+    evidence:['8 children aged 10-14 found working night shifts', 'Factory cited "vocational training"','All children missed school for 6 months'],
+    options:['Shut factory, reunite kids with school','Label it \'training\', allow to continue','Fine factory $100 only'],
+    correct:0, explanation:'Children\'s right to education and freedom from labour exploitation must be protected.' },
+];
+
+function JusticeQuestPuzzle({ onWin }: { onWin: () => void }) {
+  const [caseIdx, setCaseIdx] = useState(0);
+  const [verdicts, setVerdicts] = useState<Record<string,number>>({});
+  const [showResult, setShowResult] = useState(false);
+  const [log, setLog] = useState<string[]>(['⚖️ Review the evidence and choose the just verdict for each case!']);
+  const done = caseIdx >= COURT_CASES.length;
+  const score = done ? COURT_CASES.filter(c => verdicts[c.id] === c.correct).length : 0;
+  useEffect(() => { if (done && score >= 4) onWin(); }, [done, score, onWin]);
+  const judge = (optIdx: number) => {
+    const c = COURT_CASES[caseIdx];
+    const ok = optIdx === c.correct;
+    setVerdicts(p => ({ ...p, [c.id]: optIdx }));
+    setShowResult(true);
+    setLog(l => [ok ? `✅ Correct verdict! ${c.explanation}` : `❌ ${c.explanation}`, ...l.slice(0,3)]);
+  };
+  const next = () => { setShowResult(false); setCaseIdx(i => i+1); };
+  if (done) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-4">
+        <div className="text-5xl">{score >= 4 ? '⚖️✅' : '⚖️❌'}</div>
+        <div className="text-xl font-bold text-center">{score >= 4 ? `Justice served! ${score}/5 correct!` : `Only ${score}/5 correct. Justice needs improvement.`}</div>
+        {score < 4 && <motion.button whileHover={{ scale: 1.04 }} onClick={() => { setCaseIdx(0); setVerdicts({}); setShowResult(false); setLog(['⚖️ Try again! Review the evidence carefully.']); }}
+          className="bg-blue-600 text-white font-bold px-6 py-3 rounded-xl">🔄 Retry</motion.button>}
+        <div className="bg-gray-800 rounded-xl p-3 w-full max-h-24 overflow-y-auto">
+          {log.map((l, i) => <div key={i} className="text-xs text-gray-200 font-mono mb-0.5">{l}</div>)}
+        </div>
+      </div>
+    );
+  }
+  const c = COURT_CASES[caseIdx];
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center">
+        <span className="text-sm font-bold text-indigo-700">⚖️ Case {caseIdx+1}/{COURT_CASES.length}</span>
+        <span className="text-xs text-gray-500">Need 4/5 to win</span>
+      </div>
+      <div className="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-4">
+        <div className="font-bold text-indigo-800 mb-2">📋 {c.title}</div>
+        <div className="text-xs font-bold text-gray-600 mb-1">Evidence:</div>
+        <ul className="list-disc pl-4">
+          {c.evidence.map((e, i) => <li key={i} className="text-xs text-gray-700 mb-0.5">• {e}</li>)}
+        </ul>
+      </div>
+      {!showResult ? (
+        <div className="flex flex-col gap-2">
+          <div className="text-xs font-bold text-gray-600">Your Verdict:</div>
+          {c.options.map((opt, oi) => (
+            <motion.button key={oi} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+              onClick={() => judge(oi)}
+              className="rounded-xl p-3 text-left border-2 border-indigo-200 bg-white hover:bg-indigo-50 text-sm font-medium">
+              {['A','B','C'][oi]}. {opt}
+            </motion.button>
+          ))}
+        </div>
+      ) : (
+        <div className={cn('rounded-xl p-4 text-sm', verdicts[c.id] === c.correct ? 'bg-green-50 border-2 border-green-400' : 'bg-red-50 border-2 border-red-300')}>
+          <div className="font-bold mb-1">{verdicts[c.id] === c.correct ? '✅ Correct!' : '❌ Wrong verdict!'}</div>
+          <div className="text-gray-700">{c.explanation}</div>
+          <motion.button whileHover={{ scale: 1.04 }} onClick={next}
+            className="mt-3 bg-indigo-600 text-white font-bold px-5 py-2 rounded-xl">
+            {caseIdx + 1 < COURT_CASES.length ? 'Next Case →' : 'See Results'}
+          </motion.button>
+        </div>
+      )}
+      <div className="bg-gray-800 rounded-xl p-3 max-h-20 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-xs text-gray-200 font-mono mb-0.5">{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SDG 17 — GLOBAL LINK PUZZLE  (Accord's Global Summit)
+   Memory match: pair nations/orgs to their SDG partnership.
+════════════════════════════════════════════════════════════════ */
+const GP_PAIRS = [
+  { id:'gp1', a:'🇰🇪 Kenya', b:'🌱 Reforestation Fund',    topic:'Forest & Climate' },
+  { id:'gp2', a:'🇸🇪 Sweden', b:'💡 Clean Tech Transfer',   topic:'Energy Access' },
+  { id:'gp3', a:'🇧🇩 Bangladesh', b:'🌊 Flood Adaptation',  topic:'Climate Resilience' },
+  { id:'gp4', a:'🇩🇪 Germany', b:'🚌 E-Mobility Aid',       topic:'Sustainable Cities' },
+  { id:'gp5', a:'🇲🇽 Mexico', b:'🤝 Education Exchange',    topic:'Quality Education' },
+  { id:'gp6', a:'🇮🇳 India', b:'☀️ Solar Export Pact',      topic:'Clean Energy' },
+];
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function GlobalLinkPuzzle({ onWin }: { onWin: () => void }) {
+  const cards = useMemo(() => shuffle(
+    GP_PAIRS.flatMap(p => [
+      { uid: p.id+'a', pairId: p.id, text: p.a, side: 'a' as const },
+      { uid: p.id+'b', pairId: p.id, text: p.b, side: 'b' as const },
+    ])
+  ), []);
+  const [flipped, setFlipped]   = useState<string[]>([]);
+  const [matched, setMatched]   = useState<string[]>([]);
+  const [locked, setLocked]     = useState(false);
+  const [log, setLog]           = useState<string[]>(['🤝 Match each nation to its partnership project!']);
+  const won = matched.length === GP_PAIRS.length * 2;
+  useEffect(() => { if (won) onWin(); }, [won, onWin]);
+  const flip = (uid: string) => {
+    if (locked || flipped.includes(uid) || matched.includes(uid)) return;
+    const next = [...flipped, uid];
+    setFlipped(next);
+    if (next.length === 2) {
+      setLocked(true);
+      const [a, b] = next.map(id => cards.find(c => c.uid === id)!);
+      if (a.pairId === b.pairId) {
+        const pair = GP_PAIRS.find(p => p.id === a.pairId)!;
+        setMatched(m => [...m, a.uid, b.uid]);
+        setLog(l => [`✅ Matched! ${a.text} ↔ ${b.text} (${pair.topic})`, ...l.slice(0,3)]);
+        setFlipped([]);
+        setLocked(false);
+      } else {
+        setLog(l => [`❌ No match. Try again!`, ...l.slice(0,3)]);
+        setTimeout(() => { setFlipped([]); setLocked(false); }, 900);
+      }
+    }
+  };
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between text-sm font-bold">
+        <span className="text-purple-700">🤝 Matched: {matched.length/2}/{GP_PAIRS.length} pairs</span>
+        <span className="text-gray-500">Click 2 cards to match!</span>
+      </div>
+      <div className="grid grid-cols-4 gap-2">
+        {cards.map(card => {
+          const isFlipped  = flipped.includes(card.uid);
+          const isMatched  = matched.includes(card.uid);
+          const visible    = isFlipped || isMatched;
+          return (
+            <motion.button key={card.uid}
+              whileHover={{ scale: visible ? 1 : 1.06 }} whileTap={{ scale: 0.95 }}
+              onClick={() => flip(card.uid)}
+              className={cn('rounded-xl p-2 border-2 text-center min-h-[70px] flex items-center justify-center transition-all text-xs font-bold',
+                isMatched  ? 'border-green-400 bg-green-50 text-green-800' :
+                isFlipped  ? 'border-purple-400 bg-purple-50 text-purple-800' :
+                             'border-gray-300 bg-indigo-700 text-indigo-700 hover:bg-indigo-600 cursor-pointer')}>
+              {visible ? card.text : '🌐'}
+            </motion.button>
+          );
+        })}
+      </div>
+      <div className="bg-gray-800 rounded-xl p-3 max-h-20 overflow-y-auto">
+        {log.map((l, i) => <div key={i} className="text-xs text-gray-200 font-mono mb-0.5">{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
 const PUZZLE_MAP: Partial<Record<ZoneId, React.FC<{ onWin: () => void }>>> = {
-  poverty:   PovertyPuzzle,
-  hunger:    HungerHub,
-  health:    HealthPuzzle,
-  education: EducationPuzzle,
-  equality:  EqualityPuzzle,
-  water:     WaterPuzzle,
-  ocean:     OceanPuzzle,
-  forest:    ForestPuzzle,
-  climate:   ClimatePuzzle,
+  poverty:     PovertyPuzzle,
+  hunger:      HungerHub,
+  health:      HealthPuzzle,
+  education:   EducationPuzzle,
+  equality:    EqualityPuzzle,
+  water:       WaterPuzzle,
+  ocean:       OceanPuzzle,
+  forest:      ForestPuzzle,
+  climate:     ClimatePuzzle,
   consumption: ConsumptionPuzzle,
+  energy:      EnergyPuzzle,
+  industry:    IndustryPuzzle,
+  innovation:  InnovationPuzzle,
+  communities: CommunitiesPuzzle,
+  cities:      CitiesPuzzle,
+  peace:       JusticeQuestPuzzle,
+  partnership: GlobalLinkPuzzle,
 };
 
 export default function PuzzleScreen() {
