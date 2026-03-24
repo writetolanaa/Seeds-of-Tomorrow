@@ -1622,8 +1622,8 @@ function Buildings() {
 
       {/* ══════ ENTERABLE BUILDINGS ══════ */}
 
-      {/* GREENHOUSE (SDG 2 - Hunger, x=2220, y=60) */}
-      <g transform="translate(2220, 60)">
+      {/* GREENHOUSE (SDG 2 - Hunger, zone center) */}
+      <g transform="translate(2570, 310)">
         {/* Shadow */}
         <ellipse cx="90" cy="142" rx="80" ry="16" fill="rgba(0,0,0,0.18)" />
         {/* Main glass house structure */}
@@ -1658,8 +1658,8 @@ function Buildings() {
         <text x="90" y="156" textAnchor="middle" fontSize="10" fontFamily="Nunito" fill="white">[E] Enter</text>
       </g>
 
-      {/* HOSPITAL / HEALTH CLINIC (SDG 3 - Health, x=1140, y=55) */}
-      <g transform="translate(1140, 55)">
+      {/* HOSPITAL / HEALTH CLINIC (SDG 3 - Health, zone center) */}
+      <g transform="translate(1490, 280)">
         <ellipse cx="90" cy="140" rx="80" ry="15" fill="rgba(0,0,0,0.18)" />
         {/* Main building */}
         <rect x="5" y="30" width="170" height="110" rx="8" fill="#E3F2FD" stroke="#1565C0" strokeWidth="3" />
@@ -1690,8 +1690,8 @@ function Buildings() {
         <text x="90" y="154" textAnchor="middle" fontSize="10" fontFamily="Nunito" fill="white">[E] Enter</text>
       </g>
 
-      {/* SCHOOL (SDG 4 - Education, x=2220, y=1360) */}
-      <g transform="translate(2220, 1360)">
+      {/* SCHOOL (SDG 4 - Education, zone center) */}
+      <g transform="translate(2560, 1540)">
         <ellipse cx="100" cy="152" rx="90" ry="16" fill="rgba(0,0,0,0.18)" />
         {/* Main building */}
         <rect x="0" y="35" width="200" height="117" rx="6" fill="#EDE7F6" stroke="#6A1B9A" strokeWidth="3" />

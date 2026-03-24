@@ -199,17 +199,15 @@ export const WORLD_BUILDINGS: WorldBuilding[] = [
   { x: 250, y: 320, w: 110, h: 90, type: 'shop', color: '#FFCCBC', roofColor: '#FF5722', label: 'Market' },
   { x: 620, y: 320, w: 130, h: 100, type: 'shop', color: '#FFCCBC', roofColor: '#FF5722' },
 
-  // Health Clinic
-  { x: 1260, y: 120, w: 220, h: 160, type: 'clinic', color: '#E8F5E9', roofColor: '#2E7D32', label: 'Clinic' },
-  { x: 1510, y: 120, w: 150, h: 140, type: 'cottage', color: '#F1F8E9', roofColor: '#33691E' },
-  { x: 1690, y: 120, w: 140, h: 130, type: 'cottage', color: '#F1F8E9', roofColor: '#33691E' },
-  { x: 1860, y: 120, w: 100, h: 110, type: 'shop', color: '#DCEDC8', roofColor: '#558B2F', label: 'Pharmacy' },
+  // Health Clinic — flanking the central enterable hospital (x=1490)
+  { x: 1250, y: 120, w: 200, h: 150, type: 'clinic', color: '#E8F5E9', roofColor: '#2E7D32', label: 'Clinic' },
+  { x: 1720, y: 120, w: 140, h: 130, type: 'cottage', color: '#F1F8E9', roofColor: '#33691E' },
+  { x: 1880, y: 120, w: 100, h: 110, type: 'shop', color: '#DCEDC8', roofColor: '#558B2F', label: 'Pharmacy' },
 
-  // Hunger Farm
-  { x: 2360, y: 180, w: 220, h: 170, type: 'barn', color: '#FFF8E1', roofColor: '#F57F17', label: 'Barn' },
-  { x: 2610, y: 190, w: 110, h: 130, type: 'cottage', color: '#EFEBE9', roofColor: '#5D4037' },
-  { x: 2740, y: 185, w: 100, h: 110, type: 'shop', color: '#FFECB3', roofColor: '#FF8F00' },
-  { x: 2870, y: 190, w: 130, h: 120, type: 'barn', color: '#FFF8E1', roofColor: '#E65100' },
+  // Hunger Farm — kept left/right of the central greenhouse
+  { x: 2330, y: 180, w: 200, h: 160, type: 'barn', color: '#FFF8E1', roofColor: '#F57F17', label: 'Barn' },
+  { x: 2790, y: 190, w: 110, h: 130, type: 'cottage', color: '#EFEBE9', roofColor: '#5D4037' },
+  { x: 2920, y: 185, w: 100, h: 110, type: 'shop', color: '#FFECB3', roofColor: '#FF8F00' },
 
   // Poverty Village
   { x: 230, y: 1450, w: 130, h: 110, type: 'cottage', color: '#FFCDD2', roofColor: '#C62828', label: 'House' },
@@ -219,10 +217,10 @@ export const WORLD_BUILDINGS: WorldBuilding[] = [
   { x: 260, y: 1840, w: 140, h: 90, type: 'shop', color: '#FFAB91', roofColor: '#BF360C', label: 'Shelter' },
   { x: 620, y: 1840, w: 120, h: 90, type: 'cottage', color: '#FFCDD2', roofColor: '#C62828' },
 
-  // Education Academy
-  { x: 2340, y: 1440, w: 270, h: 200, type: 'school', color: '#EDE7F6', roofColor: '#4A148C', label: 'Academy' },
-  { x: 2640, y: 1450, w: 140, h: 130, type: 'cottage', color: '#E1BEE7', roofColor: '#6A1B9A' },
-  { x: 2810, y: 1440, w: 120, h: 120, type: 'shop', color: '#E8EAF6', roofColor: '#311B92', label: 'Library' },
+  // Education Academy — flanking the central enterable school (x=2560)
+  { x: 2330, y: 1445, w: 200, h: 175, type: 'school', color: '#EDE7F6', roofColor: '#4A148C', label: 'Academy' },
+  { x: 2810, y: 1450, w: 130, h: 130, type: 'cottage', color: '#E1BEE7', roofColor: '#6A1B9A' },
+  { x: 2960, y: 1445, w: 110, h: 110, type: 'shop', color: '#E8EAF6', roofColor: '#311B92', label: 'Library' },
 
   // ── PLANET SECTION BUILDINGS ──
 

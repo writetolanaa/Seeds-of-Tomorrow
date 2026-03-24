@@ -34,7 +34,7 @@ export const ENTERABLE_BUILDINGS: BuildingDef[] = [
     wallColor: '#2E7D32',
     floorColor: '#388E3C',
     accentColor: '#A5D6A7',
-    x: 2220, y: 60, width: 180, height: 130,
+    x: 2570, y: 310, width: 180, height: 130,
   },
   {
     id: 'hospital',
@@ -47,7 +47,7 @@ export const ENTERABLE_BUILDINGS: BuildingDef[] = [
     wallColor: '#1565C0',
     floorColor: '#1976D2',
     accentColor: '#BBDEFB',
-    x: 1140, y: 55, width: 180, height: 130,
+    x: 1490, y: 280, width: 180, height: 130,
   },
   {
     id: 'school',
@@ -60,7 +60,7 @@ export const ENTERABLE_BUILDINGS: BuildingDef[] = [
     wallColor: '#6A1B9A',
     floorColor: '#7B1FA2',
     accentColor: '#E1BEE7',
-    x: 2220, y: 1360, width: 200, height: 140,
+    x: 2560, y: 1540, width: 200, height: 140,
   },
 ];
 
