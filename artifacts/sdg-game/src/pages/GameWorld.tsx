@@ -158,21 +158,21 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         </pattern>
         {/* Planet section textures */}
         <pattern id="ocean-bg" patternUnits="userSpaceOnUse" width="60" height="60">
-          <rect width="60" height="60" fill="#0D47A1" />
-          <path d="M 0 30 Q 15 20 30 30 Q 45 40 60 30" stroke="#1565C0" strokeWidth="4" fill="none" />
+          <rect width="60" height="60" fill="#1976D2" />
+          <path d="M 0 30 Q 15 18 30 30 Q 45 42 60 30" stroke="#42A5F5" strokeWidth="4" fill="none" opacity="0.6" />
         </pattern>
         <pattern id="forest-bg" patternUnits="userSpaceOnUse" width="50" height="50">
-          <rect width="50" height="50" fill="#1B5E20" />
-          <ellipse cx="25" cy="25" rx="20" ry="18" fill="#2E7D32" opacity="0.4" />
+          <rect width="50" height="50" fill="#388E3C" />
+          <ellipse cx="25" cy="25" rx="20" ry="18" fill="#4CAF50" opacity="0.4" />
         </pattern>
         <pattern id="arctic-bg" patternUnits="userSpaceOnUse" width="50" height="50">
-          <rect width="50" height="50" fill="#ECEFF1" />
-          <ellipse cx="25" cy="25" rx="18" ry="14" fill="#CFD8DC" opacity="0.4" />
+          <rect width="50" height="50" fill="#E3F2FD" />
+          <ellipse cx="25" cy="25" rx="18" ry="14" fill="#BBDEFB" opacity="0.5" />
         </pattern>
         <pattern id="industrial-bg" patternUnits="userSpaceOnUse" width="40" height="40">
-          <rect width="40" height="40" fill="#546E7A" />
-          <rect x="5" y="5" width="12" height="12" fill="#607D8B" opacity="0.4" />
-          <rect x="23" y="23" width="12" height="12" fill="#607D8B" opacity="0.4" />
+          <rect width="40" height="40" fill="#78909C" />
+          <rect x="5" y="5" width="12" height="12" fill="#90A4AE" opacity="0.4" />
+          <rect x="23" y="23" width="12" height="12" fill="#90A4AE" opacity="0.4" />
         </pattern>
         <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
           <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.2" />
@@ -234,11 +234,11 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
       ))}
 
       {/* ════ PLANET SECTION BIOME BACKGROUNDS ════ */}
-      {/* Overall planet base (dark teal) */}
-      <rect x="0" y={2500} width={WORLD_W} height={WORLD_H - 2500} fill="#1C3A2E" />
+      {/* Overall planet base (medium teal-green) */}
+      <rect x="0" y={2500} width={WORLD_W} height={WORLD_H - 2500} fill="#2E7D52" />
 
       {/* Water/Mountain biome (top-left planet) */}
-      <rect x="0" y={2500} width="1150" height="1300" fill="#1A3A5C" opacity="0.85" />
+      <rect x="0" y={2500} width="1150" height="1300" fill="#1976D2" opacity="0.55" />
       {/* Mountain peaks */}
       <polygon points="50,2800 200,2500 350,2800" fill="#455A64" opacity="0.7" />
       <polygon points="180,2780 350,2450 520,2780" fill="#546E7A" opacity="0.7" />
@@ -279,7 +279,7 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         fill="#FFF176" opacity="0.5" />
 
       {/* Forest/Jungle biome (bottom-left planet) */}
-      <rect x="0" y="3450" width="1150" height="1150" fill="url(#forest-bg)" opacity="0.95" />
+      <rect x="0" y="3450" width="1150" height="1150" fill="url(#forest-bg)" opacity="0.80" />
       {/* Dense jungle trees in background */}
       {[[60,3520],[150,3480],[230,3510],[320,3490],[400,3520],[480,3480],[560,3505],[640,3490],[720,3520],[800,3480],[880,3510],[950,3490]].map(([x, y], i) => (
         <g key={i} transform={`translate(${x},${y})`}>
@@ -294,7 +294,7 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
       ))}
 
       {/* Arctic/Climate biome (bottom-right planet) */}
-      <rect x="2050" y="3450" width="1150" height="1150" fill="url(#arctic-bg)" opacity="0.95" />
+      <rect x="2050" y="3450" width="1150" height="1150" fill="url(#arctic-bg)" opacity="0.80" />
       {/* Melting ice flows */}
       {[[2150, 3600], [2350, 3550], [2550, 3600], [2750, 3570], [2950, 3600]].map(([x, y], i) => (
         <ellipse key={i} cx={x} cy={y} rx="80" ry="22" fill="#B3E5FC" opacity="0.6" />
@@ -334,11 +334,18 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
               stroke={done ? z.borderColor : '#9E9E9E'}
               strokeWidth="4" strokeDasharray={done ? 'none' : '12 6'}
               filter="url(#shadow)" />
-            <rect x={z.x + z.w / 2 - 100} y={z.y - 24} width="200" height="30" rx="15"
-              fill={done ? z.borderColor : '#757575'} />
-            <text x={z.x + z.w / 2} y={z.y - 4} textAnchor="middle" fill="white"
-              fontSize="13" fontWeight="bold" fontFamily="Nunito">
-              {z.emoji} SDG {z.sdg}: {done ? '✓ Healed!' : '?'}
+            {/* Big floating banner — sits above any buildings */}
+            <rect x={z.x + z.w / 2 - 150} y={z.y - 68} width="300" height="52" rx="26"
+              fill={done ? z.borderColor : '#616161'} filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 150} y={z.y - 68} width="300" height="52" rx="26"
+              fill="white" opacity="0.12" />
+            <text x={z.x + z.w / 2} y={z.y - 50} textAnchor="middle" fill="white"
+              fontSize="11" fontFamily="Nunito" opacity="0.85">
+              {done ? '✅ Zone Healed!' : '🔒 Undiscovered'}
+            </text>
+            <text x={z.x + z.w / 2} y={z.y - 28} textAnchor="middle" fill="white"
+              fontSize="20" fontWeight="bold" fontFamily="Patrick Hand, cursive">
+              {z.emoji} SDG {z.sdg} · {z.name}
             </text>
           </g>
         );
@@ -350,15 +357,22 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         return (
           <g key={z.id}>
             <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="24" ry="24"
-              fill={done ? z.color : 'rgba(255,255,255,0.12)'}
+              fill={done ? z.color : 'rgba(255,255,255,0.18)'}
               stroke={done ? z.borderColor : '#80CBC4'}
               strokeWidth="5" strokeDasharray={done ? 'none' : '14 7'}
               filter="url(#shadow)" />
-            <rect x={z.x + z.w / 2 - 110} y={z.y - 26} width="220" height="32" rx="16"
-              fill={done ? z.borderColor : '#00838F'} />
-            <text x={z.x + z.w / 2} y={z.y - 4} textAnchor="middle" fill="white"
-              fontSize="13" fontWeight="bold" fontFamily="Nunito">
-              {z.emoji} SDG {z.sdg}: {done ? '✓ Healed!' : '🔒 Explore'}
+            {/* Big floating banner */}
+            <rect x={z.x + z.w / 2 - 160} y={z.y - 70} width="320" height="54" rx="27"
+              fill={done ? z.borderColor : '#00838F'} filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 160} y={z.y - 70} width="320" height="54" rx="27"
+              fill="white" opacity="0.12" />
+            <text x={z.x + z.w / 2} y={z.y - 52} textAnchor="middle" fill="white"
+              fontSize="11" fontFamily="Nunito" opacity="0.88">
+              {done ? '✅ Zone Healed!' : '🔒 Undiscovered'}
+            </text>
+            <text x={z.x + z.w / 2} y={z.y - 30} textAnchor="middle" fill="white"
+              fontSize="20" fontWeight="bold" fontFamily="Patrick Hand, cursive">
+              {z.emoji} SDG {z.sdg} · {z.name}
             </text>
           </g>
         );
@@ -1113,10 +1127,10 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         const PG_X = 1600;
         return (
           <g>
-            <rect x="0" y={PG_Y} width={WORLD_W} height="280" fill="#1A1040" />
+            <rect x="0" y={PG_Y} width={WORLD_W} height="280" fill="#2A2060" />
             {[0,1,2,3,4,5,6,7].map(i => (
               <rect key={i} x={i * WORLD_W / 8} y={PG_Y} width={WORLD_W / 8} height="280"
-                fill={i % 2 === 0 ? '#0D0A2A' : '#1A1040'} opacity="0.85" />
+                fill={i % 2 === 0 ? '#231A50' : '#2A2060'} opacity="0.85" />
             ))}
             {/* Stars/city-lights in the gate zone */}
             {[[200,4660],[450,4680],[750,4655],[1100,4670],[1450,4660],[1900,4680],[2200,4660],[2650,4675],[2950,4660]].map(([x,y],i) => (
@@ -1142,15 +1156,15 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         );
       })()}
 
-      {/* Prosperity base background — futuristic cityscape */}
-      <rect x="0" y="4920" width={WORLD_W} height={WORLD_H - 4920} fill="#0D1B2A" />
+      {/* Prosperity base background — bright futuristic cityscape */}
+      <rect x="0" y="4920" width={WORLD_W} height={WORLD_H - 4920} fill="#1A3D5C" />
       {/* City skyline silhouette far back */}
       {[[100,4980,60,160],[220,5010,40,130],[310,4970,80,170],[430,5000,50,150],[560,4975,70,165],
         [700,5005,45,135],[810,4980,65,155],[920,5010,35,125],[1050,4975,80,170],[1150,5000,50,145],
         [1650,4975,80,170],[1750,5005,50,140],[1850,4980,60,160],[1950,5010,40,125],[2050,4975,75,165],
         [2200,5000,55,150],[2320,4980,65,160],[2440,5005,45,135],[2560,4975,80,170],[2700,5010,40,125],
         [2810,4980,70,165],[2950,5000,55,145],[3050,4975,60,160]].map(([x,y,w,h],i) => (
-        <rect key={i} x={x} y={y} width={w} height={h} rx="4" fill={i%3===0?'#0D2137':i%3===1?'#0A1A2E':'#0F2340'} opacity="0.9" />
+        <rect key={i} x={x} y={y} width={w} height={h} rx="4" fill={i%3===0?'#1E4D7B':i%3===1?'#163D63':'#1A4A74'} opacity="0.9" />
       ))}
       {/* City windows glowing */}
       {[[120,5000],[135,5030],[155,5000],[230,5020],[320,4990],[340,5020],[350,4990],
@@ -1170,15 +1184,22 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         return (
           <g key={z.id}>
             <rect x={z.x} y={z.y} width={z.w} height={z.h} rx="24" ry="24"
-              fill={done ? z.color : 'rgba(255,255,255,0.08)'}
+              fill={done ? z.color : 'rgba(255,255,255,0.14)'}
               stroke={done ? z.borderColor : '#F9A825'}
               strokeWidth="5" strokeDasharray={done ? 'none' : '14 7'}
               filter="url(#shadow)" />
-            <rect x={z.x + z.w / 2 - 120} y={z.y - 28} width="240" height="34" rx="17"
-              fill={done ? z.borderColor : '#E65100'} opacity="0.92" />
-            <text x={z.x + z.w / 2} y={z.y - 5} textAnchor="middle" fill="white"
-              fontSize="13" fontWeight="bold" fontFamily="Nunito">
-              {z.emoji} SDG {z.sdg}: {done ? '✓ Healed!' : '🔒 Explore'}
+            {/* Big floating banner */}
+            <rect x={z.x + z.w / 2 - 160} y={z.y - 70} width="320" height="54" rx="27"
+              fill={done ? z.borderColor : '#E65100'} filter="url(#shadow)" />
+            <rect x={z.x + z.w / 2 - 160} y={z.y - 70} width="320" height="54" rx="27"
+              fill="white" opacity="0.12" />
+            <text x={z.x + z.w / 2} y={z.y - 52} textAnchor="middle" fill="white"
+              fontSize="11" fontFamily="Nunito" opacity="0.88">
+              {done ? '✅ Zone Healed!' : '🔒 Undiscovered'}
+            </text>
+            <text x={z.x + z.w / 2} y={z.y - 30} textAnchor="middle" fill="white"
+              fontSize="20" fontWeight="bold" fontFamily="Patrick Hand, cursive">
+              {z.emoji} SDG {z.sdg} · {z.name}
             </text>
           </g>
         );
@@ -1191,7 +1212,7 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         const PC_Y = 5700;
         return (
           <g>
-            <circle cx={PC_X} cy={PC_Y} r="185" fill="#1A1040" stroke="#F9A825" strokeWidth="7" filter="url(#shadow)" />
+            <circle cx={PC_X} cy={PC_Y} r="185" fill="#1E3C6E" stroke="#F9A825" strokeWidth="7" filter="url(#shadow)" />
             <circle cx={PC_X} cy={PC_Y} r="185" fill="none" stroke="#FFD700" strokeWidth="5" opacity="0.7" />
             <text x={PC_X} y={PC_Y - 45} textAnchor="middle" fontSize="22" fontWeight="bold" fontFamily="Patrick Hand, cursive" fill="#FFD700">🌟 Prosperity World</text>
             <text x={PC_X} y={PC_Y - 18} textAnchor="middle" fontSize="13" fontFamily="Nunito" fill="#FFF176">SDGs 7–11: Build a better future!</text>
@@ -2204,10 +2225,10 @@ export default function GameWorld() {
             {/* Gate */}
             <rect x="0" y="2200" width={WORLD_W} height="300" fill="#263238" />
             {/* Planet section */}
-            <rect x="0" y="2500" width={WORLD_W} height="2140" fill="#1C3A2E" />
+            <rect x="0" y="2500" width={WORLD_W} height="2140" fill="#2E7D52" />
             {/* Prosperity section */}
-            <rect x="0" y="4640" width={WORLD_W} height="280" fill="#1A1040" />
-            <rect x="0" y="4920" width={WORLD_W} height={WORLD_H - 4920} fill="#0D1B2A" rx="10" />
+            <rect x="0" y="4640" width={WORLD_W} height="280" fill="#2A2060" />
+            <rect x="0" y="4920" width={WORLD_W} height={WORLD_H - 4920} fill="#1A3D5C" rx="10" />
             {ZONE_REGIONS.map(z => (
               <rect key={z.id} x={z.x} y={z.y} width={z.w} height={z.h}
                 fill={completedZones.includes(z.id) ? z.color : z.level === 'prosperity' ? 'rgba(249,168,37,0.15)' : z.level === 'planet' ? 'rgba(255,255,255,0.15)' : '#D7CCC8'}
