@@ -70,8 +70,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const getWorldHealPercent = () => Math.round((state.completedZones.length / TOTAL_ZONES) * 100);
 
-  const peopleLevelComplete = PEOPLE_ZONES.every(id => state.completedZones.includes(id));
-  const planetLevelComplete = PLANET_ZONES.every(id => state.completedZones.includes(id));
+  // DEV: force unlock all levels for testing — set false to re-enable progression lock
+  const DEV_UNLOCK_ALL = true;
+  const peopleLevelComplete = DEV_UNLOCK_ALL || PEOPLE_ZONES.every(id => state.completedZones.includes(id));
+  const planetLevelComplete = DEV_UNLOCK_ALL || PLANET_ZONES.every(id => state.completedZones.includes(id));
   const peopleProgress = PEOPLE_ZONES.filter(id => state.completedZones.includes(id)).length;
   const planetProgress = PLANET_ZONES.filter(id => state.completedZones.includes(id)).length;
 

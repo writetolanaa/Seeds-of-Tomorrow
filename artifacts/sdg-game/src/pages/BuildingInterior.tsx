@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'wouter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Warden1, Warden2, Warden3 } from '@/components/Sprites';
 import {
@@ -61,6 +62,19 @@ export const ENTERABLE_BUILDINGS: BuildingDef[] = [
     floorColor: '#7B1FA2',
     accentColor: '#E1BEE7',
     x: 2560, y: 1540, width: 200, height: 140,
+  },
+  {
+    id: 'aquarium',
+    name: 'Ocean Research Station',
+    emoji: '🐠',
+    npcName: 'Coralina',
+    npcEmoji: '🌊',
+    zoneId: 'ocean',
+    description: 'A marine research station studying ocean life and the plastic crisis. Coralina leads the dive team.',
+    wallColor: '#00696C',
+    floorColor: '#00838F',
+    accentColor: '#B2EBF2',
+    x: 2430, y: 2660, width: 180, height: 130,
   },
 ];
 
@@ -373,18 +387,184 @@ function ClassroomRoom() {
   );
 }
 
+/* ── Ocean Research Station Room ── */
+function AquariumRoom() {
+  return (
+    <svg viewBox="0 0 800 460" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="aquaWall" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#004D54" />
+          <stop offset="100%" stopColor="#006064" />
+        </linearGradient>
+        <linearGradient id="aquaFloor" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#00838F" />
+          <stop offset="100%" stopColor="#00696C" />
+        </linearGradient>
+        <linearGradient id="tankWater" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#0277BD" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#01579B" stopOpacity="0.95" />
+        </linearGradient>
+        <filter id="glow2">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+      {/* Background wall */}
+      <rect width="800" height="460" fill="url(#aquaWall)" />
+      {/* Floor */}
+      <rect x="0" y="360" width="800" height="100" fill="url(#aquaFloor)" />
+      {[0,80,160,240,320,400,480,560,640,720,800].map((x,i) => (
+        <line key={i} x1={x} y1="360" x2={x} y2="460" stroke="#004D54" strokeWidth="1.5" opacity="0.5" />
+      ))}
+      {/* Porthole windows */}
+      {[100,340,580].map((cx,i) => (
+        <g key={i} transform={`translate(${cx},80)`}>
+          <circle cx="0" cy="0" r="65" fill="#01579B" stroke="#00BCD4" strokeWidth="6" />
+          <circle cx="0" cy="0" r="57" fill="#0288D1" opacity="0.7" />
+          <ellipse cx="-15" cy="-20" rx="25" ry="18" fill="rgba(255,255,255,0.12)" />
+          {/* Fish in porthole */}
+          <ellipse cx={-20+(i*15)} cy={5} rx="14" ry="9" fill={['#FF8A65','#FFD54F','#80CBC4'][i]} />
+          <polygon points={`${-34+(i*15)},5 ${-42+(i*15)},-2 ${-42+(i*15)},12`} fill={['#FF7043','#FFC107','#4DB6AC'][i]} />
+          <circle cx={-12+(i*15)} cy={3} r="2.5" fill="white" />
+          <circle cx={-11+(i*15)} cy={3} r="1" fill="#333" />
+          {i===1 && <ellipse cx="18" cy="12" rx="10" ry="7" fill="#26C6DA" />}
+          <circle cx="0" cy="0" r="65" fill="none" stroke="#37474F" strokeWidth="10" />
+          <circle cx="0" cy="0" r="65" fill="none" stroke="#78909C" strokeWidth="4" />
+          {/* Bolts */}
+          {[45,135,225,315].map((a,j) => {
+            const rad = a * Math.PI / 180;
+            return <circle key={j} cx={Math.cos(rad)*67} cy={Math.sin(rad)*67} r="5" fill="#546E7A" stroke="#78909C" strokeWidth="2" />;
+          })}
+        </g>
+      ))}
+      {/* Big fish tank */}
+      <rect x="30" y="175" width="300" height="175" rx="6" fill="url(#tankWater)" stroke="#00BCD4" strokeWidth="5" />
+      <rect x="30" y="175" width="300" height="175" rx="6" fill="rgba(255,255,255,0.06)" />
+      {/* Tank contents */}
+      <ellipse cx="120" cy="330" rx="80" ry="12" fill="#1B5E20" opacity="0.55" />
+      {[[70,315],[135,305],[200,320],[250,310]].map(([cx,cy],i) => (
+        <g key={i}>
+          <ellipse cx={cx} cy={cy} rx="8" ry="14" fill={['#388E3C','#2E7D32','#4CAF50','#1B5E20'][i]} />
+          <ellipse cx={cx-4} cy={cy-10} rx="6" ry="10" fill={['#43A047','#388E3C','#66BB6A','#2E7D32'][i]} />
+        </g>
+      ))}
+      {/* Fish in tank */}
+      {[[85,250],[155,265],[215,245],[265,260]].map(([fx,fy],i) => (
+        <g key={i}>
+          <ellipse cx={fx} cy={fy} rx="16" ry="10" fill={['#FF8A65','#4FC3F7','#FFF176','#F48FB1'][i]} />
+          <polygon points={`${fx-16},${fy} ${fx-25},${fy-6} ${fx-25},${fy+6}`} fill={['#FF7043','#29B6F6','#FDD835','#F06292'][i]} />
+          <circle cx={fx+8} cy={fy-2} r="2.5" fill="white" />
+          <circle cx={fx+8} cy={fy-2} r="1" fill="#333" />
+        </g>
+      ))}
+      <rect x="30" y="175" width="300" height="10" rx="4" fill="rgba(0,188,212,0.35)" />
+      {/* Sand at bottom of tank */}
+      <rect x="30" y="328" width="300" height="22" rx="0" fill="#F9A825" opacity="0.5" />
+      <rect x="30" y="336" width="300" height="14" rx="0" fill="#795548" opacity="0.3" />
+      {/* Plastic bag and bottle in tank (pollution) */}
+      <path d="M 90 290 Q 100 275 105 290 Q 100 305 90 290Z" fill="rgba(255,255,255,0.45)" />
+      <rect x="230" y="282" width="10" height="24" rx="4" fill="rgba(144,202,249,0.6)" />
+      <rect x="230" y="278" width="10" height="6" rx="2" fill="rgba(100,160,210,0.7)" />
+      {/* Label over tank */}
+      <rect x="30" y="155" width="300" height="22" rx="4" fill="#006064" />
+      <text x="180" y="171" textAnchor="middle" fontSize="12" fill="#80DEEA" fontWeight="bold" fontFamily="Nunito">🔬 Live Ecosystem Tank</text>
+
+      {/* Research desk + monitors */}
+      <rect x="470" y="200" width="300" height="170" rx="8" fill="#004D54" stroke="#00838F" strokeWidth="3" />
+      {/* Monitor 1 */}
+      <rect x="485" y="210" width="120" height="80" rx="4" fill="#0D47A1" stroke="#1976D2" strokeWidth="2" />
+      <text x="545" y="232" textAnchor="middle" fontSize="8" fill="#64B5F6" fontFamily="Nunito">OCEAN TEMPS</text>
+      {[0,1,2,3].map(i => (
+        <rect key={i} x={490+i*25} y={238+Math.random()*10} width="18" height={30-i*6}
+          fill={['#F44336','#FF9800','#FFEB3B','#4CAF50'][i]} opacity="0.8" />
+      ))}
+      <text x="545" y="300" textAnchor="middle" fontSize="7" fill="#90CAF9" fontFamily="Nunito">↑ +1.8°C vs 1990</text>
+      {/* Monitor 2 */}
+      <rect x="625" y="210" width="130" height="80" rx="4" fill="#1A237E" stroke="#3949AB" strokeWidth="2" />
+      <text x="690" y="232" textAnchor="middle" fontSize="8" fill="#9FA8DA" fontFamily="Nunito">PLASTIC INDEX</text>
+      <path d="M 635 270 Q 660 242 685 255 Q 710 268 740 245" fill="none" stroke="#F44336" strokeWidth="2.5" />
+      <text x="690" y="298" textAnchor="middle" fontSize="7" fill="#EF9A9A" fontFamily="Nunito">8M tons/year ↑</text>
+      {/* Keyboard / papers */}
+      <rect x="485" y="305" width="230" height="16" rx="4" fill="#37474F" />
+      <rect x="490" y="301" width="110" height="8" rx="3" fill="#546E7A" />
+      <rect x="610" y="295" width="65" height="28" rx="3" fill="white" opacity="0.15" />
+      {/* NPC Coralina (use Thinklet as stand-in with teal tint) */}
+      <foreignObject x="490" y="300" width="80" height="120">
+        <div xmlns="http://www.w3.org/1999/xhtml" style={{ width:'100%', height:'100%', filter:'hue-rotate(160deg) saturate(1.4)' }}>
+          <ThinkletSprite className="w-full h-full" />
+        </div>
+      </foreignObject>
+      {/* Neon sign */}
+      <rect x="200" y="148" width="400" height="26" rx="13" fill="#004D54" stroke="#00BCD4" strokeWidth="2" />
+      <text x="400" y="166" textAnchor="middle" fontSize="14" fill="#80DEEA" fontWeight="bold"
+        fontFamily="Patrick Hand, cursive" filter="url(#glow2)">🌊 SDG 14: Life Below Water 🐠</text>
+    </svg>
+  );
+}
+
+/* ── Dialogue + game route lookup ── */
+const BUILDING_DIALOGUES: Record<string, { lines: string[]; gameRoute: string; gameLabel: string }> = {
+  greenhouse: {
+    lines: [
+      "Welcome, Warden! 🌱 I'm Pebblepuff, guardian of this greenhouse.",
+      "820 million people go to bed hungry every night — that's 1 in 10 humans.",
+      "But hunger is NOT inevitable! We have enough food to feed the whole world.",
+      "The real problem is waste, inequality, and broken food systems.",
+      "Help me with the harvest challenge and we'll heal this Hunger zone together! 🌾",
+    ],
+    gameRoute: '/puzzle/hunger',
+    gameLabel: '🌾 Start Harvest Challenge',
+  },
+  hospital: {
+    lines: [
+      "Welcome to the clinic! I'm Leaflet. 💊",
+      "3.5 billion people — half the world — still lack access to basic healthcare.",
+      "A child dies every 15 seconds from a disease we can already prevent.",
+      "SDG 3 says: Good Health and Well-Being is a universal right, not a privilege.",
+      "Let's fix this together — take the health knowledge challenge! 🏥",
+    ],
+    gameRoute: '/puzzle/health',
+    gameLabel: '💊 Start Health Challenge',
+  },
+  school: {
+    lines: [
+      "Hello, Warden! I'm Thinklet. 📚 Welcome to our Learning Academy!",
+      "258 million children around the world are still out of school.",
+      "Girls face the biggest barriers — poverty, distance, and discrimination.",
+      "Quality education can break every cycle of poverty.",
+      "Prove your knowledge and unlock the power of learning! 🎓",
+    ],
+    gameRoute: '/puzzle/education',
+    gameLabel: '📚 Start Knowledge Quiz',
+  },
+  aquarium: {
+    lines: [
+      "Welcome! I'm Coralina, marine researcher. 🌊",
+      "Over 8 million tons of plastic enter our oceans EVERY YEAR.",
+      "Coral reefs — home to 25% of all sea life — are bleaching from warming waters.",
+      "Sea turtles, dolphins, and whales are dying tangled in ghost nets.",
+      "SDG 14: Life Below Water calls us to protect our seas. Ready to dive in? 🐠",
+    ],
+    gameRoute: '/ocean-diver',
+    gameLabel: '🐠 Dive In! (Ocean Cleanup)',
+  },
+};
+
 interface Props {
   building: BuildingDef | null;
   onClose: () => void;
-  onTalkToNPC: (zoneId: string) => void;
+  onTalkToNPC?: (zoneId: string) => void;
   playerCharacter?: number;
 }
 
-export default function BuildingInterior({ building, onClose, onTalkToNPC, playerCharacter = 1 }: Props) {
+export default function BuildingInterior({ building, onClose, playerCharacter = 1 }: Props) {
+  const [, navigate] = useLocation();
   const PlayerSprite = [Warden1, Warden2, Warden3][(playerCharacter - 1) % 3] ?? Warden1;
+  const [dialogPhase, setDialogPhase] = useState<number | 'done' | null>(null);
 
   useEffect(() => {
     if (!building) return;
+    setDialogPhase(null);
     const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
@@ -396,13 +576,30 @@ export default function BuildingInterior({ building, onClose, onTalkToNPC, playe
     ? GreenhouseRoom
     : building.id === 'hospital'
     ? HospitalRoom
+    : building.id === 'aquarium'
+    ? AquariumRoom
     : ClassroomRoom;
 
-  const npcDialogue = building.id === 'greenhouse'
-    ? "The crops are growing! Let's talk about ending hunger. 🌾"
-    : building.id === 'hospital'
-    ? "Welcome, Warden! Healthcare should be a right for everyone. 💊"
-    : "Class is in session! Every child deserves quality education. 📚";
+  const buildingMeta = BUILDING_DIALOGUES[building.id] ?? {
+    lines: [`${building.npcName} is here. 👋`, 'Ready to help heal this zone?'],
+    gameRoute: `/puzzle/${building.zoneId}`,
+    gameLabel: '▶ Start Challenge',
+  };
+  const { lines, gameRoute, gameLabel } = buildingMeta;
+  const currentLine = typeof dialogPhase === 'number' ? lines[dialogPhase] ?? '' : '';
+
+  function advanceDialogue() {
+    if (dialogPhase === null) { setDialogPhase(0); return; }
+    if (typeof dialogPhase === 'number') {
+      if (dialogPhase < lines.length - 1) setDialogPhase(dialogPhase + 1);
+      else setDialogPhase('done');
+    }
+  }
+
+  function launchGame() {
+    onClose();
+    navigate(gameRoute);
+  }
 
   return (
     <AnimatePresence>
@@ -425,7 +622,8 @@ export default function BuildingInterior({ building, onClose, onTalkToNPC, playe
               {building.name}
             </div>
             <div className="text-white/70 text-xs" style={{ fontFamily: 'Nunito, sans-serif' }}>
-              Press <kbd className="bg-white/20 rounded px-1">ESC</kbd> to leave &nbsp;·&nbsp; Speak with {building.npcName} inside
+              Press <kbd className="bg-white/20 rounded px-1">ESC</kbd> to leave
+              &nbsp;·&nbsp; Talk to <strong>{building.npcName}</strong> to begin
             </div>
           </div>
           <button
@@ -462,39 +660,125 @@ export default function BuildingInterior({ building, onClose, onTalkToNPC, playe
               style={{ fontFamily: 'Nunito, sans-serif' }}>You</div>
           </motion.div>
 
-          {/* NPC speech bubble */}
-          <motion.div
-            className="absolute bottom-32 px-4 py-3 rounded-2xl shadow-xl max-w-xs text-center pointer-events-none"
-            style={{
-              left: '52%',
-              background: 'white',
-              color: building.wallColor,
-              fontFamily: 'Patrick Hand, cursive',
-              fontSize: 14,
-              lineHeight: 1.4,
-            }}
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, type: 'spring' }}
-          >
-            <div className="absolute bottom-0 left-8 w-4 h-4 bg-white"
-              style={{ clipPath: 'polygon(0 0,100% 0,50% 100%)' }} />
-            {npcDialogue}
-          </motion.div>
+          {/* ── DIALOGUE OVERLAY ── */}
+          <AnimatePresence mode="wait">
+            {dialogPhase === null && (
+              /* Initial: floating "Talk" button */
+              <motion.button
+                key="talk-btn"
+                className="absolute bottom-6 right-6 px-7 py-4 rounded-2xl font-bold text-lg shadow-2xl"
+                style={{ background: 'white', color: building.wallColor, fontFamily: 'Patrick Hand, cursive' }}
+                initial={{ x: 60, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 60, opacity: 0 }}
+                transition={{ type: 'spring', delay: 0.4 }}
+                onClick={advanceDialogue}
+                whileHover={{ scale: 1.07 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                💬 Talk to {building.npcName}
+              </motion.button>
+            )}
 
-          {/* Talk button */}
-          <motion.button
-            className="absolute bottom-4 right-5 px-6 py-3 rounded-2xl font-bold text-base shadow-lg"
-            style={{ background: 'white', color: building.wallColor, fontFamily: 'Patrick Hand, cursive', fontSize: 16 }}
-            initial={{ x: 60, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.4, type: 'spring' }}
-            onClick={() => { onTalkToNPC(building.zoneId); onClose(); }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            💬 Talk to {building.npcName}
-          </motion.button>
+            {typeof dialogPhase === 'number' && (
+              /* Dialogue bubble + progress */
+              <motion.div
+                key={`dialogue-${dialogPhase}`}
+                className="absolute bottom-0 left-0 right-0 px-4 pb-4"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 30, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+              >
+                <div className="max-w-2xl mx-auto">
+                  {/* NPC name tag */}
+                  <div className="flex items-center gap-2 mb-1 ml-3">
+                    <span className="text-xl">{building.npcEmoji}</span>
+                    <span className="text-sm font-bold text-white/90"
+                      style={{ fontFamily: 'Patrick Hand, cursive' }}>
+                      {building.npcName}
+                    </span>
+                    <span className="text-xs text-white/50 ml-1">
+                      {dialogPhase + 1}/{lines.length}
+                    </span>
+                  </div>
+                  {/* Bubble */}
+                  <div className="rounded-2xl px-5 py-4 shadow-2xl relative"
+                    style={{ background: 'rgba(255,255,255,0.97)', color: building.wallColor }}>
+                    <p className="text-base leading-relaxed" style={{ fontFamily: 'Patrick Hand, cursive', fontSize: 17 }}>
+                      {currentLine}
+                    </p>
+                    <div className="absolute -top-3 left-10 w-5 h-5 rotate-45 rounded-sm"
+                      style={{ background: 'rgba(255,255,255,0.97)' }} />
+                    {/* Next button */}
+                    <button
+                      className="absolute bottom-3 right-3 px-5 py-2 rounded-xl font-bold text-white text-sm shadow"
+                      style={{ background: building.wallColor, fontFamily: 'Nunito, sans-serif' }}
+                      onClick={advanceDialogue}
+                    >
+                      Next ▶
+                    </button>
+                  </div>
+                  {/* Dot indicators */}
+                  <div className="flex gap-1.5 justify-center mt-2">
+                    {lines.map((_, i) => (
+                      <div key={i} className="rounded-full transition-all"
+                        style={{
+                          width: i === dialogPhase ? 18 : 8,
+                          height: 8,
+                          background: i <= dialogPhase ? 'white' : 'rgba(255,255,255,0.3)',
+                        }} />
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {dialogPhase === 'done' && (
+              /* Game launch */
+              <motion.div
+                key="game-launch"
+                className="absolute bottom-0 left-0 right-0 px-4 pb-6"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 30, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+              >
+                <div className="max-w-md mx-auto text-center">
+                  <div className="rounded-2xl px-6 py-5 shadow-2xl"
+                    style={{ background: 'rgba(255,255,255,0.97)', color: building.wallColor }}>
+                    <p className="font-bold text-base mb-1" style={{ fontFamily: 'Patrick Hand, cursive', fontSize: 16 }}>
+                      {building.npcName} is ready!
+                    </p>
+                    <p className="text-sm text-gray-500 mb-4" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                      Complete the challenge to heal this zone.
+                    </p>
+                    <motion.button
+                      className="w-full py-4 rounded-2xl font-bold text-white text-xl shadow-lg"
+                      style={{
+                        background: `linear-gradient(135deg, ${building.wallColor}, ${building.accentColor === '#E1BEE7' ? '#9C27B0' : building.floorColor})`,
+                        fontFamily: 'Patrick Hand, cursive',
+                      }}
+                      onClick={launchGame}
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      animate={{ boxShadow: ['0 0 0px rgba(255,255,255,0.3)', '0 0 20px rgba(255,255,255,0.6)', '0 0 0px rgba(255,255,255,0.3)'] }}
+                      transition={{ boxShadow: { repeat: Infinity, duration: 1.8 } }}
+                    >
+                      {gameLabel}
+                    </motion.button>
+                    <button
+                      className="mt-3 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+                      style={{ fontFamily: 'Nunito, sans-serif' }}
+                      onClick={() => setDialogPhase(0)}
+                    >
+                      ↩ Read again
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
     </AnimatePresence>

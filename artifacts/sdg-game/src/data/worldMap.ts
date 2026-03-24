@@ -116,7 +116,7 @@ export const PLANET_NPCS: WorldNPC[] = [
   // Lords
   { id: 'aqua', name: 'Aqua', x: 400, y: 2840, zoneId: 'water', isLord: true, spriteKey: 'aqua', bubble: '💧',
     dialogues: ["Warden! Our river is turning black with pollution!", "Oil spills and factory waste are poisoning the water downstream.", "Help me deploy cleanup tools before the villages lose their water supply!"] },
-  { id: 'coralina', name: 'Coralina', x: 2440, y: 2840, zoneId: 'ocean', isLord: true, spriteKey: 'coralina', bubble: '🐠',
+  { id: 'coralina', name: 'Coralina', x: 2440, y: 2840, zoneId: 'ocean', isLord: true, isHidden: true, spriteKey: 'coralina', bubble: '🐠',
     dialogues: ["The coral reefs are bleaching and plastic is everywhere!", "Sea turtles are tangled in ghost nets. The ocean is sick.", "Help me clean the ocean zones and rescue the marine life!"] },
   { id: 'ferra', name: 'Ferra', x: 400, y: 3740, zoneId: 'forest', isLord: true, spriteKey: 'ferra', bubble: '🌿',
     dialogues: ["They are cutting down my ancient trees! Fires are spreading!", "Animals are fleeing and the soil is turning to dust.", "Help me plant trees, fight fires, and protect the wildlife!"] },
@@ -217,10 +217,11 @@ export const WORLD_BUILDINGS: WorldBuilding[] = [
   { x: 260, y: 1840, w: 140, h: 90, type: 'shop', color: '#FFAB91', roofColor: '#BF360C', label: 'Shelter' },
   { x: 620, y: 1840, w: 120, h: 90, type: 'cottage', color: '#FFCDD2', roofColor: '#C62828' },
 
-  // Education Academy — flanking the central enterable school (x=2560)
-  { x: 2330, y: 1445, w: 200, h: 175, type: 'school', color: '#EDE7F6', roofColor: '#4A148C', label: 'Academy' },
-  { x: 2810, y: 1450, w: 130, h: 130, type: 'cottage', color: '#E1BEE7', roofColor: '#6A1B9A' },
-  { x: 2960, y: 1445, w: 110, h: 110, type: 'shop', color: '#E8EAF6', roofColor: '#311B92', label: 'Library' },
+  // Education district — kept well clear of the enterable school (x=2560)
+  { x: 2030, y: 1420, w: 200, h: 175, type: 'school', color: '#EDE7F6', roofColor: '#4A148C', label: 'Academy' },
+  { x: 2250, y: 1430, w: 130, h: 140, type: 'shop',    color: '#E8EAF6', roofColor: '#311B92', label: 'Library' },
+  { x: 2810, y: 1445, w: 130, h: 130, type: 'cottage', color: '#E1BEE7', roofColor: '#6A1B9A' },
+  { x: 2960, y: 1440, w: 110, h: 115, type: 'shop',    color: '#D1C4E9', roofColor: '#4527A0', label: 'Tutoring' },
 
   // ── PLANET SECTION BUILDINGS ──
 
@@ -230,11 +231,11 @@ export const WORLD_BUILDINGS: WorldBuilding[] = [
   { x: 620, y: 2655, w: 120, h: 110, type: 'shop', color: '#B3E5FC', roofColor: '#01579B', label: 'Water Lab' },
   { x: 750, y: 2650, w: 90, h: 100, type: 'cottage', color: '#E1F5FE', roofColor: '#0288D1' },
 
-  // Ocean zone (lighthouse + docks)
+  // Ocean zone (lighthouse + docks) — Research Hub now enterable (removed from decorative)
   { x: 2310, y: 2630, w: 80, h: 200, type: 'lighthouse', color: '#E0F7FA', roofColor: '#006064', label: 'Lighthouse' },
-  { x: 2430, y: 2660, w: 150, h: 120, type: 'shop', color: '#B2EBF2', roofColor: '#00838F', label: 'Research Hub' },
-  { x: 2620, y: 2650, w: 140, h: 130, type: 'cottage', color: '#E0F7FA', roofColor: '#006064' },
-  { x: 2800, y: 2660, w: 120, h: 110, type: 'cottage', color: '#B2EBF2', roofColor: '#00838F' },
+  { x: 2640, y: 2650, w: 140, h: 130, type: 'cottage',    color: '#E0F7FA', roofColor: '#006064', label: 'Marine Lab' },
+  { x: 2810, y: 2640, w: 120, h: 115, type: 'shop',       color: '#B2EBF2', roofColor: '#00838F', label: 'Dive Shop' },
+  { x: 2960, y: 2648, w: 100, h: 105, type: 'cottage',    color: '#E0F7FA', roofColor: '#006064' },
 
   // Forest zone (treehouses + ranger station)
   { x: 230, y: 3550, w: 120, h: 140, type: 'treehouse', color: '#A5D6A7', roofColor: '#1B5E20', label: 'Ranger HQ' },
@@ -260,41 +261,66 @@ export const WORLD_BUILDINGS: WorldBuilding[] = [
 
   // ── PROSPERITY SECTION BUILDINGS ──
 
-  // Energy Fields zone (SDG 7) — solar control hub + wind turbine base
-  { x: 230, y: 4960, w: 200, h: 160, type: 'factory', color: '#FFFDE7', roofColor: '#F9A825', label: 'Solar Hub' },
-  { x: 460, y: 4960, w: 130, h: 140, type: 'tower', color: '#FFF9C4', roofColor: '#F57F17' },
-  { x: 620, y: 4970, w: 150, h: 130, type: 'shop', color: '#FFFDE7', roofColor: '#FF8F00', label: 'Grid Control' },
-  { x: 790, y: 4965, w: 100, h: 120, type: 'cottage', color: '#FFF9C4', roofColor: '#F9A825' },
+  // Energy Fields zone (SDG 7) — solar hubs + wind turbine sheds
+  { x: 180, y: 4945, w: 210, h: 165, type: 'factory', color: '#FFFDE7', roofColor: '#F9A825', label: '☀️ Solar Hub' },
+  { x: 415, y: 4945, w: 140, h: 150, type: 'tower',   color: '#FFF176', roofColor: '#F57F17' },
+  { x: 580, y: 4950, w: 155, h: 140, type: 'shop',    color: '#FFECB3', roofColor: '#FF8F00', label: '⚡ Grid Control' },
+  { x: 758, y: 4950, w: 120, h: 130, type: 'clinic',  color: '#FFFDE7', roofColor: '#FFA000', label: '🔋 Battery Lab' },
+  { x: 900, y: 4952, w: 100, h: 120, type: 'cottage', color: '#FFF9C4', roofColor: '#F9A825' },
+  // Energy zone café
+  { x: 180, y: 5140, w: 130, h: 100, type: 'shop',    color: '#FFE082', roofColor: '#FF6F00', label: '☕ Power Café' },
+  { x: 330, y: 5135, w: 110, h: 100, type: 'cottage', color: '#FFCC80', roofColor: '#E65100' },
 
-  // Innovation Hub zone (SDG 9) — labs + research campus
-  { x: 1260, y: 4960, w: 250, h: 180, type: 'clinic', color: '#E3F2FD', roofColor: '#1565C0', label: 'Research Lab' },
-  { x: 1540, y: 4970, w: 150, h: 160, type: 'tower', color: '#BBDEFB', roofColor: '#0D47A1' },
-  { x: 1720, y: 4960, w: 160, h: 150, type: 'school', color: '#E3F2FD', roofColor: '#1976D2', label: 'Tech Academy' },
-  { x: 1910, y: 4970, w: 100, h: 130, type: 'shop', color: '#BBDEFB', roofColor: '#1565C0', label: 'Patent Office' },
+  // Innovation Hub zone (SDG 9) — gleaming tech campus
+  { x: 1180, y: 4940, w: 270, h: 185, type: 'clinic',  color: '#E3F2FD', roofColor: '#1565C0', label: '🔬 Research Lab' },
+  { x: 1475, y: 4950, w: 155, h: 165, type: 'tower',   color: '#BBDEFB', roofColor: '#0D47A1' },
+  { x: 1652, y: 4940, w: 165, h: 155, type: 'school',  color: '#90CAF9', roofColor: '#1976D2', label: '💡 Tech Academy' },
+  { x: 1840, y: 4950, w: 115, h: 140, type: 'shop',    color: '#E3F2FD', roofColor: '#1565C0', label: '📋 Patent Office' },
+  { x: 1978, y: 4955, w: 100, h: 130, type: 'tower',   color: '#BBDEFB', roofColor: '#283593' },
+  // Innovation café + co-working
+  { x: 1250, y: 5150, w: 140, h: 105, type: 'shop',    color: '#B3E5FC', roofColor: '#0277BD', label: '🍵 Maker Café' },
+  { x: 1410, y: 5148, w: 130, h: 102, type: 'clinic',  color: '#E1F5FE', roofColor: '#01579B', label: '💻 Co-Work' },
 
-  // Industry/Factory Town zone (SDG 8)
-  { x: 2320, y: 4960, w: 240, h: 180, type: 'factory', color: '#FBE9E7', roofColor: '#E65100', label: 'Main Factory' },
-  { x: 2590, y: 4965, w: 150, h: 160, type: 'factory', color: '#FFCCBC', roofColor: '#BF360C', label: 'Craft Workshop' },
-  { x: 2770, y: 4960, w: 130, h: 150, type: 'shop', color: '#FBE9E7', roofColor: '#D84315', label: 'Worker Center' },
-  { x: 2930, y: 4965, w: 100, h: 130, type: 'cottage', color: '#FFCCBC', roofColor: '#E64A19' },
+  // Industry / Craft Town zone (SDG 8) — vibrant workshops
+  { x: 2250, y: 4942, w: 230, h: 182, type: 'factory', color: '#FFCCBC', roofColor: '#E65100', label: '🏭 Main Factory' },
+  { x: 2503, y: 4948, w: 155, h: 168, type: 'factory', color: '#FFAB91', roofColor: '#BF360C', label: '🔨 Workshop' },
+  { x: 2680, y: 4942, w: 140, h: 155, type: 'shop',    color: '#FF8A65', roofColor: '#D84315', label: '🛠️ Worker Center' },
+  { x: 2843, y: 4948, w: 120, h: 142, type: 'clinic',  color: '#FFCCBC', roofColor: '#FF7043', label: '📦 Dispatch Hub' },
+  { x: 2984, y: 4952, w: 100, h: 130, type: 'cottage', color: '#FBE9E7', roofColor: '#E64A19' },
+  // Industry food court
+  { x: 2280, y: 5148, w: 145, h: 105, type: 'shop',    color: '#FFE0B2', roofColor: '#FF5722', label: '🍜 Food Court' },
+  { x: 2450, y: 5145, w: 115, h: 102, type: 'cottage', color: '#FFCCBC', roofColor: '#D84315' },
 
   // Prosperity plaza hub
-  { x: 1530, y: 5700, w: 100, h: 100, type: 'well', color: '#FFF59D', roofColor: '#F9A825', label: 'Prosperity Hub' },
+  { x: 1530, y: 5700, w: 100, h: 100, type: 'well',    color: '#FFF59D', roofColor: '#F9A825', label: 'Prosperity Hub' },
 
-  // Community Housing zone (SDG 10)
-  { x: 230, y: 6110, w: 150, h: 130, type: 'cottage', color: '#F3E5F5', roofColor: '#6A1B9A', label: 'Apt Block A' },
-  { x: 410, y: 6095, w: 170, h: 150, type: 'cottage', color: '#EDE7F6', roofColor: '#4A148C', label: 'Apt Block B' },
-  { x: 610, y: 6110, w: 140, h: 130, type: 'cottage', color: '#F3E5F5', roofColor: '#7B1FA2' },
-  { x: 780, y: 6100, w: 120, h: 140, type: 'shop', color: '#EDE7F6', roofColor: '#6A1B9A', label: 'Community Hall' },
-  { x: 260, y: 6500, w: 150, h: 100, type: 'shop', color: '#D1C4E9', roofColor: '#512DA8', label: 'Welfare Office' },
-  { x: 630, y: 6495, w: 130, h: 100, type: 'cottage', color: '#EDE7F6', roofColor: '#673AB7' },
+  // 🛍️ Shopping Mall (between community + smart city)
+  { x: 1050, y: 6090, w: 380, h: 200, type: 'factory', color: '#F3E5F5', roofColor: '#9C27B0', label: '🛍️ Grand Mall' },
+  { x: 1460, y: 6095, w: 220, h: 190, type: 'factory', color: '#E8EAF6', roofColor: '#3F51B5', label: '🎬 Cinema' },
+  { x: 1700, y: 6100, w: 160, h: 180, type: 'tower',   color: '#BBDEFB', roofColor: '#1976D2', label: '🏨 Hotel' },
+  { x: 1880, y: 6095, w: 140, h: 185, type: 'tower',   color: '#B2EBF2', roofColor: '#006064', label: '🏢 Office' },
 
-  // Smart City zone (SDG 11) — skyscrapers + transit hub
-  { x: 2310, y: 6090, w: 100, h: 280, type: 'tower', color: '#E0F2F1', roofColor: '#00695C', label: 'City Tower A' },
-  { x: 2440, y: 6100, w: 120, h: 250, type: 'tower', color: '#B2DFDB', roofColor: '#004D40', label: 'City Tower B' },
-  { x: 2590, y: 6095, w: 140, h: 220, type: 'factory', color: '#E0F2F1', roofColor: '#00796B', label: 'Transit Hub' },
-  { x: 2760, y: 6100, w: 150, h: 180, type: 'school', color: '#B2DFDB', roofColor: '#00897B', label: 'Eco School' },
-  { x: 2940, y: 6110, w: 110, h: 160, type: 'shop', color: '#E0F2F1', roofColor: '#26A69A', label: 'Green Market' },
+  // Community Housing zone (SDG 10) — colourful apartment blocks
+  { x: 175, y: 6090, w: 155, h: 140, type: 'cottage', color: '#F8BBD0', roofColor: '#AD1457', label: '🏠 Apt Block A' },
+  { x: 352, y: 6075, w: 175, h: 160, type: 'cottage', color: '#CE93D8', roofColor: '#6A1B9A', label: '🏠 Apt Block B' },
+  { x: 550, y: 6090, w: 148, h: 138, type: 'cottage', color: '#B3E5FC', roofColor: '#0277BD', label: '🏠 Apt Block C' },
+  { x: 720, y: 6082, w: 135, h: 148, type: 'shop',    color: '#A5D6A7', roofColor: '#2E7D32', label: '🏛️ Community Hall' },
+  { x: 200, y: 6270, w: 155, h: 108, type: 'shop',    color: '#FFCDD2', roofColor: '#C62828', label: '🏥 Welfare Office' },
+  { x: 380, y: 6268, w: 115, h: 105, type: 'shop',    color: '#DCEDC8', roofColor: '#388E3C', label: '☕ Café Soleil' },
+  { x: 515, y: 6268, w: 100, h: 105, type: 'cottage', color: '#FFF9C4', roofColor: '#F9A825' },
+  { x: 635, y: 6265, w: 110, h: 108, type: 'clinic',  color: '#B2EBF2', roofColor: '#006064', label: '📮 Post Office' },
+
+  // Smart City zone (SDG 11) — mixed-use skyscrapers + green transit
+  { x: 2230, y: 6060, w: 110, h: 310, type: 'tower',   color: '#E0F2F1', roofColor: '#00695C', label: '🏙️ City Tower A' },
+  { x: 2360, y: 6070, w: 130, h: 275, type: 'tower',   color: '#80DEEA', roofColor: '#004D40', label: '🏙️ City Tower B' },
+  { x: 2515, y: 6065, w: 145, h: 245, type: 'factory', color: '#B2EBF2', roofColor: '#00796B', label: '🚇 Transit Hub' },
+  { x: 2682, y: 6075, w: 158, h: 200, type: 'school',  color: '#CCFF90', roofColor: '#558B2F', label: '🌿 Eco School' },
+  { x: 2862, y: 6080, w: 138, h: 185, type: 'shop',    color: '#F0F4C3', roofColor: '#9E9D24', label: '🌱 Green Market' },
+  { x: 3020, y: 6088, w: 115, h: 168, type: 'tower',   color: '#E0F7FA', roofColor: '#006064', label: '📡 Data Tower' },
+  // Smart city street café
+  { x: 2290, y: 6400, w: 130, h: 100, type: 'shop',    color: '#B2DFDB', roofColor: '#00695C', label: '☕ Smart Café' },
+  { x: 2445, y: 6398, w: 115, h: 100, type: 'cottage', color: '#80CBC4', roofColor: '#004D40' },
+  { x: 2580, y: 6402, w: 120, h: 100, type: 'clinic',  color: '#B2EBF2', roofColor: '#006064', label: '🚲 Bike Share' },
 ];
 
 /* ── COLLISION RECTS ── */

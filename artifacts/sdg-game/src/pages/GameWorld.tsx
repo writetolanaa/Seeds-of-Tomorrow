@@ -378,6 +378,49 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
         );
       })}
 
+      {/* ════════════════════════════════════════════════════════════
+           MAIN LEVEL CORRIDOR  People → Gate → Planet → Gate → Prosperity
+           Drawn first so all zones/buildings sit on top
+      ════════════════════════════════════════════════════════════ */}
+      {/* Wide asphalt road base */}
+      <rect x="1520" y="1060" width="120" height="2100" fill="#8D8D8D" opacity="0.5" />
+      {/* Road surface */}
+      <rect x="1540" y="1060" width="80" height="2100" fill="#9E9E9E" opacity="0.55" />
+      {/* Centre dashes — People to gate */}
+      {Array.from({ length: 18 }).map((_, i) => (
+        <rect key={`rd-p-${i}`} x="1574" y={1120 + i * 110} width="12" height="60"
+          fill="rgba(255,255,200,0.55)" rx="3" />
+      ))}
+      {/* Planet section road (gate exit → Planet hub → Prosperity gate) */}
+      <rect x="1520" y="3400" width="120" height="1280" fill="#607D8B" opacity="0.45" />
+      <rect x="1540" y="3400" width="80"  height="1280" fill="#78909C" opacity="0.5" />
+      {Array.from({ length: 10 }).map((_, i) => (
+        <rect key={`rd-pl-${i}`} x="1574" y={3440 + i * 120} width="12" height="70"
+          fill="rgba(200,230,255,0.5)" rx="3" />
+      ))}
+      {/* Prosperity section road (gate exit → Prosperity hub) */}
+      <rect x="1520" y="4920" width="120" height="820" fill="#455A64" opacity="0.4" />
+      <rect x="1540" y="4920" width="80"  height="820" fill="#546E7A" opacity="0.45" />
+      {Array.from({ length: 7 }).map((_, i) => (
+        <rect key={`rd-pr-${i}`} x="1574" y={4960 + i * 110} width="12" height="65"
+          fill="rgba(255,215,0,0.4)" rx="3" />
+      ))}
+      {/* Benches along the main road — People section */}
+      {[1250, 1450, 1700, 1900, 2100].map((y, i) => (
+        <g key={`bench-l-${i}`} transform={`translate(1490, ${y})`}>
+          <rect x="0" y="0" width="35" height="12" rx="4" fill="#8D6E63" />
+          <rect x="5" y="12" width="5" height="12" rx="2" fill="#6D4C41" />
+          <rect x="25" y="12" width="5" height="12" rx="2" fill="#6D4C41" />
+        </g>
+      ))}
+      {[1250, 1450, 1700, 1900, 2100].map((y, i) => (
+        <g key={`bench-r-${i}`} transform={`translate(1635, ${y})`}>
+          <rect x="0" y="0" width="35" height="12" rx="4" fill="#8D6E63" />
+          <rect x="5" y="12" width="5" height="12" rx="2" fill="#6D4C41" />
+          <rect x="25" y="12" width="5" height="12" rx="2" fill="#6D4C41" />
+        </g>
+      ))}
+
       {/* ════ PEOPLE DIRT PATHS ════ */}
       {/* Center to NW (equality) */}
       <path d="M 1580 1060 Q 1000 700 540 420" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.7" />
@@ -394,9 +437,9 @@ function WorldBackground({ completedZones }: { completedZones: string[] }) {
       {/* Center to SE (education) */}
       <path d="M 1580 1060 Q 2200 1400 2660 1680" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.7" />
       <path d="M 1580 1060 Q 2200 1400 2660 1680" stroke="#DDB97E" strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.5" />
-      {/* Path from People center down to gate */}
-      <path d="M 1580 1060 Q 1580 1700 1600 2150" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.7" />
-      <path d="M 1580 1060 Q 1580 1700 1600 2150" stroke="#DDB97E" strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.5" />
+      {/* Path from People center down to gate (now enhanced by main road above) */}
+      <path d="M 1580 1060 Q 1580 1700 1600 2150" stroke="#C8A96E" strokeWidth="55" fill="none" strokeLinecap="round" opacity="0.35" />
+      <path d="M 1580 1060 Q 1580 1700 1600 2150" stroke="#DDB97E" strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.25" />
 
       {/* ════ PEOPLE CENTRAL PLAZA ════ */}
       <circle cx="1580" cy="1060" r="180" fill="url(#cobble)" stroke="#78909C" strokeWidth="6" filter="url(#shadow)" />
@@ -1991,6 +2034,44 @@ export default function GameWorld() {
       >
         <WorldBackground completedZones={completedZones} />
         <Buildings />
+
+        {/* ── WANDERING AMBIENT PETS (non-interactive) ── */}
+        {([
+          // People zone pets
+          { emoji:'🐱', x:420,  y:1760, dur:'3.2s', anim:1 },
+          { emoji:'🐶', x:680,  y:480,  dur:'4.1s', anim:2 },
+          { emoji:'🐥', x:1350, y:400,  dur:'2.8s', anim:3 },
+          { emoji:'🐇', x:2880, y:1660, dur:'3.6s', anim:4 },
+          { emoji:'🐈', x:290,  y:520,  dur:'5.0s', anim:5 },
+          { emoji:'🦆', x:2440, y:1700, dur:'3.9s', anim:6 },
+          // Planet zone pets
+          { emoji:'🐸', x:360,  y:2970, dur:'4.5s', anim:2 },
+          { emoji:'🦜', x:430,  y:3850, dur:'2.5s', anim:3 },
+          { emoji:'🦋', x:1680, y:4280, dur:'3.0s', anim:5 },
+          { emoji:'🐢', x:2700, y:3860, dur:'6.0s', anim:1 },
+          { emoji:'🦌', x:620,  y:3780, dur:'4.2s', anim:4 },
+          // Prosperity zone pets
+          { emoji:'🤖', x:1700, y:5160, dur:'2.2s', anim:6 },
+          { emoji:'🐱', x:350,  y:6350, dur:'4.8s', anim:1 },
+          { emoji:'🐕', x:700,  y:6360, dur:'3.4s', anim:2 },
+          { emoji:'🐦', x:2600, y:6340, dur:'3.1s', anim:3 },
+          { emoji:'🐰', x:2900, y:5100, dur:'3.8s', anim:4 },
+        ] as {emoji:string;x:number;y:number;dur:string;anim:number}[]).map((pet, idx) => (
+          <div
+            key={`pet-${idx}`}
+            className="absolute pointer-events-none select-none"
+            style={{
+              left: pet.x,
+              top: pet.y,
+              fontSize: 22,
+              lineHeight: 1,
+              animation: `petWander${pet.anim} ${pet.dur} ease-in-out infinite alternate`,
+              zIndex: 10,
+            }}
+          >
+            {pet.emoji}
+          </div>
+        ))}
 
         {/* ── NPCs ── */}
         {WORLD_NPCS.filter(npc => !npc.isHidden).map(npc => {

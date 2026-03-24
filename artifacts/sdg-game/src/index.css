@@ -278,3 +278,35 @@
     animation: chibi-bob 0.5s ease-in-out infinite;
   }
 }
+
+/* ── Wandering pet animations ── */
+@keyframes petWander1 {
+  0%   { transform: translateX(0px) scaleX(1); }
+  50%  { transform: translateX(55px) scaleX(1); }
+  100% { transform: translateX(0px) scaleX(-1); }
+}
+@keyframes petWander2 {
+  0%   { transform: translateX(0px) scaleX(-1); }
+  50%  { transform: translateX(75px) scaleX(-1); }
+  100% { transform: translateX(0px) scaleX(1); }
+}
+@keyframes petWander3 {
+  0%   { transform: translateX(0px) translateY(0px) scaleX(1); }
+  33%  { transform: translateX(40px) translateY(-8px) scaleX(1); }
+  66%  { transform: translateX(20px) translateY(5px) scaleX(-1); }
+  100% { transform: translateX(0px) translateY(0px) scaleX(-1); }
+}
+@keyframes petWander4 {
+  0%   { transform: translateX(0px) scaleX(1); }
+  100% { transform: translateX(80px) scaleX(-1); }
+}
+@keyframes petWander5 {
+  0%   { transform: translateX(10px) translateY(-4px) scaleX(1); }
+  50%  { transform: translateX(60px) translateY(6px) scaleX(-1); }
+  100% { transform: translateX(0px) translateY(-4px) scaleX(1); }
+}
+@keyframes petWander6 {
+  0%   { transform: translateX(0) scaleX(1) rotate(0deg); }
+  50%  { transform: translateX(50px) scaleX(1) rotate(5deg); }
+  100% { transform: translateX(0) scaleX(-1) rotate(0deg); }
+}
