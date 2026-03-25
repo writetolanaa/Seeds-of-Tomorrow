@@ -1,0 +1,106 @@
+SDG 2 – Zero Hunger: Grow & Serve – Full Game Design
+
+Genre: Farming + Trading Simulation
+Target Audience: Kids, teens, casual players
+Tone: Vibrant, playful, satisfying
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Plant crops on available plots.
+	2.	Water and fertilize crops to maintain quality.
+	3.	Harvest mature crops.
+	4.	Sell or distribute crops to citizens based on demand and preferences.
+	5.	Track metrics: hunger levels, citizen happiness, food waste.
+	6.	Repeat each in-game day/week.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start of Day
+	•	Display inventory: seeds, water, fertilizer.
+	•	Display citizen demand: crop type, quantity, and budget.
+	•	Highlight plots ready for planting or harvest.
+
+Step 1: Plant Crops
+	•	Player selects crop type and plots for planting.
+	•	Assign water and fertilizer levels for each plot.
+	•	Growth quality depends on soil quality, water, and fertilizer.
+
+Step 2: Monitor Crop Growth
+	•	Crops pass through growth stages: seed → sprout → mature.
+	•	Player may intervene for pests, weeds, or weather events.
+	•	Crop health and growth progress are updated every in-game hour/day.
+
+Step 3: Harvest
+	•	Player clicks on mature crops to harvest.
+	•	Harvest yield is calculated using base yield × growth health × fertilizer bonus.
+	•	Add harvested crops to inventory.
+
+Step 4: Sell or Distribute to Citizens
+	•	Citizens appear with individual preferences and budgets.
+	•	Player assigns crops to each citizen.
+	•	Satisfaction depends on matching crop type, quantity, and quality to citizen requests.
+	•	Metrics updated: citizen hunger reduced, money earned, food waste generated.
+
+Step 5: End of Day
+	•	Update global stats: total hunger, total waste, profit.
+	•	Display visual feedback: citizen happiness, inventory changes, crop growth.
+	•	Prepare for next day’s planting and citizen demands.
+
+⸻
+
+3. Key Variables & Objects
+
+Crop Attributes
+	•	Type (e.g., carrot, tomato)
+	•	Growth stage (seed, sprout, mature)
+	•	Health (0–100)
+	•	Water level
+	•	Fertilizer level
+	•	Yield multiplier
+
+Citizen Attributes
+	•	Hunger level (0–100)
+	•	Crop preference
+	•	Budget
+	•	Happiness (0–100)
+
+Global Variables
+	•	Day count
+	•	Total hunger across all citizens
+	•	Total waste generated
+	•	Inventory (seeds, harvested crops, water, fertilizer)
+	•	Market prices
+
+⸻
+
+4. UI Elements
+	•	Top bar: day, money, hunger meter, waste meter
+	•	Side panel: inventory of seeds, crops, water, fertilizer
+	•	Citizen panel: current requests, budgets, and satisfaction
+	•	Plot grid: planting, watering, growth, and harvesting visuals
+	•	Alerts: pests, low water, or missed citizen requests
+
+⸻
+
+5. Feedback Systems
+	•	Citizens smile when hunger is satisfied; frown if needs are unmet.
+	•	Visual effects for crop growth: sprouting, ripening, sparkle for high-quality harvests.
+	•	Daily summary screen: hunger reduced, money earned, waste produced.
+	•	Audio cues: watering, harvesting, selling.
+
+⸻
+
+6. Progression
+	•	Unlock new crops, seeds, and fertilizers as days/weeks progress.
+	•	Expand plot size to grow more crops.
+	•	Introduce rare crops with higher yield or citizen value.
+	•	Challenges: pests, droughts, market fluctuations affecting citizen demand and budgets.
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: All citizens’ hunger levels remain below the critical threshold for a set number of days/weeks.
+	•	Loss: Hunger exceeds critical levels or food waste becomes unsustainable.

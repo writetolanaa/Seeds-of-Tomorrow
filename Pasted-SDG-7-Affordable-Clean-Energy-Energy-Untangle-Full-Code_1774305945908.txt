@@ -1,0 +1,107 @@
+SDG 6 – Clean Water & Sanitation: Water Stories – Full Game Design
+
+Genre: Story-driven Environmental Simulation / Puzzle
+Target Audience: Teens, casual players
+Tone: Engaging, educational, story-focused, visual
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Track water sources from mountains to cities.
+	2.	Detect and clean pollutants (oil spills, waste, chemicals).
+	3.	Use tools and strategies to improve water quality.
+	4.	Monitor the impact on communities and ecosystems.
+	5.	Respond to events like contamination, droughts, or industrial spills.
+	6.	Repeat across multiple river segments and story chapters.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start of Scenario
+	•	Player sees the river map with upstream, midstream, and downstream zones.
+	•	Water quality indicators: pollution levels, flow rate, ecosystem health.
+	•	Citizen needs and ecosystem alerts are visible.
+
+Step 1: Detect Pollution
+	•	Identify sources of pollution: oil spills, industrial waste, trash.
+	•	Player can scan segments or receive alerts from NPCs.
+	•	Pollution has types and severity affecting cleaning strategy.
+
+Step 2: Deploy Cleaning Tools
+	•	Tools include absorbent pads, filtration devices, chemical neutralizers, trash collection units.
+	•	Player selects tools and applies them to river segments.
+	•	Tool effectiveness depends on pollution type, quantity, and river conditions.
+
+Step 3: Manage Resources
+	•	Limited cleaning tools and manpower require strategic deployment.
+	•	Overuse or misplacement wastes resources and reduces effectiveness.
+	•	Resources are replenished gradually or via mission objectives.
+
+Step 4: Monitor Downstream Effects
+	•	Water quality improvements upstream affect downstream villages and ecosystems.
+	•	NPC health, biodiversity, and river usability update dynamically.
+	•	Feedback guides next interventions.
+
+Step 5: End of Scenario / Day
+	•	Update metrics: water quality per segment, citizen health, biodiversity health.
+	•	Provide visual feedback: cleaner water, thriving wildlife, happy citizens.
+	•	Prepare next scenario: new pollution events or upstream challenges.
+
+⸻
+
+3. Key Variables & Objects
+
+River Segment Attributes
+	•	Location (upstream, midstream, downstream)
+	•	Pollution level (0–100)
+	•	Pollution type (oil, trash, chemicals)
+	•	Flow rate
+
+NPC Attributes
+	•	Health (0–100)
+	•	Water access level (0–100)
+	•	Satisfaction / trust in player interventions
+
+Tool Attributes
+	•	Type (absorbent pad, filter, neutralizer, trash collector)
+	•	Efficiency per pollution type
+	•	Availability / inventory
+
+Global Variables
+	•	Scenario / day count
+	•	Overall water quality index
+	•	Biodiversity health
+	•	Resource inventory
+
+⸻
+
+4. UI Elements
+	•	Top bar: day/scenario, overall water quality index, resource inventory
+	•	River map: shows pollution levels, flow, and segment status
+	•	NPC panel: citizen health, water access, alerts
+	•	Tool panel: available cleaning tools, effectiveness indicators
+	•	Alerts: new pollution events, downstream problems, resource depletion
+	•	End-of-day report: water quality, ecosystem recovery, citizen satisfaction
+
+⸻
+
+5. Feedback Systems
+	•	Visual: water clarity, river color, fish and wildlife animation
+	•	Audio: water flowing, pollution detection alerts, tool usage sounds
+	•	NPCs react to water quality: happy when clean, distressed when polluted
+	•	Metrics update dynamically: pollution reduced, ecosystem recovery visible
+
+⸻
+
+6. Progression
+	•	Unlock advanced cleaning tools and river monitoring devices as scenarios progress
+	•	Introduce larger rivers with multiple pollution sources
+	•	Challenge players with natural events: floods, droughts, unexpected industrial spills
+	•	Story chapters introduce social and environmental consequences
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: All river segments meet safe water quality thresholds; citizens have full access to clean water; biodiversity restored
+	•	Loss: Water quality remains poor downstream, citizens fall ill, pollution persists beyond acceptable levels

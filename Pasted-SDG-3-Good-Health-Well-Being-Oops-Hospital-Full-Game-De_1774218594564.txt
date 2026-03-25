@@ -1,0 +1,99 @@
+SDG 3 – Good Health & Well-Being: Oops! Hospital! – Full Game Design
+
+Genre: Management / Comedy Simulation
+Target Audience: Teens, casual players
+Tone: Light-hearted, humorous, educational
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Patients arrive with health issues caused by lifestyle habits.
+	2.	Player diagnoses problems and assigns interventions (treatment, lifestyle changes, preventative measures).
+	3.	Manage hospital resources: staff, beds, medicine, and wellness programs.
+	4.	Track population health metrics: patient recovery, overall wellness, and hospital reputation.
+	5.	Repeat each in-game day.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start of Day
+	•	Display hospital dashboard: bed availability, staff on duty, medicine stock, and patient queue.
+	•	Show population health metrics: overall wellness, disease outbreak risk, stress levels.
+
+Step 1: Admit Patients
+	•	Patients arrive with random or seasonal health issues: overeating, lack of sleep, stress, minor injuries, flu.
+	•	Each patient has a “lifestyle health score” affecting recovery difficulty.
+
+Step 2: Diagnose & Assign Interventions
+	•	Player selects interventions:
+	•	Diet plan, exercise program, counseling, medicine, rest.
+	•	Each intervention modifies patient health variables over time.
+	•	Some interventions require hospital resources (staff time, medicine stock).
+
+Step 3: Monitor Recovery
+	•	Track patient recovery progress hourly or daily: health score increases based on assigned treatments and lifestyle changes.
+	•	Unexpected events can occur: stress spikes, hospital overcrowding, contagious disease.
+	•	Player may need to reassign staff or adjust treatment plans.
+
+Step 4: Preventive Programs
+	•	Players can implement hospital-wide wellness initiatives: exercise classes, vaccination campaigns, public health education.
+	•	These reduce future patient influx or improve recovery speed.
+
+Step 5: End of Day
+	•	Update metrics: patient recovery, hospital reputation, resource levels.
+	•	Provide visual feedback: happy patients, overcrowding alerts, staff fatigue indicators.
+	•	Prepare next day: new patient queue, resource adjustments, disease trends.
+
+⸻
+
+3. Key Variables & Objects
+
+Patient Attributes
+	•	Name, age
+	•	Health score (0–100)
+	•	Disease type / lifestyle issue
+	•	Recovery rate modifier (affected by interventions and hospital efficiency)
+
+Hospital Attributes
+	•	Staff availability (doctors, nurses, counselors)
+	•	Bed count
+	•	Medicine and supplies inventory
+	•	Wellness program status
+
+Global Variables
+	•	Day count
+	•	Population health index
+	•	Hospital reputation score
+	•	Patient queue length
+
+⸻
+
+4. UI Elements
+	•	Top bar: day count, hospital reputation, staff availability, medicine stock
+	•	Patient panel: list of patients, health status, required intervention
+	•	Resource panel: available staff, beds, medicine, wellness program options
+	•	Alerts: patient critical condition, overcrowding, medicine shortage
+	•	Daily report: recovery rates, population wellness trends, hospital feedback
+
+⸻
+
+5. Feedback Systems
+	•	Patient animations: smiling when recovering, worried when neglected
+	•	Visual indicators of overcrowding or high stress
+	•	Daily report with stats: recovered patients, hospital reputation, resource consumption
+	•	Audio cues: treatment success, emergency alerts, staff activity
+
+⸻
+
+6. Progression
+	•	Unlock new treatments and wellness programs as reputation improves
+	•	Hire more staff or expand hospital facilities
+	•	Introduce seasonal challenges: flu season, heatwaves, stress spikes
+	•	Track long-term population health trends to inform strategic decisions
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Population health index remains high, hospital reputation reaches maximum, and emergency response capacity is maintained over X days.
+	•	Loss: Population health drops below critical threshold, hospital becomes overcrowded, or resources are depleted, causing widespread failure to treat patients.

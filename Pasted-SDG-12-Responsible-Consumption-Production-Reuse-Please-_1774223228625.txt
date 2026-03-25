@@ -1,0 +1,109 @@
+SDG 11 – Sustainable Cities: Smart City Builder – Full Coder-Ready Design
+
+Genre: City-Building / Simulation / Strategy
+Target Audience: Teens, casual players
+Tone: Strategic, creative, educational
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Player manages a city with multiple districts and infrastructure systems.
+	2.	Build and upgrade sustainable buildings, transport, and public services.
+	3.	Ensure accessibility, safety, and environmental sustainability.
+	4.	Respond to city events: traffic congestion, pollution spikes, emergencies.
+	5.	Track city metrics: citizen satisfaction, pollution, safety, and accessibility.
+	6.	Repeat daily, weekly, or seasonal cycles to grow a balanced, sustainable city.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start Session
+	•	Display city dashboard: population, budget, pollution, safety, citizen satisfaction.
+	•	Highlight districts needing attention: traffic, low services, or high pollution.
+
+Step 1: Build/Upgrade Infrastructure
+	•	Construct buildings: residential, commercial, industrial, public services.
+	•	Upgrade systems: energy-efficient buildings, green transport, water management.
+	•	Placement affects accessibility, pollution, and citizen happiness.
+
+Step 2: Manage Transportation
+	•	Build roads, public transit, bike lanes, and pedestrian paths.
+	•	Optimize traffic flow to reduce congestion and emissions.
+	•	Adjust public transport schedules and routes.
+
+Step 3: Implement Sustainability Measures
+	•	Green spaces: parks, urban forests, green roofs
+	•	Renewable energy: solar panels, wind turbines, hydro stations
+	•	Waste management: recycling centers, composting, pollution control
+
+Step 4: Respond to Events
+	•	Random events: natural disasters, accidents, traffic jams, pollution spikes
+	•	Player responds: deploy emergency services, adjust traffic routes, implement cleanup
+
+Step 5: Monitor Metrics
+	•	Real-time feedback: citizen happiness, pollution levels, traffic congestion, safety
+	•	Adjust city planning and policies based on metrics
+
+Step 6: End of Day/Week
+	•	Update metrics: population satisfaction, pollution reduction, safety improvements
+	•	Unlock new buildings, districts, or technologies as the city grows
+
+⸻
+
+3. Key Variables & Objects
+
+City Zone Attributes
+	•	Type: residential, commercial, industrial, public
+	•	Population density
+	•	Pollution level (0–100)
+	•	Safety index (0–100)
+
+Building Attributes
+	•	Type: energy-efficient, standard, public service
+	•	Capacity and occupancy
+	•	Environmental impact
+
+Transport System Attributes
+	•	Roads, public transit, bike lanes, pedestrian paths
+	•	Traffic flow efficiency
+	•	Emissions impact
+
+Global Variables
+	•	Population count
+	•	Budget
+	•	Citizen satisfaction (0–100)
+	•	Pollution level (0–100)
+	•	Safety index (0–100)
+
+⸻
+
+4. UI Elements
+	•	Top bar: budget, citizen satisfaction, pollution, safety, population
+	•	City map: districts, buildings, transport lines, real-time traffic
+	•	Building panel: construct, upgrade, demolish options
+	•	Event panel: alerts for accidents, disasters, traffic issues
+	•	Metrics panel: pollution, safety, population happiness trends
+	•	End-of-day/week report: population growth, satisfaction, environmental impact
+
+⸻
+
+5. Feedback Systems
+	•	Visual: buildings, parks, and traffic animated; pollution or accidents highlighted
+	•	Audio: city ambiance, alerts for events, positive chimes for improvements
+	•	Real-time metrics update dynamically: satisfaction, pollution, safety
+	•	Citizen reactions: happy, neutral, or unhappy icons based on services
+
+⸻
+
+6. Progression
+	•	Unlock advanced sustainable buildings, transport systems, and renewable energy options
+	•	Introduce larger, more complex districts with diverse needs
+	•	Seasonal challenges: storms, festivals, energy demands
+	•	Track cumulative metrics for reputation and unlock rewards
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Citizen satisfaction is high, pollution and accidents minimized, city is accessible and sustainable across multiple cycles
+	•	Loss: Citizen satisfaction drops critically, pollution reaches dangerous levels, or disasters overwhelm city systems

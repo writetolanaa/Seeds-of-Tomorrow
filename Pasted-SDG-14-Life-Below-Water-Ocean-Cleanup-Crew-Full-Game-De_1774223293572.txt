@@ -1,0 +1,104 @@
+SDG 13 – Climate Action: Climate Diary – Full Game Design
+
+Genre: Narrative + Strategy Simulation
+Target Audience: Teens, casual strategy players
+Tone: Educational, interactive, decision-driven
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Player reviews climate metrics: CO₂ levels, temperature, biodiversity, and ecosystem health.
+	2.	Make policy and lifestyle choices that affect the environment.
+	3.	Simulate one year per turn and observe climate consequences.
+	4.	Respond to events: natural disasters, pollution spikes, policy challenges.
+	5.	Track long-term environmental trends and global goals.
+	6.	Repeat across multiple years to stabilize or improve climate conditions.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start of Year
+	•	Display global dashboard: CO₂ levels, temperature, biodiversity, energy usage, extreme weather risk.
+	•	Highlight urgent areas needing intervention.
+
+Step 1: Choose Actions
+	•	Player selects from policy, economic, or lifestyle interventions:
+	•	Renewable energy investment (solar, wind, hydro)
+	•	Deforestation prevention and reforestation programs
+	•	Public awareness campaigns (reduce consumption, recycling)
+	•	Industrial emission regulations
+	•	Transportation and infrastructure changes
+
+Step 2: Allocate Resources
+	•	Each intervention consumes limited resources: budget, manpower, or political influence.
+	•	Player must prioritize actions based on immediate vs long-term impact.
+
+Step 3: Simulate Year
+	•	Calculate effects of interventions on CO₂, temperature, biodiversity, and extreme weather.
+	•	Random events may occur: droughts, floods, wildfires, industrial accidents.
+	•	Player can respond with emergency measures, adjusting resources or policies.
+
+Step 4: Track Consequences
+	•	Global metrics update dynamically:
+	•	CO₂ reduction or increase
+	•	Temperature changes
+	•	Biodiversity gains or losses
+	•	Frequency/severity of extreme weather
+
+Step 5: End of Year / Turn
+	•	Present visual and numeric feedback: graphs, animated global changes, citizen reactions.
+	•	Adjust available resources and introduce new events for next year.
+
+⸻
+
+3. Key Variables & Objects
+
+Global Climate Attributes
+	•	CO₂ level (ppm)
+	•	Average global temperature (°C)
+	•	Biodiversity index (0–100)
+	•	Extreme weather risk (0–100)
+
+Policy / Intervention Attributes
+	•	Name and type (energy, forest, industrial, lifestyle)
+	•	Cost (budget, manpower, political capital)
+	•	Effectiveness (impact on CO₂, biodiversity, or temperature)
+	•	Duration / persistence
+
+Global Variables
+	•	Year count
+	•	Total resources available
+	•	Population awareness and compliance index
+	•	Event queue (disasters, industrial incidents)
+
+⸻
+
+4. UI Elements
+	•	Top bar: year, resources, global CO₂, temperature, biodiversity
+	•	Policy panel: available interventions, cost, and expected impact
+	•	World map: visual changes in forests, ice caps, pollution hotspots
+	•	Alerts: extreme weather events, unexpected emissions, climate crises
+	•	End-of-year report: graphs showing progress, setbacks, and long-term trends
+
+⸻
+
+5. Feedback Systems
+	•	Visual: shrinking glaciers, deforestation, storm animations, biodiversity changes
+	•	Audio: weather sounds, alerts for disasters, policy success chimes
+	•	Graphs: CO₂ levels, temperature trends, biodiversity index
+	•	Citizens / global population reactions: positive if policies succeed, negative if disasters occur
+
+⸻
+
+6. Progression
+	•	Unlock advanced policies, technologies, and renewable energy options as years progress
+	•	Introduce global challenges: climate treaties, industrial lobbying, natural disasters
+	•	Difficulty scales: new regions or faster environmental changes
+	•	Track cumulative impact for long-term global success
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Global metrics stabilize or improve within target thresholds over X years (CO₂, temperature, biodiversity)
+	•	Loss: CO₂ exceeds critical levels, temperature rises uncontrollably, biodiversity collapses, or repeated disasters overwhelm resources

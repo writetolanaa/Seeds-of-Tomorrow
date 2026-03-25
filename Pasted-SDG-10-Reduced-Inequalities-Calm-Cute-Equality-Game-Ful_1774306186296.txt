@@ -1,0 +1,101 @@
+SDG 10 – Reduced Inequalities: Calm & Cute Equality Game – Full Coder-Ready Design
+
+Genre: Casual / Relaxing Simulation
+Target Audience: Teens, casual players, all ages
+Tone: Calm, cute, educational, low-pressure
+
+⸻
+
+1. Core Gameplay Loop
+	1.	Player interacts with a small community of characters with different backgrounds, abilities, and needs.
+	2.	Identify inequalities in access to resources, opportunities, and services.
+	3.	Take actions to redistribute resources, improve access, and foster inclusion.
+	4.	Observe positive changes in character well-being and social cohesion.
+	5.	Track equality metrics across the community.
+	6.	Repeat daily or session cycles to maintain a harmonious, equitable environment.
+
+⸻
+
+2. Step-by-Step Player Actions
+
+Step 0: Start Day/Session
+	•	Display community dashboard: characters, resources, and equality metrics.
+	•	Highlight characters or areas with low access or high need.
+
+Step 1: Observe Inequalities
+	•	Click on characters or locations to see:
+	•	Resource availability (food, toys, tools, access to education/work)
+	•	Happiness and well-being levels
+	•	Opportunities for growth or development
+
+Step 2: Take Actions
+	•	Player redistributes resources: food, books, toys, or tools.
+	•	Provide access to services: medical check-ups, education, skill training.
+	•	Foster inclusion through social events, mentorship, or collaboration tasks.
+
+Step 3: Monitor Impact
+	•	Characters react visibly: smiling, playing, learning, or collaborating.
+	•	Metrics update: equality index (0–100), character happiness, social cohesion.
+	•	Positive actions increase overall harmony; neglected needs decrease metrics.
+
+Step 4: End of Day/Session
+	•	Update metrics for resource usage, equality index, and character satisfaction.
+	•	Provide visual feedback: happy, active community; colorful, balanced environment.
+	•	Prepare next session with new needs or events.
+
+⸻
+
+3. Key Variables & Objects
+
+Character Attributes
+	•	Name, background, and abilities
+	•	Resource access (0–100%)
+	•	Happiness (0–100)
+	•	Participation in community activities
+
+Resource Attributes
+	•	Type: food, toys, educational tools, healthcare access
+	•	Quantity
+	•	Distribution history
+
+Community Metrics
+	•	Equality index (0–100)
+	•	Average happiness
+	•	Social cohesion (0–100)
+
+Global Variables
+	•	Day/session count
+	•	Total resources available
+	•	Events queue (e.g., seasonal needs, emergencies)
+
+⸻
+
+4. UI Elements
+	•	Top bar: day/session, equality index, community happiness, available resources
+	•	Character panel: list of community members, resource access, happiness
+	•	Resource panel: available items, distribution options
+	•	Community view: interactive map of homes, schools, playgrounds, workplaces
+	•	Alerts: unmet needs, resource shortages, or opportunities for improvement
+	•	End-of-day report: equality trends, resource usage, character happiness
+
+⸻
+
+5. Feedback Systems
+	•	Visual: characters react positively when needs are met, icons for happiness
+	•	Audio: soft chimes for successful actions, gentle alerts for issues
+	•	Dynamic metrics: equality index and community happiness bar updates in real-time
+	•	Visual harmony: balanced colors and activity in the community map
+
+⸻
+
+6. Progression
+	•	Unlock new resources, services, and community programs
+	•	Introduce larger communities with more characters and diverse needs
+	•	Seasonal or event-based challenges: emergencies, festivals, or new opportunities
+	•	Track cumulative equality metrics for long-term community harmony
+
+⸻
+
+7. Win/Loss Conditions
+	•	Win: Equality index stays high, character happiness is maintained, and social cohesion remains strong over multiple sessions
+	•	Loss: Inequalities persist, resources mismanaged, or happiness and cohesion fall below thresholds

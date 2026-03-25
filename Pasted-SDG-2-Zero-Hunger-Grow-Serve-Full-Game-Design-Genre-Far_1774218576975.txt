@@ -1,0 +1,222 @@
+SDG 17 – Partnerships for the Goals: Global Link
+
+Genre: Strategy / Diplomacy / Resource Coordination
+Target Audience: Teens, young adults
+Tone: Strategic, cooperative, hopeful, global
+
+⸻
+
+1. Core Game Idea
+
+The player acts as a global coordinator whose job is to connect countries, organizations, NGOs, companies, and communities so that all other SDGs can succeed.
+
+The game is about cooperation, not competition.
+No single actor can win alone.
+
+⸻
+
+2. Core Gameplay Loop
+	1.	Identify global problems and development gaps.
+	2.	Build partnerships between actors with complementary strengths.
+	3.	Negotiate agreements (funding, knowledge, technology, logistics).
+	4.	Coordinate joint projects across regions.
+	5.	Track partnership effectiveness and global progress.
+	6.	Repeat across global cycles (years/summits).
+
+⸻
+
+3. Step-by-Step Player Actions
+
+Step 0: Start of Global Cycle
+	•	Player sees the world dashboard:
+	•	Global cooperation index
+	•	Funding availability
+	•	Knowledge-sharing level
+	•	Technology access
+	•	Active global challenges appear (climate, health, education, infrastructure).
+
+⸻
+
+Step 1: Analyze Needs
+	•	Player clicks a region or country to view:
+	•	Which SDGs are struggling
+	•	Available resources
+	•	Missing capabilities (money, expertise, tech, logistics)
+
+Each region has strengths and weaknesses.
+
+⸻
+
+Step 2: Select Partners
+	•	Player chooses multiple actors:
+	•	Governments
+	•	NGOs
+	•	Universities
+	•	Private companies
+	•	Local communities
+
+Each actor has:
+	•	Strengths (funding, tech, labor, data)
+	•	Limits (budget, politics, geography)
+
+⸻
+
+Step 3: Negotiate Agreements
+	•	Player sets partnership terms:
+	•	Who provides funding
+	•	Who shares technology
+	•	Who manages implementation
+	•	How benefits are distributed
+
+Poor negotiation leads to:
+	•	Distrust
+	•	Withdrawn partners
+	•	Failed projects
+
+Fair agreements increase long-term cooperation.
+
+⸻
+
+Step 4: Launch Joint Projects
+
+Projects may support:
+	•	Clean energy
+	•	Education systems
+	•	Healthcare access
+	•	Infrastructure
+	•	Climate resilience
+
+Projects run over multiple turns and require:
+	•	Continuous cooperation
+	•	Resource flow
+	•	Political stability
+
+⸻
+
+Step 5: Monitor Cooperation
+	•	Track:
+	•	Project progress
+	•	Partner satisfaction
+	•	Transparency
+	•	Impact on SDG metrics
+
+Player can intervene if:
+	•	Partners disagree
+	•	Resources stall
+	•	Trust drops
+
+⸻
+
+Step 6: End of Cycle
+	•	Global reports summarize:
+	•	Successful partnerships
+	•	Failed collaborations
+	•	SDG progress
+	•	New challenges and partners appear.
+
+⸻
+
+4. Key Game Systems & Variables
+
+Global Metrics
+	•	Cooperation Index (0–100)
+	•	Trust Level (0–100)
+	•	Funding Efficiency (0–100)
+	•	Knowledge Exchange Level (0–100)
+
+⸻
+
+Partner Attributes
+	•	Type (government, NGO, company, academic)
+	•	Resources provided
+	•	Reliability
+	•	Political or ethical constraints
+
+⸻
+
+Project Variables
+	•	Duration
+	•	Required resources
+	•	Risk level
+	•	SDGs impacted
+	•	Success probability
+
+⸻
+
+5. Player Abilities
+
+The player can:
+	•	Build long-term alliances
+	•	Mediate disputes between partners
+	•	Increase transparency
+	•	Improve data sharing
+	•	Create global forums and summits
+	•	Encourage technology transfer
+
+Abilities unlock as trust and cooperation grow.
+
+⸻
+
+6. User Interface Design
+	•	World map: regions, active projects, partnerships
+	•	Partner panel: strengths, satisfaction, commitments
+	•	Negotiation panel: sliders for responsibility sharing
+	•	Project panel: timelines, progress bars, risks
+	•	Global dashboard: cooperation, trust, SDG progress
+	•	End-of-cycle report: outcomes and lessons learned
+
+⸻
+
+7. Feedback Systems
+
+Visual
+	•	Lines connecting partners across the globe
+	•	Projects visually progress on the map
+	•	World becomes more vibrant as cooperation improves
+
+Narrative
+	•	Global news updates
+	•	Partner statements
+	•	Summit outcomes
+
+Audio
+	•	Calm global music
+	•	Alert tones for conflicts
+	•	Success sounds for strong partnerships
+
+⸻
+
+8. Progression System
+	•	Start with fragmented global cooperation
+	•	Unlock:
+	•	Multilateral agreements
+	•	Global funds
+	•	Technology-sharing platforms
+	•	Emergency response coalitions
+	•	Later stages require managing many SDGs simultaneously
+
+⸻
+
+9. Win / Loss Conditions
+
+Win
+	•	High global cooperation
+	•	Multiple SDGs improving simultaneously
+	•	Long-lasting, fair partnerships
+	•	Strong trust between global actors
+
+Loss
+	•	Partnerships collapse
+	•	Trust erodes
+	•	Projects fail repeatedly
+	•	Global progress stalls
+
+⸻
+
+10. Educational Outcome
+
+The player learns that:
+	•	No SDG can succeed alone
+	•	Trust is more valuable than money
+	•	Fair partnerships outperform short-term deals
+	•	Global problems require shared responsibility
